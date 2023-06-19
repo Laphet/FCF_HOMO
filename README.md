@@ -1,5 +1,5 @@
 ### Data description
-The domain is discretized into MxNxP cells in x-, y- and z-direction.
+The domain is discretized into "MxNxP" cells in x-, y- and z-direction.
 For a 3d index “(i, j, k)” with “0 <= i < M”, “0 <= j < N” and “0 <= k < P”,
 we should convert it into a 1d index as “(ixNxP + jxP + k)”.
 
@@ -17,6 +17,7 @@ The data type of “A” and “b” could be **double** or **float**.
 ### CUDA implementation
 To construct a CSR sparse matrix, we may need a routine:
 - cusparseCreateCsr().
+
 To destroy a CSR sparse matrix, we may need a routine:
 - cusparseDestroySpMat().
 
