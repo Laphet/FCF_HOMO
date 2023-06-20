@@ -3,9 +3,9 @@
 void _addByType(
     double *d_ptr,
     float *f_ptr,
-    long int ind,
-    double val,
-    data_type dt)
+    const int ind,
+    const double val,
+    const data_type dt)
 {
   if (dt == _p_float)
     f_ptr[ind] += (float)val;
@@ -16,8 +16,8 @@ void _addByType(
 void _zeroByType(
     double *d_ptr,
     float *f_ptr,
-    long int ind,
-    data_type dt)
+    const int ind,
+    const data_type dt)
 {
   if (dt == _p_float)
     f_ptr[ind] = 0.0f;
@@ -36,7 +36,7 @@ int getCsrMatData(
     const data_type dt)
 {
   int M = dims[0], N = dims[1], P = dims[2];
-  long int size = M * N * P, row = 0;
+  int size = M * N * P, row = 0;
   double *d_csrValues = (double *)csrValues;
   float *f_csrValues = (float *)csrValues;
 
@@ -154,4 +154,61 @@ int getCsrMatData(
               sizeof(double) * csrRowOffsets[row + 1]);
     csrRowOffsets[row + 1] += csrRowOffsets[row];
   }
+
+  return 0;
+}
+
+int getStdRhsVec(
+    void *rhs,
+    const double *dims,
+    const double *k_z,
+    double delta_p,
+    const data_type dt)
+{
+  int M = dims[0], N = dims[1], P = dims[2];
+  int size = M * N * P, row = 0;
+  double *d_rhs = (double *)rhs;
+  float *f_rhs = (float *)rhs;
+
+#pragma omp parallel for
+  for (row = 0; row < size; ++row)
+  {
+    int i = row % P, j = (row / P) % N, k = row / (P * N), col = 0;
+    _zeroByType(d_rhs, f_rhs, row, dt);
+    if (k == 0)
+      _addByType(d_rhs, f_rhs, row, 2.0 * k_z[row] * delta_p, dt);
+  }
+
+  return 0;
+}
+
+int getHomoCondZ(
+    void *homoCondZ,
+    const void *p,
+    const double *dims,
+    const double *k_z,
+    const double delta_p,
+    const double lenZ,
+    const data_type dt)
+{
+  int M = dims[0], N = dims[1], P = dims[2], i = 0, j = 0, row = 0;
+  double temp_p = 0.0, temp = 0.0;
+  double *d_p = (double *)p, *d_homoCondZ = (double *)homoCondZ;
+  float *f_p = (float *)p, *f_homoCondZ = (float *)homoCondZ;
+
+  _zeroByType(d_homoCondZ, f_homoCondZ, 0, dt);
+  for (i = 0; i < M; ++i)
+    for (j = 0; j < N; ++j)
+    {
+      row = i * N * P + j * P;
+      if (dt == _p_float)
+        temp_p = (double)f_p[row];
+      else
+        temp_p = d_p[row];
+      temp = k_z[row] * (temp_p - delta_p) / delta_p;
+      temp *= 2.0 * lenZ * lenZ / (M * N * P);
+      _addByType(d_homoCondZ, f_homoCondZ, 0, temp, dt);
+    }
+
+  return 0;
 }

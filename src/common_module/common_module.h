@@ -24,4 +24,20 @@ int getCsrMatData(
     const double *k_z,
     const data_type dt);
 
+int getStdRhsVec(
+    void *rhs,
+    const double *dims,
+    const double *k_z,
+    double delta_p,
+    const data_type dt);
+
+int getHomoCondZ(
+    void *homoCondZ,
+    const void *p,
+    const double *dims,
+    const double *k_z,
+    const double delta_p,
+    const double lenZ,
+    const data_type dt);
+
 #endif
