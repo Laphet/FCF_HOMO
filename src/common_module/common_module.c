@@ -212,3 +212,29 @@ int getHomoCondZ(
 
   return 0;
 }
+
+int getOnesVec(
+    void *vec,
+    const int size,
+    const double alpha,
+    const data_type dt)
+{
+  int i = 0;
+  double *d_vec = (double *)(vec);
+  float *f_vec = (float *)(vec);
+
+  if (dt == _p_float)
+  {
+#pragma omp parallel for
+    for (i = 0; i < size; ++i)
+      f_vec[i] = (float)alpha;
+  }
+  else
+  {
+#pragma omp parallel for
+    for (i = 0; i < size; ++i)
+      d_vec[i] = alpha;
+  }
+
+  return 0;
+}

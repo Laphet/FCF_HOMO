@@ -40,4 +40,10 @@ int getHomoCondZ(
     const double lenZ,
     const data_type dt);
 
+int getOnesVec(
+    void *vec,
+    const int size,
+    const double alpha,
+    const data_type dt);
+
 #endif
