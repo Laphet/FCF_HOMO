@@ -25,6 +25,15 @@ To calculate the product of a sparse matrix and a dense vector, we may need a ro
 - cusparseSpMV().
 Note that we will also use this routine to obtain the residual.
 
+The cuda tridiagonal solver is included in cuSparse.
+We will use the batched tridiagonal solver to maximize efficiency.
+- cusparse<S, D, C, Z>gtsv2StridedBatch()
+Note that there is another batched tridiagonal solver called
+- cusparse<S, D, C, Z>gtsvInterleavedBatch()
+which needs a different data layout ("k" goes slowest) compared with the former one.
+
+
+
 
 
 

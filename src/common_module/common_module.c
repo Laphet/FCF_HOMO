@@ -45,7 +45,7 @@ int getCsrMatData(
 #pragma omp parallel for
   for (row = 0; row < size; ++row)
   {
-    int i = row % P, j = (row / P) % N, k = row / (P * N), col = 0;
+    int i = row / (P * N), j = (row / P) % N, k = row % P, col = 0;
     double mean_k = 0.0;
     csrRowOffsets[row + 1] = 0;
     // cols order, 0, z-, z+, y-, y+, x-, x+
@@ -138,19 +138,20 @@ int getCsrMatData(
     if (k == 0 || k == P - 1)
       _addByType(d_csrValues, f_csrValues,
                  row * STENCIL_WIDTH, 2.0 * k_z[row], dt);
+    // The number of nonzeros of the current row.
     csrRowOffsets[row + 1]++;
   }
 
   // Clean unused memory.
   for (row = 0; row < size; ++row)
   {
-    memmove(&csrRowOffsets[row], &csrColInd[row * STENCIL_WIDTH],
+    memmove(&csrColInd[csrRowOffsets[row]], &csrColInd[row * STENCIL_WIDTH],
             sizeof(int) * csrRowOffsets[row + 1]);
     if (dt == _p_float)
-      memmove(&f_csrValues[row], &f_csrValues[row * STENCIL_WIDTH],
+      memmove(&f_csrValues[csrRowOffsets[row]], &f_csrValues[row * STENCIL_WIDTH],
               sizeof(float) * csrRowOffsets[row + 1]);
     else
-      memmove(&d_csrValues[row], &d_csrValues[row * STENCIL_WIDTH],
+      memmove(&d_csrValues[csrRowOffsets[row]], &d_csrValues[row * STENCIL_WIDTH],
               sizeof(double) * csrRowOffsets[row + 1]);
     csrRowOffsets[row + 1] += csrRowOffsets[row];
   }
@@ -173,7 +174,7 @@ int getStdRhsVec(
 #pragma omp parallel for
   for (row = 0; row < size; ++row)
   {
-    int i = row % P, j = (row / P) % N, k = row / (P * N), col = 0;
+    int i = row / (P * N), j = (row / P) % N, k = row % P, col = 0;
     _zeroByType(d_rhs, f_rhs, row, dt);
     if (k == 0)
       _addByType(d_rhs, f_rhs, row, 2.0 * k_z[row] * delta_p, dt);
