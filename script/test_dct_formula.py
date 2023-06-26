@@ -47,6 +47,16 @@ def dct_forward(M, N, x):
     return x_hat
 
 
+def dct_backward(M, N, x_hat):
+    x_2d_hat = x_hat.reshape((M, N))
+    v_hat = np.zeros((M, N), dtype=np.cdouble)
+    for i_prime in range(M):
+        i_theta = PI * i_prime / (2 * M)
+        for j_prime in range(N):
+            j_theta = PI * j_prime / (2 * N)
+            v_hat[i_prime, j_prime] = 1.0
+
+
 M, N = 4, 8
 mat, mat_inv = get_dct_mats(M, N)
 iden_mat = np.eye(M * N)
