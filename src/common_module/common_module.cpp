@@ -10,14 +10,14 @@ int getCsrMatData(
     const std::vector<double> &k_y,
     const std::vector<double> &k_z)
 {
-  int M = dims[0], N = dims[1], P = dims[2];
-  int size = M * N * P, row = 0;
+  int M{dims[0]}, N{dims[1]}, P{dims[2]};
+  int size{M * N * P}, row{0};
 
   csrRowOffsets[0] = 0;
 #pragma omp parallel for
   for (row = 0; row < size; ++row)
   {
-    int i = row / (P * N), j = (row / P) % N, k = row % P, col = 0;
+    int i{row / (P * N)}, j{(row / P) % N}, k{row % P}, col{0};
     double mean_k = 0.0;
 
     csrRowOffsets[row + 1] = 0;
@@ -134,13 +134,13 @@ int getStdRhsVec(
     const std::vector<double> &k_z,
     const double delta_p)
 {
-  int M = dims[0], N = dims[1], P = dims[2];
-  int size = M * N * P, row = 0;
+  int M{dims[0]}, N{dims[1]}, P{dims[2]};
+  int size{M * N * P}, row{0};
 
 #pragma omp parallel for
   for (row = 0; row < size; ++row)
   {
-    int i = row / (P * N), j = (row / P) % N, k = row % P, col = 0;
+    int i{row / (P * N)}, j{(row / P) % N}, k{row % P}, col{0};
     rhs[row] = static_cast<T>(0.0);
     if (k == 0)
       rhs[row] += static_cast<T>(2.0 * k_z[row] * delta_p);
@@ -170,8 +170,8 @@ int getHomoCoeffZ(
     const double delta_p,
     const double lenZ)
 {
-  int M = dims[0], N = dims[1], P = dims[2], i = 0, j = 0, row = 0;
-  double temp = 0.0;
+  int M{dims[0]}, N{dims[1]}, P{dims[2]}, i{0}, j{0}, row{0};
+  double temp{0.0};
 
   homoCoeffZ = static_cast<T>(0.0);
 #pragma omp parallel for reduction(+ : homoCoeffZ)

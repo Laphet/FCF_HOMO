@@ -78,7 +78,7 @@ def dct_backward(M, N, x_hat):
     return x
 
 
-M, N = 7, 9
+M, N = 7, 5
 mat, mat_inv = get_dct_mats(M, N)
 diag = np.ones((M, N))
 diag[0, :] *= 0.5
