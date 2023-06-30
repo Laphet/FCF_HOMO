@@ -15,3 +15,5 @@ int getStdRhsVec(std::vector<T> &rhs, const std::vector<int> &dims, const std::v
 
 template <typename T>
 int getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p, const double lenZ);
+
+#include "common_module.tpp"

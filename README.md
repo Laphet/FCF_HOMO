@@ -38,19 +38,22 @@ Note that there is another batched tridiagonal solver called
 which needs a different data layout ("k" goes the slowest) compared with the former one.
 
 Due to that cuFFT does not implement a fast cosine transformation,
-we need to apply a special treatment for the case (see reference 1).
-Note that we could use cusparseSpMV() to avoid writing a for-loop by ourselves.
+we need to apply a special treatment (see reference 1).
+Note that we need to write kernel functions to implement pre- and post-processes. 
+The formula in the original reference contains a typo, 
+and check the Python script for the correct one.
+
 We focus on two types of transformations:
-- C2C,
-- Z2Z.
+- R2C, D2Z,
+- C2R, Z2D.
 
-To convert an S(float) array to a C(complex) array, we could first allocate a
-float array of a "2N" length and then use cuBlas to do copies with a stride of two. 
-Finally, cast the pointer to "complex *".
+We need the following routines from cuFFT:
+- cufftCreate(),
+- cufftMakePlanMany(),
+- cufftExecR2C(), cufftExecD2Z(),
+- cufftExecC2R(), cufftExecZ2D(),
+- cufftDestroy().
 
-Similarly, to obtain a real part of a C(complex) array, we could first allocate a
-float array of an "N" length and then cast "complex *" to "float *". 
-Finally, use cuBlas to do copies.
 
 
 
