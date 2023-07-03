@@ -272,7 +272,7 @@ __global__ void ifctPost(T *out, T const *in, const int M, const int N, const in
 }
 
 template <typename T>
-__global__ void fctForward(T *out_hat, T const *in, T *realBuffer, cuda::std::complex<T> *compBuffer, const int M, const int N, const int P)
+__global__ void cuFctSolver<T>::fctForward(const thrust::device_vector<T> &in, thrust::device_vector<T> &out_hat)
 {
   int blockSize{0};   // The launch configurator returned block size
   int minGridSize{0}; // The minimum grid size needed to achieve the maximum occupancy for a full device launch
@@ -286,10 +286,10 @@ __global__ void fctForward(T *out_hat, T const *in, T *realBuffer, cuda::std::co
     blockSize = MAX_THREADS_PER_BLOCK;
   }
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
-  fctPre<T><<<gridSize, blockSize>>>(realBuffer, in, M, N, P);
+  fctPre<T><<<gridSize, blockSize>>>(&realBuffer[0], &in[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 
-  CHECK_CUDA_ERROR(cufftReal2Comp(plan, realBuffer, compBuffer));
+  CHECK_CUDA_ERROR(cufftReal2Comp(fft_plan, &realBuffer[0], &compBuffer[0]));
 
   CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, fctPost, 0, 0));
   blockSize = (blockSize / WARP_SIZE) * WARP_SIZE; // This should be useless.
@@ -298,12 +298,12 @@ __global__ void fctForward(T *out_hat, T const *in, T *realBuffer, cuda::std::co
     blockSize = MAX_THREADS_PER_BLOCK;
   }
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
-  fctPost<T><<<gridSize, blockSize>>>(out_hat, compBuffer, M, N, P);
+  fctPost<T><<<gridSize, blockSize>>>(&out_hat[0], &compBuffer[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 }
 
 template <typename T>
-__global__ void fctBackward(T *out, T const *in_hat, T *realBuffer, cuda::std::complex<T> *compBuffer, cufftHandle plan, const int M, const int N, const int P)
+__global__ void cuFctSolver<T>::fctBackward(const thrust::device_vector<T> &in_hat, thrust::device_vector<T> &out_hat)
 {
   int blockSize{0};   // The launch configurator returned block size
   int minGridSize{0}; // The minimum grid size needed to achieve the maximum occupancy for a full device launch
@@ -317,10 +317,10 @@ __global__ void fctBackward(T *out, T const *in_hat, T *realBuffer, cuda::std::c
     blockSize = MAX_THREADS_PER_BLOCK;
   }
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
-  ifctPre<T><<<gridSize, blockSize>>>(compBuffer, in_hat, M, N, P);
+  ifctPre<T><<<gridSize, blockSize>>>(&compBuffer[0], &in_hat[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 
-  CHECK_CUDA_ERROR(cufftComp2Real(plan, compBuffer, realBuffer));
+  CHECK_CUDA_ERROR(cufftComp2Real(fft_plan, &compBuffer[0], &realBuffer[0]));
 
   CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, ifctPost, 0, 0));
   blockSize = (blockSize / WARP_SIZE) * WARP_SIZE; // This should be useless.
@@ -329,6 +329,6 @@ __global__ void fctBackward(T *out, T const *in_hat, T *realBuffer, cuda::std::c
     blockSize = MAX_THREADS_PER_BLOCK;
   }
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
-  ifctPost<T><<<gridSize, blockSize>>>(out, realBuffer, M, N, P);
+  ifctPost<T><<<gridSize, blockSize>>>(&out[0], &realBuffer[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 }

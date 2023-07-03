@@ -54,10 +54,10 @@ We need the following routines from cuFFT:
 - cufftExecC2R(), cufftExecZ2D(),
 - cufftDestroy().
 
-
-
-
 ### FFTW implementation
+Use the following commands to configure fftw:
+./configure --prefix=${HOME}/fftw --enable-single --enable-avx512 --enable-openmp
+
 
 ### References
 [1] Makhoul, J. (1980). A fast cosine transform in one and two dimensions. 
