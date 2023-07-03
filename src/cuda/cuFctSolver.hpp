@@ -7,8 +7,8 @@
 #include "math_constants.h"
 #include "cuda_utils.hpp"
 
-constexpr int MAX_THREADS_PER_BLOCK{1024};
-constexpr int WARP_SIZE{32};
+__constant__ int MAX_THREADS_PER_BLOCK{1024};
+__constant__ int WARP_SIZE{32};
 
 template <typename T>
 class cuFctSolver {
