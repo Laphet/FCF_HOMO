@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(fct_homo LANGUAGES CXX)
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -22,6 +22,7 @@ if(USE_CUDA)
   enable_language(CUDA)
   set(CMAKE_CUDA_ARCHITECTURES 75)
   find_package(CUDAToolkit REQUIRED)
+  add_subdirectory(src/cuda)
 endif()
 
 if(USE_FFTW)
@@ -34,7 +35,6 @@ find_package(OpenMP REQUIRED)
 
 
 add_subdirectory(src/common_module)
-add_subdirectory(src/cuda)
 add_subdirectory(src/main)
 
 

@@ -1,34 +1,47 @@
 #pragma once
 
 #include <math.h>
+#include <iostream>
 #include <cuda/std/complex>
 #include <cufft.h>
 #include <thrust/device_vector.h>
 #include "math_constants.h"
-#include "cuda_utils.hpp"
 
-__constant__ int MAX_THREADS_PER_BLOCK{1024};
-__constant__ int WARP_SIZE{32};
+#define MAX_THREADS_PER_BLOCK 1024
+#define WARP_SIZE             32
+#define DIM                   3
+
+#define CHECK_CUDA_ERROR(val) check((val), #val, __FILE__, __LINE__)
+template <typename T>
+void check(T err, char const *const func, char const *const file, int const line);
+
+#define CHECK_LAST_CUDA_ERROR() checkLast(__FILE__, __LINE__)
+void checkLast(char const *const file, int const line);
 
 template <typename T>
 class cuFctSolver {
-  using complex_t = cuda::std::complex<T>;
-  const std::size_t                M, N, P;
-  thrust::device_vector<T>         realBuffer;
-  thrust::device_vector<complex_t> compBuffer;
-  cufftHandle                      fft_plan;
+  int                                          dims[DIM];
+  thrust::device_vector<T>                     realBuffer;
+  thrust::device_vector<cuda::std::complex<T>> compBuffer;
+  cufftHandle                                  fft_r2c_plan, fft_c2r_plan;
 
 public:
-  __global__ cuFctSolver(const std::size_t _M, const std::size_t _N, const std::size_t _P) : M(_M), N(_N), P(_P), realBuffer(_M * _N * _P), compBuffer(_M * _N * _P), fft_plan(0)
+  cuFctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer(_M * _N * _P), compBuffer(_M * _N * _P), fft_r2c_plan(0), fft_c2r_plan(0)
   {
     // Works on the cufft context.
-    CHECK_CUDA_ERROR(cufftCreate(&fft_plan));
-    CHECK_CUDA_ERROR();
+    CHECK_CUDA_ERROR(cufftCreate(&fft_r2c_plan));
+    CHECK_CUDA_ERROR(cufftPlanMany(&fft_r2c_plan, 2, &dims[0], NULL, dims[2], 1, NULL, dims[2], 1, CUFFT_R2C, dims[2]));
+    CHECK_CUDA_ERROR(cufftCreate(&fft_c2r_plan));
+    CHECK_CUDA_ERROR(cufftPlanMany(&fft_c2r_plan, 2, &dims[0], NULL, dims[2], 1, NULL, dims[2], 1, CUFFT_C2R, dims[2]));
   }
 
-  __global__ void fctForward(const thrust::device_vector<T> &in, thrust::device_vector<T> &out_hat);
+  ~cuFctSolver()
+  {
+    CHECK_CUDA_ERROR(cufftDestroy(fft_r2c_plan));
+    CHECK_CUDA_ERROR(cufftDestroy(fft_c2r_plan));
+  }
 
-  __global__ void fctBackward(const thrust::device_vector<T> &in_hat, thrust::device_vector<T> &out_hat);
+  void fctForward(const thrust::device_vector<T> &in, thrust::device_vector<T> &out_hat);
+
+  void fctBackward(const thrust::device_vector<T> &in_hat, thrust::device_vector<T> &out_hat);
 };
-
-#include "cuFctSolver.tpp"

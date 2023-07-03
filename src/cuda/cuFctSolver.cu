@@ -3,6 +3,26 @@
 #define FCT_POST_STENCIL_WIDTH 2
 #define IFCT_PRE_STENCIL_WIDTH 4
 
+template <typename T>
+void check(T err, char const *const func, char const *const file, int const line)
+{
+  if (err != cudaSuccess) {
+    std::cerr << "CUDA Runtime Error at: " << file << ":" << line << std::endl;
+    std::cerr << cudaGetErrorString(err) << " " << func << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+}
+
+void checkLast(char const *const file, int const line)
+{
+  cudaError_t err{cudaGetLastError()};
+  if (err != cudaSuccess) {
+    std::cerr << "CUDA Runtime Error at: " << file << ":" << line << std::endl;
+    std::cerr << cudaGetErrorString(err) << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+}
+
 __device__ int getIdxFrom3dIdx(const int i, const int j, const int k, const int N, const int P)
 {
   return i * N * P + j * P + k;
@@ -68,21 +88,9 @@ inline cufftResult cufftComp2Real(cufftHandle plan, cuda::std::complex<double> *
 }
 
 template <typename T>
-__global__ void fctPre(T *out, T const *in, const int M, const int N, const int P);
-
-template <typename T>
-__global__ void fctPost(T *out_hat, cuda::std::complex<T> const *in_hat, const int M, const int N, const int P);
-
-template <typename T>
-__global__ void ifctPre(cuda::std::complex<T> *out_hat, T const *in_hat, const int M, const int N, const int P);
-
-template <typename T>
-__global__ void ifctPost(T *out, T const *in, const int M, const int N, const int P);
-
-template <typename T>
 __global__ void fctPre(T *out, T const *in, const int M, const int N, const int P)
 {
-  int          glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
+  size_t       glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
   int          i{0}, j{0}, k{0}, idx_req{0}, idx_tar{0};
   int          P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
   __shared__ T in_buffer[MAX_THREADS_PER_BLOCK];
@@ -109,14 +117,14 @@ template <typename T>
 __global__ void fctPost(T *out_hat, cuda::std::complex<T> const *in_hat, const int M, const int N, const int P)
 {
   using complex_t = cuda::std::complex<T>;
-  int                  glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
+  size_t               glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
   int                  i_p{0}, j_p{0}, k{0}, idx_req{0}, idx_tar{0};
   int                  P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
   __shared__ complex_t in_hat_buffer[FCT_POST_STENCIL_WIDTH][MAX_THREADS_PER_BLOCK + 1];
   T                    myZERO{static_cast<T>(0.0)}, myHALF{static_cast<T>(0.5)}; // Avoid bank conflicts, we add a padding to every row here.
 
   if (glbThreadIdx < M * N * P_mod) {
-    get3dIdxFromThreadIdx(i_p, j_p, k, idx, N, P, P_mod);
+    get3dIdxFromThreadIdx(i_p, j_p, k, glbThreadIdx, N, P, P_mod);
     if (1 <= i_p && j_p <= N / 2) {
       idx_req                       = getIdxFrom3dIdxHalf(i_p, j_p, k, N, P);
       in_hat_buffer[0][threadIdx.x] = in_hat[idx_req];
@@ -148,14 +156,14 @@ __global__ void fctPost(T *out_hat, cuda::std::complex<T> const *in_hat, const i
   }
   __syncthreads();
 
-  T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi<T>(myZERO)};
+  T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi(myZERO)};
   complex_t ninj_exp, nipj_exp, temp;
 
   if (glbThreadIdx < M * N * P_mod) {
     i_theta  = static_cast<T>(i_p) / static_cast<T>(2 * M) * cuPi;
     j_theta  = static_cast<T>(j_p) / static_cast<T>(2 * N) * cuPi;
-    ninj_exp = getExpItheta<T>(-i_theta - j_theta);
-    nipj_exp = getExpItheta<T>(-i_theta + j_theta);
+    ninj_exp = getExpItheta(-i_theta - j_theta);
+    nipj_exp = getExpItheta(-i_theta + j_theta);
     idx_tar  = getIdxFrom3dIdx(i_p, j_p, k, N, P);
 
     if (1 <= j_p && j_p <= N / 2) {
@@ -182,7 +190,7 @@ template <typename T>
 __global__ void ifctPre(cuda::std::complex<T> *out_hat, T const *in_hat, const int M, const int N, const int P)
 {
   using complex_t = cuda::std::complex<T>;
-  int          glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
+  size_t       glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
   int          i_p{0}, j_p{0}, k{0}, idx_req{0}, idx_tar{0};
   int          P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
   T            myZERO{static_cast<T>(0.0)};
@@ -228,7 +236,7 @@ __global__ void ifctPre(cuda::std::complex<T> *out_hat, T const *in_hat, const i
   }
   __syncthreads();
 
-  T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi<T>(myZERO)};
+  T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi(myZERO)};
   complex_t temp;
 
   if (glbThreadIdx < M * N * P_mod && j_p <= N / 2) {
@@ -248,7 +256,7 @@ __global__ void ifctPre(cuda::std::complex<T> *out_hat, T const *in_hat, const i
 template <typename T>
 __global__ void ifctPost(T *out, T const *in, const int M, const int N, const int P)
 {
-  int          glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
+  size_t       glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
   int          i{0}, j{0}, k{0}, idx_req{0}, idx_tar{0};
   int          P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
   __shared__ T in_buffer[MAX_THREADS_PER_BLOCK];
@@ -272,14 +280,15 @@ __global__ void ifctPost(T *out, T const *in, const int M, const int N, const in
 }
 
 template <typename T>
-__global__ void cuFctSolver<T>::fctForward(const thrust::device_vector<T> &in, thrust::device_vector<T> &out_hat)
+void cuFctSolver<T>::fctForward(const thrust::device_vector<T> &in, thrust::device_vector<T> &out_hat)
 {
+  int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int blockSize{0};   // The launch configurator returned block size
   int minGridSize{0}; // The minimum grid size needed to achieve the maximum occupancy for a full device launch
   int gridSize{0};    // The actual grid size needed, based on input size
   int P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
 
-  CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, fctPre, 0, 0));
+  CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, &fctPre<T>, 0, 0));
   blockSize = (blockSize / WARP_SIZE) * WARP_SIZE; // This should be useless.
   if (blockSize < P) {
     std::cout << "Recommended blocksize=" << blockSize << " < P=" << P << ", reset blocksize=" << MAX_THREADS_PER_BLOCK << '\n';
@@ -289,9 +298,9 @@ __global__ void cuFctSolver<T>::fctForward(const thrust::device_vector<T> &in, t
   fctPre<T><<<gridSize, blockSize>>>(&realBuffer[0], &in[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 
-  CHECK_CUDA_ERROR(cufftReal2Comp(fft_plan, &realBuffer[0], &compBuffer[0]));
+  CHECK_CUDA_ERROR(cufftReal2Comp(fft_r2c_plan, &realBuffer[0], &compBuffer[0]));
 
-  CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, fctPost, 0, 0));
+  CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, &fctPost<T>, 0, 0));
   blockSize = (blockSize / WARP_SIZE) * WARP_SIZE; // This should be useless.
   if (blockSize < P) {
     std::cout << "Recommended blocksize=" << blockSize << " < P=" << P << ", reset blocksize=" << MAX_THREADS_PER_BLOCK << '\n';
@@ -303,14 +312,15 @@ __global__ void cuFctSolver<T>::fctForward(const thrust::device_vector<T> &in, t
 }
 
 template <typename T>
-__global__ void cuFctSolver<T>::fctBackward(const thrust::device_vector<T> &in_hat, thrust::device_vector<T> &out_hat)
+void cuFctSolver<T>::fctBackward(const thrust::device_vector<T> &in_hat, thrust::device_vector<T> &out_hat)
 {
+  int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int blockSize{0};   // The launch configurator returned block size
   int minGridSize{0}; // The minimum grid size needed to achieve the maximum occupancy for a full device launch
   int gridSize{0};    // The actual grid size needed, based on input size
   int P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
 
-  CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, ifctPre, 0, 0));
+  CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, &ifctPre<T>, 0, 0));
   blockSize = (blockSize / WARP_SIZE) * WARP_SIZE; // This should be useless.
   if (blockSize < P) {
     std::cout << "Recommended blocksize=" << blockSize << " < P=" << P << ", reset blocksize=" << MAX_THREADS_PER_BLOCK << '\n';
@@ -320,15 +330,17 @@ __global__ void cuFctSolver<T>::fctBackward(const thrust::device_vector<T> &in_h
   ifctPre<T><<<gridSize, blockSize>>>(&compBuffer[0], &in_hat[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 
-  CHECK_CUDA_ERROR(cufftComp2Real(fft_plan, &compBuffer[0], &realBuffer[0]));
+  CHECK_CUDA_ERROR(cufftComp2Real(fft_c2r_plan, &compBuffer[0], &realBuffer[0]));
 
-  CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, ifctPost, 0, 0));
+  CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, &ifctPost<T>, 0, 0));
   blockSize = (blockSize / WARP_SIZE) * WARP_SIZE; // This should be useless.
   if (blockSize < P) {
     std::cout << "Recommended blocksize=" << blockSize << " < P=" << P << ", reset blocksize=" << MAX_THREADS_PER_BLOCK << '\n';
     blockSize = MAX_THREADS_PER_BLOCK;
   }
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
-  ifctPost<T><<<gridSize, blockSize>>>(&out[0], &realBuffer[0], M, N, P);
+  ifctPost<T><<<gridSize, blockSize>>>(&out_hat[0], &realBuffer[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 }
+
+#include "cuFctSolver.tpp"

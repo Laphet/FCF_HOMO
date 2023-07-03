@@ -109,3 +109,5 @@ int getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<int>
 
   return 0;
 }
+
+#include "common_module.tpp"
