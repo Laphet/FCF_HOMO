@@ -7,9 +7,7 @@
 #include <cufft.h>
 #include <math_constants.h>
 
-#define MAX_THREADS_PER_BLOCK 1024
-#define WARP_SIZE             32
-#define DIM                   3
+#define DIM 3
 
 #define CHECK_CUDA_ERROR(val) check((val), #val, __FILE__, __LINE__)
 template <typename T>
@@ -27,26 +25,9 @@ class cuFctSolver {
   cufftHandle            fft_c2r_plan;
 
 public:
-  cuFctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer(nullptr), compBuffer(nullptr), fft_r2c_plan(0), fft_c2r_plan(0)
-  {
-    CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&realBuffer), sizeof(T) * _M * _N * _P));
-    CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&compBuffer), sizeof(cuda::std::complex<T>) * _M * _N * _P));
-    // Works on the cufft context.
-    CHECK_CUDA_ERROR(cufftCreate(&fft_r2c_plan));
-    CHECK_CUDA_ERROR(cufftPlanMany(&fft_r2c_plan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, CUFFT_R2C, dims[2]));
-    CHECK_CUDA_ERROR(cufftCreate(&fft_c2r_plan));
-    CHECK_CUDA_ERROR(cufftPlanMany(&fft_c2r_plan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, CUFFT_C2R, dims[2]));
-  }
+  cuFctSolver(const int _M, const int _N, const int _P);
 
-  ~cuFctSolver()
-  {
-    CHECK_CUDA_ERROR(cufftDestroy(fft_c2r_plan));
-    CHECK_CUDA_ERROR(cufftDestroy(fft_r2c_plan));
-    CHECK_CUDA_ERROR(cudaFree(compBuffer));
-    compBuffer = nullptr;
-    CHECK_CUDA_ERROR(cudaFree(realBuffer));
-    realBuffer = nullptr;
-  }
+  ~cuFctSolver();
 
   void fctForward(const T *in, T *out_hat);
 

@@ -1,5 +1,7 @@
 #include "cuFctSolver.hpp"
 
+#define MAX_THREADS_PER_BLOCK  1024
+#define WARP_SIZE              32
 #define FCT_POST_STENCIL_WIDTH 2
 #define IFCT_PRE_STENCIL_WIDTH 4
 
@@ -46,12 +48,17 @@ __device__ void get3dIdxFromThreadIdx(int &i, int &j, int &k, const int glbThrea
   k = (glbThreadIdx % P_mod) % P;
 }
 
-__device__ float getPi(float t)
+template <typename T>
+__device__ T getPi();
+
+template <>
+__device__ float getPi<float>()
 {
   return CUDART_PI_F;
 }
 
-__device__ double getPi(double t)
+template <>
+__device__ double getPi<double>()
 {
   return CUDART_PI;
 }
@@ -167,7 +174,7 @@ __global__ void fctPost(T *out_hat, cuda::std::complex<T> const *in_hat, const i
   }
   __syncthreads();
 
-  T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi(myZERO)};
+  T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi<T>()};
   complex_T ninj_exp, nipj_exp, temp, tempBuff0, tempBuff1;
 
   if (glbThreadIdx < M * N * P_mod) {
@@ -258,7 +265,7 @@ __global__ void ifctPre(cuda::std::complex<T> *out_hat, T const *in_hat, const i
   }
   __syncthreads();
 
-  T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi(myZERO)};
+  T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi<T>()};
   complex_T temp;
 
   if (glbThreadIdx < M * N * P_mod && j_p <= N / 2) {
@@ -363,6 +370,59 @@ void cuFctSolver<T>::fctBackward(const T *in_hat, T *out_hat)
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
   ifctPost<T><<<gridSize, blockSize>>>(&out_hat[0], &realBuffer[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
+}
+
+template <typename T>
+cufftType_t getR2C_t();
+
+template <>
+cufftType_t getR2C_t<float>()
+{
+  return CUFFT_R2C;
+}
+
+template <>
+cufftType_t getR2C_t<double>()
+{
+  return CUFFT_D2Z;
+}
+
+template <typename T>
+cufftType_t getC2R_t();
+
+template <>
+cufftType_t getC2R_t<float>()
+{
+  return CUFFT_C2R;
+}
+
+template <>
+cufftType_t getC2R_t<double>()
+{
+  return CUFFT_Z2D;
+}
+
+template <typename T>
+cuFctSolver<T>::cuFctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer(nullptr), compBuffer(nullptr), fft_r2c_plan(0), fft_c2r_plan(0)
+{
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&realBuffer), sizeof(T) * _M * _N * _P));
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&compBuffer), sizeof(cuda::std::complex<T>) * _M * _N * _P));
+  // Works on the cufft context.
+  CHECK_CUDA_ERROR(cufftCreate(&fft_r2c_plan));
+  CHECK_CUDA_ERROR(cufftPlanMany(&fft_r2c_plan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, getR2C_t<T>(), dims[2]));
+  CHECK_CUDA_ERROR(cufftCreate(&fft_c2r_plan));
+  CHECK_CUDA_ERROR(cufftPlanMany(&fft_c2r_plan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, getC2R_t<T>(), dims[2]));
+}
+
+template <typename T>
+cuFctSolver<T>::~cuFctSolver()
+{
+  CHECK_CUDA_ERROR(cufftDestroy(fft_c2r_plan));
+  CHECK_CUDA_ERROR(cufftDestroy(fft_r2c_plan));
+  CHECK_CUDA_ERROR(cudaFree(compBuffer));
+  compBuffer = nullptr;
+  CHECK_CUDA_ERROR(cudaFree(realBuffer));
+  realBuffer = nullptr;
 }
 
 #include "cuFctSolver.tpp"
