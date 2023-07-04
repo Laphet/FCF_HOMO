@@ -1,8 +1,8 @@
 #pragma once
 
-#include <vector>
 #include <cstring>
 #include <omp.h>
+#include <vector>
 
 const int DIM           = 3;
 const int STENCIL_WIDTH = 7;

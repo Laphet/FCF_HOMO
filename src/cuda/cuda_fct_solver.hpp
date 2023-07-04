@@ -1,10 +1,10 @@
 #pragma once
 
 #include <math.h>
-#include <iostream>
 #include <cuda_runtime.h>
 #include <cuda/std/complex>
 #include <cufft.h>
+#include <iostream>
 #include <math_constants.h>
 
 #define DIM 3

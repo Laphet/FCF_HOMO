@@ -56,7 +56,10 @@ We need the following routines from cuFFT:
 
 ### FFTW implementation
 Use the following commands to configure fftw:
-./configure --prefix=${HOME}/fftw --enable-single --enable-avx512 --enable-openmp
+./configure --prefix=${HOME}/fftw3 --enable-avx2 --enable-avx512 --enable-openmp
+
+To enable using fftw3 in the float precision, we need to reconfigure
+./configure --prefix=${HOME}/fftw3 --enable-single --enable-avx2 --enable-avx512 --enable-openmp
 
 
 ### References

@@ -1,6 +1,6 @@
-#include <iostream>
 #include "common_module.hpp"
-#include "cuFctSolver.hpp"
+#include "cuda_fct_solver.hpp"
+#include <iostream>
 
 int main(int argc, char *argv[])
 {

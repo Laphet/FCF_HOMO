@@ -1,4 +1,4 @@
-#include "cuFctSolver.hpp"
+#include "cuda_fct_solver.hpp"
 
 #define MAX_THREADS_PER_BLOCK  1024
 #define WARP_SIZE              32
@@ -425,4 +425,4 @@ cuFctSolver<T>::~cuFctSolver()
   realBuffer = nullptr;
 }
 
-#include "cuFctSolver.tpp"
+#include "cuda_fct_solver.tpp"

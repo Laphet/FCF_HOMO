@@ -74,6 +74,8 @@ int getCsrMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, 
     std::memmove(&csrValues[csrRowOffsets[row]], &csrValues[row * STENCIL_WIDTH], sizeof(T) * csrRowOffsets[row + 1]);
     csrRowOffsets[row + 1] += csrRowOffsets[row];
   }
+
+  return 0;
 }
 
 template <typename T>
