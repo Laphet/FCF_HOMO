@@ -6,9 +6,10 @@
 template <typename T>
 void check(T err, char const *const func, char const *const file, int const line)
 {
-  if (err != cudaSuccess) {
+  auto status = static_cast<cudaError_t>(err);
+  if (status != cudaSuccess) {
     std::cerr << "CUDA Runtime Error at: " << file << ":" << line << std::endl;
-    std::cerr << cudaGetErrorString(err) << " " << func << std::endl;
+    std::cerr << cudaGetErrorString(status) << " " << func << std::endl;
     std::exit(EXIT_FAILURE);
   }
 }
@@ -116,48 +117,58 @@ __global__ void fctPre(T *out, T const *in, const int M, const int N, const int 
 template <typename T>
 __global__ void fctPost(T *out_hat, cuda::std::complex<T> const *in_hat, const int M, const int N, const int P)
 {
-  using complex_t = cuda::std::complex<T>;
-  size_t               glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
-  int                  i_p{0}, j_p{0}, k{0}, idx_req{0}, idx_tar{0};
-  int                  P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
-  __shared__ complex_t in_hat_buffer[FCT_POST_STENCIL_WIDTH][MAX_THREADS_PER_BLOCK + 1];
-  T                    myZERO{static_cast<T>(0.0)}, myHALF{static_cast<T>(0.5)}; // Avoid bank conflicts, we add a padding to every row here.
+  using complex_T = cuda::std::complex<T>;
+  size_t       glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
+  int          i_p{0}, j_p{0}, k{0}, idx_req{0}, idx_tar{0};
+  int          P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
+  __shared__ T in_hat_buffer[2 * FCT_POST_STENCIL_WIDTH][MAX_THREADS_PER_BLOCK + 1];
+  // Cannot use cuda::std::complex<T> here.
+  // Avoid bank conflicts, we add a padding to every row here.
+  T myZERO{static_cast<T>(0.0)}, myHALF{static_cast<T>(0.5)};
 
   if (glbThreadIdx < M * N * P_mod) {
     get3dIdxFromThreadIdx(i_p, j_p, k, glbThreadIdx, N, P, P_mod);
     if (1 <= i_p && j_p <= N / 2) {
       idx_req                       = getIdxFrom3dIdxHalf(i_p, j_p, k, N, P);
-      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req];
+      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].real();
+      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].imag();
 
       idx_req                       = getIdxFrom3dIdxHalf(M - i_p, j_p, k, N, P);
-      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req];
+      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].real();
+      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].imag();
     }
     if (0 == i_p && j_p <= N / 2) {
       idx_req                       = getIdxFrom3dIdxHalf(0, j_p, k, N, P);
-      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req];
+      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].real();
+      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].imag();
 
       idx_req                       = getIdxFrom3dIdxHalf(0, j_p, k, N, P);
-      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req];
+      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].real();
+      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].imag();
     }
     if (1 <= i_p && N / 2 + 1 <= j_p) {
       idx_req                       = getIdxFrom3dIdxHalf(M - i_p, N - j_p, k, N, P);
-      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req];
+      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].real();
+      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].imag();
 
       idx_req                       = getIdxFrom3dIdxHalf(i_p, N - j_p, k, N, P);
-      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req];
+      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].real();
+      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].imag();
     }
     if (0 == i_p && N / 2 + 1 <= j_p) {
       idx_req                       = getIdxFrom3dIdxHalf(0, N - j_p, k, N, P);
-      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req];
+      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].real();
+      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].imag();
 
       idx_req                       = getIdxFrom3dIdxHalf(0, N - j_p, k, N, P);
-      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req];
+      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].real();
+      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].imag();
     }
   }
   __syncthreads();
 
   T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi(myZERO)};
-  complex_t ninj_exp, nipj_exp, temp;
+  complex_T ninj_exp, nipj_exp, temp, tempBuff0, tempBuff1;
 
   if (glbThreadIdx < M * N * P_mod) {
     i_theta  = static_cast<T>(i_p) / static_cast<T>(2 * M) * cuPi;
@@ -167,19 +178,29 @@ __global__ void fctPost(T *out_hat, cuda::std::complex<T> const *in_hat, const i
     idx_tar  = getIdxFrom3dIdx(i_p, j_p, k, N, P);
 
     if (1 <= j_p && j_p <= N / 2) {
-      temp = ninj_exp * in_hat_buffer[0][threadIdx.x];
-      temp += nipj_exp * cuda::std::conj(in_hat_buffer[1][threadIdx.x]);
+      tempBuff0.real(in_hat_buffer[0][threadIdx.x]);
+      tempBuff0.imag(in_hat_buffer[1][threadIdx.x]);
+      temp = ninj_exp * tempBuff0;
+      tempBuff1.real(in_hat_buffer[2][threadIdx.x]);
+      tempBuff1.imag(in_hat_buffer[3][threadIdx.x]);
+      temp += nipj_exp * cuda::std::conj(tempBuff1);
       out_hat[idx_tar] = temp.real() * myHALF;
       return;
     }
     if (N / 2 + 1 <= j_p) {
-      temp = ninj_exp * cuda::std::conj(in_hat_buffer[0][threadIdx.x]);
-      temp += nipj_exp * in_hat_buffer[1][threadIdx.x];
+      tempBuff0.real(in_hat_buffer[0][threadIdx.x]);
+      tempBuff0.imag(in_hat_buffer[1][threadIdx.x]);
+      temp = ninj_exp * cuda::std::conj(tempBuff0);
+      tempBuff1.real(in_hat_buffer[2][threadIdx.x]);
+      tempBuff1.imag(in_hat_buffer[3][threadIdx.x]);
+      temp += nipj_exp * tempBuff1;
       out_hat[idx_tar] = temp.real() * myHALF;
       return;
     }
     if (0 == j_p) {
-      temp             = ninj_exp * in_hat_buffer[0][threadIdx.x];
+      tempBuff0.real(in_hat_buffer[0][threadIdx.x]);
+      tempBuff0.imag(in_hat_buffer[1][threadIdx.x]);
+      temp             = ninj_exp * tempBuff0;
       out_hat[idx_tar] = temp.real();
       return;
     }
@@ -189,15 +210,16 @@ __global__ void fctPost(T *out_hat, cuda::std::complex<T> const *in_hat, const i
 template <typename T>
 __global__ void ifctPre(cuda::std::complex<T> *out_hat, T const *in_hat, const int M, const int N, const int P)
 {
-  using complex_t = cuda::std::complex<T>;
+  using complex_T = cuda::std::complex<T>;
   size_t       glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
   int          i_p{0}, j_p{0}, k{0}, idx_req{0}, idx_tar{0};
   int          P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
   T            myZERO{static_cast<T>(0.0)};
-  __shared__ T in_hat_buffer[IFCT_PRE_STENCIL_WIDTH][MAX_THREADS_PER_BLOCK + 1]; // Avoid bank conflicts, we add a pad to every row here.
+  __shared__ T in_hat_buffer[IFCT_PRE_STENCIL_WIDTH][MAX_THREADS_PER_BLOCK + 1];
+  // Avoid bank conflicts, we add a pad to every row here.
 
   if (glbThreadIdx < M * N * P_mod) {
-    get3dIdxFromThreadIdx(i_p, j_p, k, idx, N, P, P_mod);
+    get3dIdxFromThreadIdx(i_p, j_p, k, glbThreadIdx, N, P, P_mod);
     idx_req                       = getIdxFrom3dIdx(i_p, j_p, k, N, P);
     in_hat_buffer[0][threadIdx.x] = in_hat[idx_req];
     if (0 < i_p && 0 < j_p) {
@@ -237,7 +259,7 @@ __global__ void ifctPre(cuda::std::complex<T> *out_hat, T const *in_hat, const i
   __syncthreads();
 
   T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi(myZERO)};
-  complex_t temp;
+  complex_T temp;
 
   if (glbThreadIdx < M * N * P_mod && j_p <= N / 2) {
     i_theta = static_cast<T>(i_p) / static_cast<T>(2 * M) * cuPi;
@@ -280,7 +302,7 @@ __global__ void ifctPost(T *out, T const *in, const int M, const int N, const in
 }
 
 template <typename T>
-void cuFctSolver<T>::fctForward(const thrust::device_vector<T> &in, thrust::device_vector<T> &out_hat)
+void cuFctSolver<T>::fctForward(const T *in, T *out_hat)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int blockSize{0};   // The launch configurator returned block size
@@ -312,7 +334,7 @@ void cuFctSolver<T>::fctForward(const thrust::device_vector<T> &in, thrust::devi
 }
 
 template <typename T>
-void cuFctSolver<T>::fctBackward(const thrust::device_vector<T> &in_hat, thrust::device_vector<T> &out_hat)
+void cuFctSolver<T>::fctBackward(const T *in_hat, T *out_hat)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int blockSize{0};   // The launch configurator returned block size
