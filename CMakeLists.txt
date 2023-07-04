@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(fct_homo LANGUAGES CXX)
+set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
+
+find_package(OpenMP REQUIRED)
+add_subdirectory(src/common_module)
 
 # if(DEFINED ENV{MKLROOT})
 #   set(MKL_ROOT "$ENV{MKLROOT}")
@@ -31,10 +35,7 @@ if(USE_FFTW)
   # find_package(IntelSYCL REQUIRED)
 endif()
 
-find_package(OpenMP REQUIRED)
 
-
-add_subdirectory(src/common_module)
 add_subdirectory(src/main)
 
 

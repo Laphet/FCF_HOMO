@@ -2,6 +2,7 @@
 
 #include <math.h>
 #include <iostream>
+#include <cuda_runtime.h>
 #include <cuda/std/complex>
 #include <cufft.h>
 #include <math_constants.h>
@@ -26,15 +27,15 @@ class cuFctSolver {
   cufftHandle            fft_c2r_plan;
 
 public:
-  cuFctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer(NULL), compBuffer(NULL), fft_r2c_plan(0), fft_c2r_plan(0)
+  cuFctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer(nullptr), compBuffer(nullptr), fft_r2c_plan(0), fft_c2r_plan(0)
   {
     CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&realBuffer), sizeof(T) * _M * _N * _P));
     CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&compBuffer), sizeof(cuda::std::complex<T>) * _M * _N * _P));
     // Works on the cufft context.
     CHECK_CUDA_ERROR(cufftCreate(&fft_r2c_plan));
-    CHECK_CUDA_ERROR(cufftPlanMany(&fft_r2c_plan, 2, &dims[0], NULL, dims[2], 1, NULL, dims[2], 1, CUFFT_R2C, dims[2]));
+    CHECK_CUDA_ERROR(cufftPlanMany(&fft_r2c_plan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, CUFFT_R2C, dims[2]));
     CHECK_CUDA_ERROR(cufftCreate(&fft_c2r_plan));
-    CHECK_CUDA_ERROR(cufftPlanMany(&fft_c2r_plan, 2, &dims[0], NULL, dims[2], 1, NULL, dims[2], 1, CUFFT_C2R, dims[2]));
+    CHECK_CUDA_ERROR(cufftPlanMany(&fft_c2r_plan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, CUFFT_C2R, dims[2]));
   }
 
   ~cuFctSolver()
@@ -42,9 +43,9 @@ public:
     CHECK_CUDA_ERROR(cufftDestroy(fft_c2r_plan));
     CHECK_CUDA_ERROR(cufftDestroy(fft_r2c_plan));
     CHECK_CUDA_ERROR(cudaFree(compBuffer));
-    compBuffer = NULL;
+    compBuffer = nullptr;
     CHECK_CUDA_ERROR(cudaFree(realBuffer));
-    realBuffer = NULL;
+    realBuffer = nullptr;
   }
 
   void fctForward(const T *in, T *out_hat);

@@ -1,5 +1,6 @@
-#include "common_module.hpp"
 #include <iostream>
+#include "common_module.hpp"
+#include "cuFctSolver.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -17,6 +18,17 @@ int main(int argc, char *argv[])
   getStdRhsVec<T>(rhs, dims, kappa, delta_p);
 
   getHomoCoeffZ<T>(homoCoeffZ, rhs, dims, kappa, delta_p, lenZ);
+
+  T *v{nullptr}, *v_hat{nullptr};
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&v), sizeof(T) * M * N * P));
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&v_hat), sizeof(T) * M * N * P));
+
+  cuFctSolver<T> solver(M, N, P);
+  solver.fctBackward(&v[0], &v_hat[0]);
+  solver.fctBackward(&v_hat[0], &v[0]);
+
+  CHECK_CUDA_ERROR(cudaFree(v_hat));
+  CHECK_CUDA_ERROR(cudaFree(v));
 
   std::cout << "Hello world, there are " << omp_get_num_threads() << " threads.\n";
 }
