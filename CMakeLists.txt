@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
-project(fct_homo LANGUAGES CXX)
+project(fct-homo LANGUAGES CXX)
 set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -8,7 +8,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
 
 find_package(OpenMP REQUIRED)
-add_subdirectory(src/common_module)
+add_subdirectory(src/common)
 
 # if(DEFINED ENV{MKLROOT})
 #   set(MKL_ROOT "$ENV{MKLROOT}")
@@ -30,7 +30,7 @@ if(USE_CUDA)
 endif()
 
 if(USE_FFTW3_MKL)
-  add_subdirectory(src/fftw3_oneapi)
+  add_subdirectory(src/fftw3-oneapi)
   find_package(PkgConfig REQUIRED)
   # The path should be where contains {NAME}.pc files.
   # This fftw3_omp.pc file is a modification of the original .pc file

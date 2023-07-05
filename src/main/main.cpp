@@ -1,5 +1,5 @@
-#include "common_module.hpp"
-#include "cuda_fct_solver.hpp"
+#include "common.hpp"
+#include "cuda-fct-solver.hpp"
 #include <iostream>
 
 int main(int argc, char *argv[])

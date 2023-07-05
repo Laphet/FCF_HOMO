@@ -1,4 +1,4 @@
-#include "common_module.hpp"
+#include "common.hpp"
 
 template <typename T>
 int getCsrMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z)
@@ -112,4 +112,4 @@ int getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<int>
   return 0;
 }
 
-#include "common_module.tpp"
+#include "common.tpp"
