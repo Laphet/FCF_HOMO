@@ -20,7 +20,7 @@ add_subdirectory(src/common)
 # find_package(MKL CONFIG REQUIRED)
 
 option(USE_CUDA "Use cuda libraries." ON)
-option(USE_FFTW3_MKL "Use the fftw3 and mkl libraries." ON)
+option(USE_FFTW3_ONEAPI "Use the fftw3 and oneapi libraries." ON)
 
 if(USE_CUDA)
   enable_language(CUDA)
@@ -29,8 +29,8 @@ if(USE_CUDA)
   add_subdirectory(src/cuda)
 endif()
 
-if(USE_FFTW3_MKL)
-  add_subdirectory(src/fftw3-oneapi)
+if(USE_FFTW3_ONEAPI)
+  
   find_package(PkgConfig REQUIRED)
   # The path should be where contains {NAME}.pc files.
   # This fftw3_omp.pc file is a modification of the original .pc file
@@ -47,6 +47,7 @@ if(USE_FFTW3_MKL)
   # message("${FFTW3_OMP_INCLUDE_DIRS}")
   # message("${FFTW3_OMP_CFLAGS}")
   # message("${FFTW3_OMP_CFLAGS_OTHER}")
+  add_subdirectory(src/fftw3-oneapi)
 endif()
 
 

@@ -21,8 +21,8 @@ class cufctSolver {
   int                    dims[DIM];
   T                     *realBuffer;
   cuda::std::complex<T> *compBuffer;
-  cufftHandle            fft_r2c_plan;
-  cufftHandle            fft_c2r_plan;
+  cufftHandle            r2cPlan;
+  cufftHandle            c2rPlan;
 
 public:
   cufctSolver(const int _M, const int _N, const int _P);
@@ -31,5 +31,9 @@ public:
 
   void fctForward(const T *in, T *out_hat);
 
-  void fctBackward(const T *in_hat, T *out_hat);
+  void fctBackward(const T *in_hat, T *out);
 };
+
+template class cufctSolver<float>;
+
+template class cufctSolver<double>;

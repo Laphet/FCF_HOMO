@@ -54,12 +54,24 @@ We need the following routines from cuFFT:
 - cufftExecC2R(), cufftExecZ2D(),
 - cufftDestroy().
 
-### FFTW implementation
+### FFTW and oneapi implementation
 Use the following commands to configure fftw:
 ./configure --prefix=${HOME}/fftw3 --enable-avx2 --enable-avx512 --enable-openmp
 
 To enable using fftw3 in the float precision, we need to reconfigure
-./configure --prefix=${HOME}/fftw3f --enable-single --enable-avx2 --enable-avx512 --enable-openmp
+./configure --prefix=${HOME}/fftw3 --enable-single --enable-avx2 --enable-avx512 --enable-openmp
+
+Note that the original fftw3.pc (fftw3f.pc) is not for linking to the OpenMP version,
+and we use the modified .pc file instead.
+
+We will use the following routines:
+- fftw_malloc();
+- fftw_free();
+- fftw_plan_many_r2r(), different types for the forward and backward directions;
+- fftw_execute();
+- fftw_execute_r2r(), use the same plan;
+- fftw_destroy_plan();
+- fftw_cleanup().
 
 
 ### References

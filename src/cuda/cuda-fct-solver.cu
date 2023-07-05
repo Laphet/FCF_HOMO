@@ -327,7 +327,7 @@ void cufctSolver<T>::fctForward(const T *in, T *out_hat)
   fctPre<T><<<gridSize, blockSize>>>(&realBuffer[0], &in[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 
-  CHECK_CUDA_ERROR(cufftReal2Comp(fft_r2c_plan, &realBuffer[0], &compBuffer[0]));
+  CHECK_CUDA_ERROR(cufftReal2Comp(r2cPlan, &realBuffer[0], &compBuffer[0]));
 
   CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, &fctPost<T>, 0, 0));
   blockSize = (blockSize / WARP_SIZE) * WARP_SIZE; // This should be useless.
@@ -341,7 +341,7 @@ void cufctSolver<T>::fctForward(const T *in, T *out_hat)
 }
 
 template <typename T>
-void cufctSolver<T>::fctBackward(const T *in_hat, T *out_hat)
+void cufctSolver<T>::fctBackward(const T *in_hat, T *out)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int blockSize{0};   // The launch configurator returned block size
@@ -359,7 +359,7 @@ void cufctSolver<T>::fctBackward(const T *in_hat, T *out_hat)
   ifctPre<T><<<gridSize, blockSize>>>(&compBuffer[0], &in_hat[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 
-  CHECK_CUDA_ERROR(cufftComp2Real(fft_c2r_plan, &compBuffer[0], &realBuffer[0]));
+  CHECK_CUDA_ERROR(cufftComp2Real(c2rPlan, &compBuffer[0], &realBuffer[0]));
 
   CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, &ifctPost<T>, 0, 0));
   blockSize = (blockSize / WARP_SIZE) * WARP_SIZE; // This should be useless.
@@ -368,7 +368,7 @@ void cufctSolver<T>::fctBackward(const T *in_hat, T *out_hat)
     blockSize = MAX_THREADS_PER_BLOCK;
   }
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
-  ifctPost<T><<<gridSize, blockSize>>>(&out_hat[0], &realBuffer[0], M, N, P);
+  ifctPost<T><<<gridSize, blockSize>>>(&out[0], &realBuffer[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 }
 
@@ -403,26 +403,24 @@ cufftType_t getC2R_t<double>()
 }
 
 template <typename T>
-cufctSolver<T>::cufctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer(nullptr), compBuffer(nullptr), fft_r2c_plan(0), fft_c2r_plan(0)
+cufctSolver<T>::cufctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer(nullptr), compBuffer(nullptr), r2cPlan(0), c2rPlan(0)
 {
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&realBuffer), sizeof(T) * _M * _N * _P));
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&compBuffer), sizeof(cuda::std::complex<T>) * _M * _N * _P));
   // Works on the cufft context.
-  CHECK_CUDA_ERROR(cufftCreate(&fft_r2c_plan));
-  CHECK_CUDA_ERROR(cufftPlanMany(&fft_r2c_plan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, getR2C_t<T>(), dims[2]));
-  CHECK_CUDA_ERROR(cufftCreate(&fft_c2r_plan));
-  CHECK_CUDA_ERROR(cufftPlanMany(&fft_c2r_plan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, getC2R_t<T>(), dims[2]));
+  CHECK_CUDA_ERROR(cufftCreate(&r2cPlan));
+  CHECK_CUDA_ERROR(cufftPlanMany(&r2cPlan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, getR2C_t<T>(), dims[2]));
+  CHECK_CUDA_ERROR(cufftCreate(&c2rPlan));
+  CHECK_CUDA_ERROR(cufftPlanMany(&c2rPlan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, getC2R_t<T>(), dims[2]));
 }
 
 template <typename T>
 cufctSolver<T>::~cufctSolver()
 {
-  CHECK_CUDA_ERROR(cufftDestroy(fft_c2r_plan));
-  CHECK_CUDA_ERROR(cufftDestroy(fft_r2c_plan));
+  CHECK_CUDA_ERROR(cufftDestroy(c2rPlan));
+  CHECK_CUDA_ERROR(cufftDestroy(r2cPlan));
   CHECK_CUDA_ERROR(cudaFree(compBuffer));
   compBuffer = nullptr;
   CHECK_CUDA_ERROR(cudaFree(realBuffer));
   realBuffer = nullptr;
 }
-
-#include "cuda-fct-solver.tpp"
