@@ -20,7 +20,7 @@ add_subdirectory(src/common_module)
 # find_package(MKL CONFIG REQUIRED)
 
 option(USE_CUDA "Use cuda libraries." ON)
-option(USE_FFTW "Use the fftw library." OFF)
+option(USE_FFTW3_MKL "Use the fftw3 and mkl libraries." ON)
 
 if(USE_CUDA)
   enable_language(CUDA)
@@ -29,10 +29,24 @@ if(USE_CUDA)
   add_subdirectory(src/cuda)
 endif()
 
-if(USE_FFTW)
-  # set(CMAKE_C_COMPILER "icx")
-  # set(CMAKE_CXX_COMPILER "icpx")
-  # find_package(IntelSYCL REQUIRED)
+if(USE_FFTW3_MKL)
+  add_subdirectory(src/fftw3_oneapi)
+  find_package(PkgConfig REQUIRED)
+  # The path should be where contains {NAME}.pc files.
+  # This fftw3_omp.pc file is a modification of the original .pc file
+  # to force linking to the OpenMP version of fftw3.
+  set(ENV{PKG_CONFIG_PATH} "${CMAKE_CURRENT_LIST_DIR}:$ENV{PKG_CONFIG_PATH}")
+  message("$ENV{PKG_CONFIG_PATH}")
+  # The import modules should be {NAME} which are taken from {NAME}.pc filenames.
+  pkg_check_modules(FFTW3_OMP REQUIRED IMPORTED_TARGET fftw3_omp)
+  # message("${FFTW3_OMP_LIBRARIES}")
+  # message("${FFTW3_OMP_LINK_LIBRARIES}")
+  # message("${FFTW3_OMP_LIBRARY_DIRS}")
+  # message("${FFTW3_OMP_LDFLAGS}")
+  # message("${FFTW3_OMP_LDFLAGS_OTHER}")
+  # message("${FFTW3_OMP_INCLUDE_DIRS}")
+  # message("${FFTW3_OMP_CFLAGS}")
+  # message("${FFTW3_OMP_CFLAGS_OTHER}")
 endif()
 
 

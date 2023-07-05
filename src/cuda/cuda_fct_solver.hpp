@@ -17,7 +17,7 @@ void check(T err, char const *const func, char const *const file, int const line
 void checkLast(char const *const file, int const line);
 
 template <typename T>
-class cuFctSolver {
+class cufctSolver {
   int                    dims[DIM];
   T                     *realBuffer;
   cuda::std::complex<T> *compBuffer;
@@ -25,9 +25,9 @@ class cuFctSolver {
   cufftHandle            fft_c2r_plan;
 
 public:
-  cuFctSolver(const int _M, const int _N, const int _P);
+  cufctSolver(const int _M, const int _N, const int _P);
 
-  ~cuFctSolver();
+  ~cufctSolver();
 
   void fctForward(const T *in, T *out_hat);
 

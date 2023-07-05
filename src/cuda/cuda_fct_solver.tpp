@@ -1,3 +1,3 @@
-template class cuFctSolver<float>;
+template class cufctSolver<float>;
 
-template class cuFctSolver<double>;
+template class cufctSolver<double>;

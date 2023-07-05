@@ -309,7 +309,7 @@ __global__ void ifctPost(T *out, T const *in, const int M, const int N, const in
 }
 
 template <typename T>
-void cuFctSolver<T>::fctForward(const T *in, T *out_hat)
+void cufctSolver<T>::fctForward(const T *in, T *out_hat)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int blockSize{0};   // The launch configurator returned block size
@@ -341,7 +341,7 @@ void cuFctSolver<T>::fctForward(const T *in, T *out_hat)
 }
 
 template <typename T>
-void cuFctSolver<T>::fctBackward(const T *in_hat, T *out_hat)
+void cufctSolver<T>::fctBackward(const T *in_hat, T *out_hat)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int blockSize{0};   // The launch configurator returned block size
@@ -403,7 +403,7 @@ cufftType_t getC2R_t<double>()
 }
 
 template <typename T>
-cuFctSolver<T>::cuFctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer(nullptr), compBuffer(nullptr), fft_r2c_plan(0), fft_c2r_plan(0)
+cufctSolver<T>::cufctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer(nullptr), compBuffer(nullptr), fft_r2c_plan(0), fft_c2r_plan(0)
 {
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&realBuffer), sizeof(T) * _M * _N * _P));
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&compBuffer), sizeof(cuda::std::complex<T>) * _M * _N * _P));
@@ -415,7 +415,7 @@ cuFctSolver<T>::cuFctSolver(const int _M, const int _N, const int _P) : dims{_M,
 }
 
 template <typename T>
-cuFctSolver<T>::~cuFctSolver()
+cufctSolver<T>::~cufctSolver()
 {
   CHECK_CUDA_ERROR(cufftDestroy(fft_c2r_plan));
   CHECK_CUDA_ERROR(cufftDestroy(fft_r2c_plan));

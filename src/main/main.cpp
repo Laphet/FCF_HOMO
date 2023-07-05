@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&v), sizeof(T) * M * N * P));
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&v_hat), sizeof(T) * M * N * P));
 
-  cuFctSolver<T> solver(M, N, P);
+  cufctSolver<T> solver(M, N, P);
   solver.fctBackward(&v[0], &v_hat[0]);
   solver.fctBackward(&v_hat[0], &v[0]);
 

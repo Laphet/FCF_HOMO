@@ -1,0 +1,11 @@
+prefix=/home/extradisk/changqing/fftw3
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: FFTW_OMP
+Description: fast Fourier transform library (OpenMP Version)
+Version: 3.3.10
+Libs: -L${libdir} -lfftw3f_omp -lfftw3_omp
+Libs.private: -lm
+Cflags: -I${includedir}
