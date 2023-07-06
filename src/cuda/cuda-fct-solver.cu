@@ -63,16 +63,34 @@ __device__ double getPi<double>()
   return CUDART_PI;
 }
 
-__device__ cuda::std::complex<float> getExpItheta(const float theta)
+__device__ cuComplex getExpItheta(const float theta)
 {
-  cuda::std::complex<float> r(cosf(theta), sinf(theta));
-  return r;
+  return make_cuComplex(cosf(theta), sin(theta));
 }
 
-__device__ cuda::std::complex<double> getExpItheta(const double theta)
+__device__ cuDoubleComplex getExpItheta(const double theta)
 {
-  cuda::std::complex<double> r(cos(theta), sin(theta));
-  return r;
+  return make_cuDoubleComplex(cos(theta), sin(theta));
+}
+
+__device__ cuComplex cuConjWraper(cuComplex cVar)
+{
+  return cuConjf(cVar);
+}
+
+__device__ cuDoubleComplex cuConjWraper(cuDoubleComplex cVar)
+{
+  return cuConj(cVar);
+}
+
+__device__ cuComplex cuMult(cuComplex cVar1, cuComplex cVar2)
+{
+  return cuCmulf(cVar1, cVar2);
+}
+
+__device__ cuDoubleComplex cuMult(cuDoubleComplex cVar1, cuDoubleComplex cVar2)
+{
+  return cuCmul(cVar1, cVar2);
 }
 
 template <typename T>
@@ -102,60 +120,60 @@ __global__ void fctPre(T *out, T const *in, const int M, const int N, const int 
 }
 
 template <typename T>
-__global__ void fctPost(T *out_hat, cuda::std::complex<T> const *in_hat, const int M, const int N, const int P)
+__global__ void fctPost(T *out_hat, decltype(cuTraits<T>::compVar) const *in_hat, const int M, const int N, const int P)
 {
-  using complex_T = cuda::std::complex<T>;
+  using complex_T = decltype(cuTraits<T>::compVar);
   size_t       glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
   int          i_p{0}, j_p{0}, k{0}, idx_req{0}, idx_tar{0};
   int          P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
   __shared__ T in_hat_buffer[2 * FCT_POST_STENCIL_WIDTH][MAX_THREADS_PER_BLOCK + 1];
   // Cannot use cuda::std::complex<T> here.
   // Avoid bank conflicts, we add a padding to every row here.
-  T myZERO{static_cast<T>(0.0)}, myHALF{static_cast<T>(0.5)};
+  T myHALF{static_cast<T>(0.5)};
 
   if (glbThreadIdx < M * N * P_mod) {
     get3dIdxFromThreadIdx(i_p, j_p, k, glbThreadIdx, N, P, P_mod);
     if (1 <= i_p && j_p <= N / 2) {
       idx_req                       = getIdxFrom3dIdxHalf(i_p, j_p, k, N, P);
-      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].real();
-      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].imag();
+      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].x;
+      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].y;
 
       idx_req                       = getIdxFrom3dIdxHalf(M - i_p, j_p, k, N, P);
-      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].real();
-      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].imag();
+      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].x;
+      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].y;
     }
     if (0 == i_p && j_p <= N / 2) {
       idx_req                       = getIdxFrom3dIdxHalf(0, j_p, k, N, P);
-      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].real();
-      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].imag();
+      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].x;
+      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].y;
 
       idx_req                       = getIdxFrom3dIdxHalf(0, j_p, k, N, P);
-      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].real();
-      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].imag();
+      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].x;
+      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].y;
     }
     if (1 <= i_p && N / 2 + 1 <= j_p) {
       idx_req                       = getIdxFrom3dIdxHalf(M - i_p, N - j_p, k, N, P);
-      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].real();
-      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].imag();
+      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].x;
+      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].y;
 
       idx_req                       = getIdxFrom3dIdxHalf(i_p, N - j_p, k, N, P);
-      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].real();
-      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].imag();
+      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].x;
+      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].y;
     }
     if (0 == i_p && N / 2 + 1 <= j_p) {
       idx_req                       = getIdxFrom3dIdxHalf(0, N - j_p, k, N, P);
-      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].real();
-      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].imag();
+      in_hat_buffer[0][threadIdx.x] = in_hat[idx_req].x;
+      in_hat_buffer[1][threadIdx.x] = in_hat[idx_req].y;
 
       idx_req                       = getIdxFrom3dIdxHalf(0, N - j_p, k, N, P);
-      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].real();
-      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].imag();
+      in_hat_buffer[2][threadIdx.x] = in_hat[idx_req].x;
+      in_hat_buffer[3][threadIdx.x] = in_hat[idx_req].y;
     }
   }
   __syncthreads();
 
-  T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi<T>()};
-  complex_T ninj_exp, nipj_exp, temp, tempBuff0, tempBuff1;
+  T         i_theta, j_theta, cuPi{getPi<T>()}, temp0, temp1;
+  complex_T ninj_exp, nipj_exp, tempBuff0, tempBuff1;
 
   if (glbThreadIdx < M * N * P_mod) {
     i_theta  = static_cast<T>(i_p) / static_cast<T>(2 * M) * cuPi;
@@ -165,39 +183,38 @@ __global__ void fctPost(T *out_hat, cuda::std::complex<T> const *in_hat, const i
     idx_tar  = getIdxFrom3dIdx(i_p, j_p, k, N, P);
 
     if (1 <= j_p && j_p <= N / 2) {
-      tempBuff0.real(in_hat_buffer[0][threadIdx.x]);
-      tempBuff0.imag(in_hat_buffer[1][threadIdx.x]);
-      temp = ninj_exp * tempBuff0;
-      tempBuff1.real(in_hat_buffer[2][threadIdx.x]);
-      tempBuff1.imag(in_hat_buffer[3][threadIdx.x]);
-      temp += nipj_exp * cuda::std::conj(tempBuff1);
-      out_hat[idx_tar] = temp.real() * myHALF;
+      tempBuff0.x      = in_hat_buffer[0][threadIdx.x];
+      tempBuff0.y      = in_hat_buffer[1][threadIdx.x];
+      temp0            = ninj_exp.x * tempBuff0.x - ninj_exp.y * tempBuff0.y;
+      tempBuff1.x      = in_hat_buffer[2][threadIdx.x];
+      tempBuff1.y      = -in_hat_buffer[3][threadIdx.x];
+      temp1            = nipj_exp.x * tempBuff1.x - nipj_exp.y * tempBuff1.y;
+      out_hat[idx_tar] = (temp0 + temp1) * myHALF;
       return;
     }
     if (N / 2 + 1 <= j_p) {
-      tempBuff0.real(in_hat_buffer[0][threadIdx.x]);
-      tempBuff0.imag(in_hat_buffer[1][threadIdx.x]);
-      temp = ninj_exp * cuda::std::conj(tempBuff0);
-      tempBuff1.real(in_hat_buffer[2][threadIdx.x]);
-      tempBuff1.imag(in_hat_buffer[3][threadIdx.x]);
-      temp += nipj_exp * tempBuff1;
-      out_hat[idx_tar] = temp.real() * myHALF;
+      tempBuff0.x      = in_hat_buffer[0][threadIdx.x];
+      tempBuff0.y      = -in_hat_buffer[1][threadIdx.x];
+      temp0            = ninj_exp.x * tempBuff0.x - ninj_exp.y * tempBuff0.y;
+      tempBuff1.x      = in_hat_buffer[2][threadIdx.x];
+      tempBuff1.y      = in_hat_buffer[3][threadIdx.x];
+      temp1            = nipj_exp.x * tempBuff1.x - nipj_exp.y * tempBuff1.y;
+      out_hat[idx_tar] = (temp0 + temp1) * myHALF;
       return;
     }
     if (0 == j_p) {
-      tempBuff0.real(in_hat_buffer[0][threadIdx.x]);
-      tempBuff0.imag(in_hat_buffer[1][threadIdx.x]);
-      temp             = ninj_exp * tempBuff0;
-      out_hat[idx_tar] = temp.real();
+      tempBuff0.x      = in_hat_buffer[0][threadIdx.x];
+      tempBuff0.y      = in_hat_buffer[1][threadIdx.x];
+      out_hat[idx_tar] = ninj_exp.x * tempBuff0.x - ninj_exp.y * tempBuff0.y;
       return;
     }
   } else return;
 }
 
 template <typename T>
-__global__ void ifctPre(cuda::std::complex<T> *out_hat, T const *in_hat, const int M, const int N, const int P)
+__global__ void ifctPre(decltype(cuTraits<T>::compVar) *out_hat, T const *in_hat, const int M, const int N, const int P)
 {
-  using complex_T = cuda::std::complex<T>;
+  using complex_T = decltype(cuTraits<T>::compVar);
   size_t       glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
   int          i_p{0}, j_p{0}, k{0}, idx_req{0}, idx_tar{0};
   int          P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
@@ -246,18 +263,16 @@ __global__ void ifctPre(cuda::std::complex<T> *out_hat, T const *in_hat, const i
   __syncthreads();
 
   T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi<T>()};
-  complex_T temp;
+  complex_T temp, pipj_exp;
 
   if (glbThreadIdx < M * N * P_mod && j_p <= N / 2) {
-    i_theta = static_cast<T>(i_p) / static_cast<T>(2 * M) * cuPi;
-    j_theta = static_cast<T>(j_p) / static_cast<T>(2 * N) * cuPi;
-
-    temp.real(in_hat_buffer[0][threadIdx.x] - in_hat_buffer[1][threadIdx.x]);
-    temp.imag(-(in_hat_buffer[2][threadIdx.x] - in_hat_buffer[3][threadIdx.x]));
-    temp *= cuda::std::conj(getExpItheta(i_theta)) * cuda::std::conj(getExpItheta(j_theta));
-
+    i_theta          = static_cast<T>(i_p) / static_cast<T>(2 * M) * cuPi;
+    j_theta          = static_cast<T>(j_p) / static_cast<T>(2 * N) * cuPi;
+    pipj_exp         = getExpItheta(i_theta + j_theta);
+    temp.x           = in_hat_buffer[0][threadIdx.x] - in_hat_buffer[1][threadIdx.x];
+    temp.y           = -(in_hat_buffer[2][threadIdx.x] - in_hat_buffer[3][threadIdx.x]);
     idx_tar          = getIdxFrom3dIdxHalf(i_p, j_p, k, N, P);
-    out_hat[idx_tar] = temp;
+    out_hat[idx_tar] = cuMult(pipj_exp, temp);
     return;
   } else return;
 }
@@ -292,12 +307,22 @@ template <typename T>
 cufctSolver<T>::cufctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer(nullptr), compBuffer(nullptr), r2cPlan(0), c2rPlan(0)
 {
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&realBuffer), sizeof(T) * _M * _N * _P));
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&compBuffer), sizeof(cuda::std::complex<T>) * _M * _N * _P));
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&compBuffer), sizeof(cuCompType) * _M * _N * _P));
   // Works on the cufft context.
   CHECK_CUDA_ERROR(cufftCreate(&r2cPlan));
   CHECK_CUDA_ERROR(cufftPlanMany(&r2cPlan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, cuTraits<T>::r2cType, dims[2]));
   CHECK_CUDA_ERROR(cufftCreate(&c2rPlan));
   CHECK_CUDA_ERROR(cufftPlanMany(&c2rPlan, 2, &dims[0], nullptr, dims[2], 1, nullptr, dims[2], 1, cuTraits<T>::c2rType, dims[2]));
+}
+
+cufftResult cufftReal2Comp(cufftHandle plan, float *idata, cuComplex *odata)
+{
+  return cufftExecR2C(plan, reinterpret_cast<cufftReal *>(idata), reinterpret_cast<cufftComplex *>(odata));
+}
+
+cufftResult cufftReal2Comp(cufftHandle plan, double *idata, cuDoubleComplex *odata)
+{
+  return cufftExecD2Z(plan, reinterpret_cast<cufftDoubleReal *>(idata), reinterpret_cast<cufftDoubleComplex *>(odata));
 }
 
 template <typename T>
@@ -319,7 +344,7 @@ void cufctSolver<T>::fctForward(const T *in, T *out_hat)
   fctPre<T><<<gridSize, blockSize>>>(&realBuffer[0], &in[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 
-  CHECK_CUDA_ERROR(cuTraits<T>::cufftReal2Comp(r2cPlan, &realBuffer[0], &compBuffer[0]));
+  CHECK_CUDA_ERROR(cufftReal2Comp(r2cPlan, &realBuffer[0], &compBuffer[0]));
 
   CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, &fctPost<T>, 0, 0));
   blockSize = (blockSize / WARP_SIZE) * WARP_SIZE; // This should be useless.
@@ -330,6 +355,16 @@ void cufctSolver<T>::fctForward(const T *in, T *out_hat)
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
   fctPost<T><<<gridSize, blockSize>>>(&out_hat[0], &compBuffer[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
+}
+
+cufftResult cufftComp2Real(cufftHandle plan, cuComplex *idata, float *odata)
+{
+  return cufftExecC2R(plan, reinterpret_cast<cufftComplex *>(idata), reinterpret_cast<cufftReal *>(odata));
+}
+
+cufftResult cufftComp2Real(cufftHandle plan, cuDoubleComplex *idata, double *odata)
+{
+  return cufftExecZ2D(plan, reinterpret_cast<cufftDoubleComplex *>(idata), reinterpret_cast<cufftDoubleReal *>(odata));
 }
 
 template <typename T>
@@ -351,7 +386,7 @@ void cufctSolver<T>::fctBackward(const T *in_hat, T *out)
   ifctPre<T><<<gridSize, blockSize>>>(&compBuffer[0], &in_hat[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 
-  CHECK_CUDA_ERROR(cuTraits<T>::cufftComp2Real(c2rPlan, &compBuffer[0], &realBuffer[0]));
+  CHECK_CUDA_ERROR(cufftComp2Real(c2rPlan, &compBuffer[0], &realBuffer[0]));
 
   CHECK_CUDA_ERROR(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, &ifctPost<T>, 0, 0));
   blockSize = (blockSize / WARP_SIZE) * WARP_SIZE; // This should be useless.
