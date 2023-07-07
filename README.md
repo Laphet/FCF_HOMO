@@ -74,6 +74,13 @@ We will use the following routines:
 - fftw_cleanup().
 
 
+### Set up development environment
+- Install oneapi in the home directory, and use oneapi.config to (only) enable compilers (icx, icpx).
+- Install cmake via conda.
+- Install clang-format via conda.
+- Change vscode cmake tools settings.
+- Move .pc files to ./externals.
+
 ### References
 [1] Makhoul, J. (1980). A fast cosine transform in one and two dimensions. 
 IEEE Transactions on Acoustics, Speech, and Signal Processing, 28(1), 27-34.
