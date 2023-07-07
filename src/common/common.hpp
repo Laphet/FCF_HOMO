@@ -3,18 +3,41 @@
 #include <cstring>
 #include <omp.h>
 #include <vector>
+#include <cmath>
 
-// #define getIdxFrom3dIdx(i, j, k, N, P) ((i) * (N) * (P) + (j) * (P) + (k))
-// The device code also need this routine, it seems that writing a macro is acceptable.
+template <typename T>
+struct mathTraits;
 
-constexpr int DIM           = 3;
+template <>
+struct mathTraits<float> {
+  static constexpr float mathPi{static_cast<float>(M_PI)};
+  static float           mathCos(float x) { return cosf(x); }
+};
+
+template <>
+struct mathTraits<double> {
+  static constexpr double mathPi{M_PI};
+  static double           mathCos(double x) { return cos(x); }
+};
+
 constexpr int STENCIL_WIDTH = 7;
 
-template <typename T>
-int getCsrMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
+int getIdxFrom3dIdx(const int i, const int j, const int k, const int N, const int P);
+
+void get3dIdxFromIdx(int &i, int &j, int &k, const int idx, const int N, const int P);
 
 template <typename T>
-int getStdRhsVec(std::vector<T> &rhs, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p);
+void getCsrMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
 
 template <typename T>
-int getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p, const double lenZ);
+void getStdRhsVec(std::vector<T> &rhs, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p);
+
+template <typename T>
+void getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p, const double lenZ);
+
+float mathCos(float x);
+
+double mathCos(double x);
+
+template <typename T>
+void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat, const std::vector<int> &dims);

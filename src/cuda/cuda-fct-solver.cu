@@ -26,7 +26,7 @@ void checkLast(char const *const file, int const line)
   }
 }
 
-__device__ int getIdxFrom3dIdx(const int i, const int j, const int k, const int N, const int P)
+__device__ int getIdxFrom3dIdx_d(const int i, const int j, const int k, const int N, const int P)
 {
   return i * N * P + j * P + k;
 }
@@ -104,17 +104,17 @@ __global__ void fctPre(T *out, T const *in, const int M, const int N, const int 
   if (glbThreadIdx < M * N * P_mod) {
     get3dIdxFromThreadIdx(i, j, k, glbThreadIdx, N, P, P_mod);
 
-    if (i < (M + 1) / 2 && j < (N + 1) / 2) idx_req = getIdxFrom3dIdx(2 * i, 2 * j, k, N, P);
-    if ((M + 1) / 2 <= i && j < (N + 1) / 2) idx_req = getIdxFrom3dIdx(2 * M - 2 * i - 1, 2 * j, k, N, P);
-    if (i < (M + 1) / 2 && (N + 1) / 2 <= j) idx_req = getIdxFrom3dIdx(2 * i, 2 * N - 2 * j - 1, k, N, P);
-    if ((M + 1) / 2 <= i && (N + 1) / 2 <= j) idx_req = getIdxFrom3dIdx(2 * M - 2 * i - 1, 2 * N - 2 * j - 1, k, N, P);
+    if (i < (M + 1) / 2 && j < (N + 1) / 2) idx_req = getIdxFrom3dIdx_d(2 * i, 2 * j, k, N, P);
+    if ((M + 1) / 2 <= i && j < (N + 1) / 2) idx_req = getIdxFrom3dIdx_d(2 * M - 2 * i - 1, 2 * j, k, N, P);
+    if (i < (M + 1) / 2 && (N + 1) / 2 <= j) idx_req = getIdxFrom3dIdx_d(2 * i, 2 * N - 2 * j - 1, k, N, P);
+    if ((M + 1) / 2 <= i && (N + 1) / 2 <= j) idx_req = getIdxFrom3dIdx_d(2 * M - 2 * i - 1, 2 * N - 2 * j - 1, k, N, P);
 
     in_buffer[threadIdx.x] = in[idx_req];
   }
   __syncthreads();
 
   if (glbThreadIdx < M * N * P_mod) {
-    idx_tar      = getIdxFrom3dIdx(i, j, k, N, P);
+    idx_tar      = getIdxFrom3dIdx_d(i, j, k, N, P);
     out[idx_tar] = in_buffer[threadIdx.x];
   }
 }
@@ -180,7 +180,7 @@ __global__ void fctPost(T *out_hat, decltype(cuTraits<T>::compVar) const *in_hat
     j_theta  = static_cast<T>(j_p) / static_cast<T>(2 * N) * cuPi;
     ninj_exp = getExpItheta(-i_theta - j_theta);
     nipj_exp = getExpItheta(-i_theta + j_theta);
-    idx_tar  = getIdxFrom3dIdx(i_p, j_p, k, N, P);
+    idx_tar  = getIdxFrom3dIdx_d(i_p, j_p, k, N, P);
 
     if (1 <= j_p && j_p <= N / 2) {
       tempBuff0.x      = in_hat_buffer[0][threadIdx.x];
@@ -224,16 +224,16 @@ __global__ void ifctPre(decltype(cuTraits<T>::compVar) *out_hat, T const *in_hat
 
   if (glbThreadIdx < M * N * P_mod) {
     get3dIdxFromThreadIdx(i_p, j_p, k, glbThreadIdx, N, P, P_mod);
-    idx_req                       = getIdxFrom3dIdx(i_p, j_p, k, N, P);
+    idx_req                       = getIdxFrom3dIdx_d(i_p, j_p, k, N, P);
     in_hat_buffer[0][threadIdx.x] = in_hat[idx_req];
     if (0 < i_p && 0 < j_p) {
-      idx_req                       = getIdxFrom3dIdx(M - i_p, N - j_p, k, N, P);
+      idx_req                       = getIdxFrom3dIdx_d(M - i_p, N - j_p, k, N, P);
       in_hat_buffer[1][threadIdx.x] = in_hat[idx_req];
 
-      idx_req                       = getIdxFrom3dIdx(M - i_p, j_p, k, N, P);
+      idx_req                       = getIdxFrom3dIdx_d(M - i_p, j_p, k, N, P);
       in_hat_buffer[2][threadIdx.x] = in_hat[idx_req];
 
-      idx_req                       = getIdxFrom3dIdx(i_p, N - j_p, k, N, P);
+      idx_req                       = getIdxFrom3dIdx_d(i_p, N - j_p, k, N, P);
       in_hat_buffer[3][threadIdx.x] = in_hat[idx_req];
     }
     if (0 == i_p && 0 < j_p) {
@@ -241,13 +241,13 @@ __global__ void ifctPre(decltype(cuTraits<T>::compVar) *out_hat, T const *in_hat
 
       in_hat_buffer[2][threadIdx.x] = myZERO;
 
-      idx_req                       = getIdxFrom3dIdx(0, N - j_p, k, N, P);
+      idx_req                       = getIdxFrom3dIdx_d(0, N - j_p, k, N, P);
       in_hat_buffer[3][threadIdx.x] = in_hat[idx_req];
     }
     if (0 < i_p && 0 == j_p) {
       in_hat_buffer[1][threadIdx.x] = myZERO;
 
-      idx_req                       = getIdxFrom3dIdx(M - i_p, 0, k, N, P);
+      idx_req                       = getIdxFrom3dIdx_d(M - i_p, 0, k, N, P);
       in_hat_buffer[2][threadIdx.x] = in_hat[idx_req];
 
       in_hat_buffer[3][threadIdx.x] = myZERO;
@@ -288,17 +288,17 @@ __global__ void ifctPost(T *out, T const *in, const int M, const int N, const in
   if (glbThreadIdx < M * N * P_mod) {
     get3dIdxFromThreadIdx(i, j, k, glbThreadIdx, N, P, P_mod);
 
-    if (0 == i % 2 && 0 == j % 2) idx_req = getIdxFrom3dIdx(i / 2, j / 2, k, N, P);
-    if (1 == i % 2 && 1 == j % 2) idx_req = getIdxFrom3dIdx(i / 2, N - (j + 1) / 2, k, N, P);
-    if (1 == i % 2 && 0 == j % 2) idx_req = getIdxFrom3dIdx(M - (i + 1) / 2, j / 2, k, N, P);
-    if (1 == i % 2 && 1 == j % 2) idx_req = getIdxFrom3dIdx(M - (i + 1) / 2, N - (j + 1) / 2, k, N, P);
+    if (0 == i % 2 && 0 == j % 2) idx_req = getIdxFrom3dIdx_d(i / 2, j / 2, k, N, P);
+    if (1 == i % 2 && 1 == j % 2) idx_req = getIdxFrom3dIdx_d(i / 2, N - (j + 1) / 2, k, N, P);
+    if (1 == i % 2 && 0 == j % 2) idx_req = getIdxFrom3dIdx_d(M - (i + 1) / 2, j / 2, k, N, P);
+    if (1 == i % 2 && 1 == j % 2) idx_req = getIdxFrom3dIdx_d(M - (i + 1) / 2, N - (j + 1) / 2, k, N, P);
 
     in_buffer[threadIdx.x] = in[idx_req];
   }
   __syncthreads();
 
   if (glbThreadIdx < M * N * P_mod) {
-    idx_tar      = getIdxFrom3dIdx(i, j, k, N, P);
+    idx_tar      = getIdxFrom3dIdx_d(i, j, k, N, P);
     out[idx_tar] = in_buffer[threadIdx.x];
   }
 }

@@ -30,7 +30,6 @@ if(USE_CUDA)
 endif()
 
 if(USE_FFTW3_MKL)
-  
   # The path should be where contains {NAME}.pc files.
   # This fftw3_omp.pc file is a modification of the original .pc file
   # to force linking to the OpenMP version of fftw3.
@@ -48,16 +47,15 @@ if(USE_FFTW3_MKL)
   # message("${FFTW3_OMP_CFLAGS_OTHER}")
 
   # pkg_check_modules(TBB REQUIRED IMPORTED_TARGET tbb)
+  # pkg_check_modules(MKL REQUIRED IMPORTED_TARGET mkl-dynamic-ilp64-iomp)
+  # pkg_check_modules(TBB REQUIRED IMPORTED_TARGET tbb)
   pkg_check_modules(MKL REQUIRED IMPORTED_TARGET mkl-dynamic-ilp64-iomp)
   # set(MKL_ROOT "$ENV{HOME}/intel/oneapi/mkl/latest")
   # list(APPEND CMAKE_MODULE_PATH "${MKL_ROOT}/lib/cmake")
   # set(MKL_LINK "static")
   # find_package(MKL CONFIG REQUIRED)
   # message(CMAKE_MODULE_PATH="${CMAKE_MODULE_PATH}")
-  
   # message(STATUS "${MKL_IMPORTED_TARGETS}")
-
-  
 
   # set(TBBROOT "$ENV{HOME}/intel/oneapi/tbb/latest")
   # list(APPEND CMAKE_MODULE_PATH "${TBBROOT}/lib/cmake")
@@ -68,7 +66,6 @@ if(USE_FFTW3_MKL)
 
   add_subdirectory(src/fftw3-mkl)
 endif()
-
 
 add_subdirectory(src/main)
 

@@ -1,5 +1,6 @@
 #include "common.hpp"
-#include "cuda-fct-solver.hpp"
+// #include "cuda-fct-solver.hpp"
+#include "cpu-fct-solver.hpp"
 #include <iostream>
 
 int main(int argc, char *argv[])
@@ -19,16 +20,29 @@ int main(int argc, char *argv[])
 
   getHomoCoeffZ<T>(homoCoeffZ, rhs, dims, kappa, delta_p, lenZ);
 
-  T *v{nullptr}, *v_hat{nullptr};
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&v), sizeof(T) * M * N * P));
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&v_hat), sizeof(T) * M * N * P));
+  // T *v{nullptr}, *v_hat{nullptr};
+  // CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&v), sizeof(T) * M * N * P));
+  // CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&v_hat), sizeof(T) * M * N * P));
 
-  cufctSolver<T> solver(M, N, P);
-  solver.fctBackward(&v[0], &v_hat[0]);
-  solver.fctBackward(&v_hat[0], &v[0]);
+  // cufctSolver<T> solver(M, N, P);
+  // solver.fctBackward(&v[0], &v_hat[0]);
+  // solver.fctBackward(&v_hat[0], &v[0]);
 
-  CHECK_CUDA_ERROR(cudaFree(v_hat));
-  CHECK_CUDA_ERROR(cudaFree(v));
+  // CHECK_CUDA_ERROR(cudaFree(v_hat));
+  // CHECK_CUDA_ERROR(cudaFree(v));
 
-  std::cout << "Hello world, there are " << omp_get_num_threads() << " threads.\n";
+  std::vector<T> v(size), v_hat(size), r(size);
+  setTestVecs<T>(v, v_hat, dims);
+
+  using fftwVec = std::vector<T, fftwAllocator<T>>;
+  fftwVec v_fftw(size);
+  mklTraits<T>::mklCopy(size, &v[0], &v_fftw[0]);
+  fctSolver<T> cpuSolver(M, N, P);
+  cpuSolver.fctForward(v_fftw);
+
+  mklTraits<T>::mklResi(size, &v_hat[0], &v_fftw[0], &r[0]);
+  T err{static_cast<T>(0)};
+  err = mklTraits<T>::mklNorm(size, &r[0]);
+
+  std::cout << "Error=" << err << '\n';
 }

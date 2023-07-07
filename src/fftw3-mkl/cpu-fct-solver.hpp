@@ -1,8 +1,10 @@
 #pragma once
 
 #include <fftw3.h>
+#include <mkl.h>
 #include <omp.h>
 #include <vector>
+#include <cmath>
 #include <cstddef>
 
 constexpr int DIM{3};
@@ -41,13 +43,43 @@ struct fftwTraits<double> {
 };
 
 template <typename T>
+struct mklTraits;
+
+template <>
+struct mklTraits<float> {
+  static void mklScal(const MKL_INT n, const float a, float *x) { cblas_sscal(n, a, x, 1); }
+  static void mklCopy(const MKL_INT n, const float *a, float *b) { cblas_scopy(n, a, 1, b, 1); }
+  static void mklResi(const MKL_INT n, const float *x, const float *y, float *r)
+  {
+    cblas_scopy(n, x, 1, r, 1);
+    cblas_saxpy(n, -1.0f, y, 1, r, 1);
+  }
+  static float mklNorm(const MKL_INT n, const float *r) { return sqrtf(cblas_sdot(n, r, 1, r, 1)); }
+};
+
+template <>
+struct mklTraits<double> {
+  static void mklScal(const MKL_INT n, const double a, double *x) { cblas_dscal(n, a, x, 1); }
+  static void mklCopy(const MKL_INT n, const double *a, double *b) { cblas_dcopy(n, a, 1, b, 1); }
+  static void mklResi(const MKL_INT n, const double *x, const double *y, double *r)
+  {
+    cblas_dcopy(n, x, 1, r, 1);
+    cblas_daxpy(n, -1.0f, y, 1, r, 1);
+  }
+  static double mklNorm(const MKL_INT n, const double *r) { return sqrt(cblas_ddot(n, r, 1, r, 1)); }
+};
+
+template <typename T>
 struct fftwAllocator {
   typedef T value_type;
 
   fftwAllocator() = default;
 
   template <class U>
-  constexpr fftwAllocator(const fftwAllocator<U> &) noexcept;
+  constexpr fftwAllocator(const fftwAllocator<U> &) noexcept
+  {
+    ;
+  }
 
   [[nodiscard]] T *allocate(std::size_t n);
 
@@ -84,7 +116,3 @@ public:
 
   ~fctSolver();
 };
-
-template class fctSolver<float>;
-
-template class fctSolver<double>;
