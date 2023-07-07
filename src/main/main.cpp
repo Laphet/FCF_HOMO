@@ -43,6 +43,10 @@ int main(int argc, char *argv[])
   mklTraits<T>::mklResi(size, &v_hat[0], &v_fftw[0], &r[0]);
   T err{static_cast<T>(0)};
   err = mklTraits<T>::mklNorm(size, &r[0]);
+  std::cout << "Error=" << err << '\n';
 
+  cpuSolver.fctBackward(v_fftw);
+  mklTraits<T>::mklResi(size, &v[0], &v_fftw[0], &r[0]);
+  err = mklTraits<T>::mklNorm(size, &r[0]);
   std::cout << "Error=" << err << '\n';
 }

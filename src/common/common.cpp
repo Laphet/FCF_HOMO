@@ -136,7 +136,7 @@ void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat, const std::vector<int
   T   myPi{mathTraits<T>::mathPi}, myHalf{static_cast<T>(0.5)};
   for (row = 0; row < size; ++row) {
     get3dIdxFromIdx(i, j, k, row, N, P);
-    if (1 == i_t && 2 == j_t) v_hat[row] = static_cast<T>(1.0);
+    if (i_t == i && j_t == j) v_hat[row] = static_cast<T>(1.0);
     else v_hat[row] = static_cast<T>(0.0);
     v[row] = static_cast<T>(4) / static_cast<T>(M * N);
     v[row] *= mathTraits<T>::mathCos(myPi * (static_cast<T>(i) + myHalf) * static_cast<T>(i_t) / static_cast<T>(M));

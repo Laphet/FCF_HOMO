@@ -26,16 +26,25 @@ fctSolver<T>::fctSolver(const int _M, const int _N, const int _P) : dims{_M, _N,
 template <typename T>
 void fctSolver<T>::fctForward(fftwVec &v)
 {
-  if (&v[0] == &rhsBuffer[0]) fftwTraits<T>::fftwExec(forwardPlan);
-  else fftwTraits<T>::fftwExecNewArray(forwardPlan, &v[0], &v[0]);
+  // std::cout << "fftw3 uses " << fftw_planner_nthreads() << " threads.\n";
+  T *v_ptr{&v[0]}, *rhsBuffer_ptr{&rhsBuffer[0]};
+  if (v_ptr == rhsBuffer_ptr) {
+    // std::cout << "Use fftwExec!\n";
+    fftwTraits<T>::fftwExec(forwardPlan);
+  } else {
+    // std::cout << "Use fftwExecNewArray!\n";
+    fftwTraits<T>::fftwExecNewArray(forwardPlan, &v[0], &v[0]);
+  }
+  mklTraits<T>::mklScal(dims[0] * dims[1] * dims[2], 0.25, &v[0]);
 }
 
 template <typename T>
 void fctSolver<T>::fctBackward(fftwVec &v)
 {
-  if (&v[0] == &rhsBuffer[0]) fftwTraits<T>::fftwExec(backwardPlan);
+  T *v_ptr{&v[0]}, *rhsBuffer_ptr{&rhsBuffer[0]};
+  if (v_ptr == rhsBuffer_ptr) fftwTraits<T>::fftwExec(backwardPlan);
   else fftwTraits<T>::fftwExecNewArray(backwardPlan, &v[0], &v[0]);
-  const T scalFactor{static_cast<T>(4) / static_cast<T>(dims[0] * dims[1])};
+  const T scalFactor{static_cast<T>(1) / static_cast<T>(dims[0] * dims[1])};
   mklTraits<T>::mklScal(dims[0] * dims[1] * dims[2], scalFactor, &v[0]);
 }
 

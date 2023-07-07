@@ -56,10 +56,10 @@ We need the following routines from cuFFT:
 
 ### FFTW and oneapi implementation
 Use the following commands to configure fftw:
-./configure --prefix=${HOME}/fftw3 --enable-avx2 --enable-avx512 --enable-openmp
+CC=icx ./configure --prefix=${HOME}/fftw3 --enable-avx2 --enable-avx512 --enable-openmp --enable-threads
 
 To enable using fftw3 in the float precision, we need to reconfigure
-./configure --prefix=${HOME}/fftw3 --enable-single --enable-avx2 --enable-avx512 --enable-openmp
+CC=icx ./configure --prefix=${HOME}/fftw3 --enable-single --enable-avx2 --enable-avx512 --enable-openmp --enable-threads
 
 Note that the original fftw3.pc (fftw3f.pc) is not for linking to the OpenMP version,
 and we use the modified .pc file instead.

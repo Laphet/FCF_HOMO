@@ -6,6 +6,7 @@
 #include <vector>
 #include <cmath>
 #include <cstddef>
+#include <iostream>
 
 constexpr int DIM{3};
 
