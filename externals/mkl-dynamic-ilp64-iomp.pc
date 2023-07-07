@@ -12,7 +12,7 @@
 # License.
 #===============================================================================
 
-prefix=/home/extradisk/changqing/intel/oneapi/mkl/latest/lib/pkgconfig/../..
+prefix=/home/cqye/intel/oneapi/mkl/latest/lib/pkgconfig/../..
 exec_prefix=${prefix}
 libdir=${exec_prefix}/lib/intel64
 includedir=${prefix}/include

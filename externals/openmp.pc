@@ -13,7 +13,7 @@
 
 </copyright> */
 
-prefix=/home/extradisk/changqing/intel/oneapi/compiler/latest/lib/pkgconfig/../../
+prefix=/home/cqye/intel/oneapi/compiler/latest/lib/pkgconfig/../../
 libdir=${prefix}/linux/compiler/lib/intel64/
 includedir=${prefix}/linux/compiler/include
 
