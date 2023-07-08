@@ -81,6 +81,12 @@ We will use the following routines:
 - Change vscode cmake tools settings.
 - Move .pc files to ./externals.
 
+### Use valgrind to detect memory leaks
+Install valgrind via conda, and try:
+
+- valgrind --leak-check=yes ./main
+- valgrind --leak-check=full --show-leak-kinds=all ./main > valgrind_report.txt
+
 ### References
 [1] Makhoul, J. (1980). A fast cosine transform in one and two dimensions. 
 IEEE Transactions on Acoustics, Speech, and Signal Processing, 28(1), 27-34.

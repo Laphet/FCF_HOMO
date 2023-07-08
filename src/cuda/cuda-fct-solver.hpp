@@ -7,7 +7,7 @@
 #include <math_constants.h>
 #include <iostream>
 
-#define DIM 3
+// static constexpr int DIM{3};
 
 #define CHECK_CUDA_ERROR(val) check((val), #val, __FILE__, __LINE__)
 template <typename T>
@@ -36,7 +36,7 @@ struct cuTraits<double> {
 template <typename T>
 class cufctSolver {
   using cuCompType = decltype(cuTraits<T>::compVar);
-  int         dims[DIM];
+  int         dims[3];
   T          *realBuffer;
   cuCompType *compBuffer;
   cufftHandle r2cPlan;

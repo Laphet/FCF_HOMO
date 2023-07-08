@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <iostream>
 
-constexpr int DIM{3};
+// constexpr int DIM{3};
 
 template <typename T>
 struct fftwTraits;
@@ -103,7 +103,7 @@ template <typename T>
 class fctSolver {
   using fftw_plan_T = decltype(fftwTraits<T>::planType);
   using fftwVec     = std::vector<T, fftwAllocator<T>>;
-  int         dims[DIM];
+  int         dims[3];
   fftwVec     rhsBuffer;
   fftwVec     pBuffer;
   fftw_plan_T forwardPlan;  // in-place data manipulation.

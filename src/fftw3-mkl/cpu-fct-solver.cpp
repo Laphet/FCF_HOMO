@@ -28,8 +28,10 @@ void fctSolver<T>::fctForward(fftwVec &v)
 {
   // std::cout << "fftw3 uses " << fftw_planner_nthreads() << " threads.\n";
   T *v_ptr{&v[0]}, *rhsBuffer_ptr{&rhsBuffer[0]};
-  if (v_ptr == rhsBuffer_ptr) {
-    // std::cout << "Use fftwExec!\n";
+  if (v_ptr == rhsBuffer_ptr && v.size() == rhsBuffer.size()) {
+    //   if (&v[0] == &rhsBuffer[0] && v.size() == rhsBuffer.size()) {
+    std::cout << "Use fftwExec!\n";
+    // It is wired that "if (&v[0] == &rhsBuffer[0])" enters this branch.
     fftwTraits<T>::fftwExec(forwardPlan);
   } else {
     // std::cout << "Use fftwExecNewArray!\n";
@@ -42,7 +44,7 @@ template <typename T>
 void fctSolver<T>::fctBackward(fftwVec &v)
 {
   T *v_ptr{&v[0]}, *rhsBuffer_ptr{&rhsBuffer[0]};
-  if (v_ptr == rhsBuffer_ptr) fftwTraits<T>::fftwExec(backwardPlan);
+  if (v_ptr == rhsBuffer_ptr && v.size() == rhsBuffer.size()) fftwTraits<T>::fftwExec(backwardPlan);
   else fftwTraits<T>::fftwExecNewArray(backwardPlan, &v[0], &v[0]);
   const T scalFactor{static_cast<T>(1) / static_cast<T>(dims[0] * dims[1])};
   mklTraits<T>::mklScal(dims[0] * dims[1] * dims[2], scalFactor, &v[0]);

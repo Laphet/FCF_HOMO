@@ -11,7 +11,7 @@ target_include_directories(cpu-fct-solver
   # PUBLIC $<TARGET_PROPERTY:MKL::MKL,INTERFACE_INCLUDE_DIRECTORIES>
   INTERFACE ${CMAKE_CURRENT_LIST_DIR})
 target_link_libraries(cpu-fct-solver
-  # PRIVATE PkgConfig::OPENMP
+  PRIVATE PkgConfig::OPENMP
   PUBLIC PkgConfig::FFTW3_OMP
   # PRIVATE OpenMP::OpenMP_CXX
 
