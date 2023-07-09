@@ -4,7 +4,6 @@
 #include <math.h>
 #include <cuComplex.h>
 #include <cufft.h>
-#include <math_constants.h>
 #include <iostream>
 
 // static constexpr int DIM{3};
@@ -45,9 +44,9 @@ class cufctSolver {
 public:
   cufctSolver(const int _M, const int _N, const int _P);
 
-  void fctForward(const T *in, T *out_hat);
+  void fctForward(T *v);
 
-  void fctBackward(const T *in_hat, T *out);
+  void fctBackward(T *v);
 
   ~cufctSolver();
 };

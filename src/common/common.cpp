@@ -102,11 +102,11 @@ void getStdRhsVec(std::vector<T> &rhs, const std::vector<int> &dims, const std::
   int size{M * N * P}, row{0};
 
 #pragma omp parallel for
-  for (row = 0; row < size; ++row) {
+  for (int row{0}; row < size; ++row) {
     int i{0}, j{0}, k{0};
     get3dIdxFromIdx(i, j, k, row, N, P);
-    rhs[row] = static_cast<T>(0.0);
-    if (k == 0) rhs[row] += static_cast<T>(2.0 * k_z[row] * delta_p);
+    rhs[row] = 0;
+    if (k == 0) rhs[row] += 2 * static_cast<T>(k_z[row] * delta_p);
   }
 }
 
@@ -116,7 +116,7 @@ void getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<int
   int    M{dims[0]}, N{dims[1]}, P{dims[2]}, i{0}, j{0}, row{0};
   double temp{0.0};
 
-  homoCoeffZ = static_cast<T>(0.0);
+  homoCoeffZ = 0;
 #pragma omp parallel for reduction(+ : homoCoeffZ)
   for (i = 0; i < M; ++i)
     for (j = 0; j < N; ++j) {
@@ -131,16 +131,44 @@ template <typename T>
 void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat, const std::vector<int> &dims)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
-  int size{M * N * P}, row{0};
+  int size{M * N * P};
   int i{0}, j{0}, k{0}, i_t{1}, j_t{2};
-  T   myPi{mathTraits<T>::mathPi}, myHalf{static_cast<T>(0.5)};
-  for (row = 0; row < size; ++row) {
+  T   myPi{static_cast<T>(M_PI)}, myHalf{static_cast<T>(0.5)};
+  for (int row{0}; row < size; ++row) {
     get3dIdxFromIdx(i, j, k, row, N, P);
-    if (i_t == i && j_t == j) v_hat[row] = static_cast<T>(1.0);
-    else v_hat[row] = static_cast<T>(0.0);
+    if (i_t == i && j_t == j) v_hat[row] = 1;
+    else v_hat[row] = 0;
     v[row] = static_cast<T>(4) / static_cast<T>(M * N);
     v[row] *= mathTraits<T>::mathCos(myPi * (static_cast<T>(i) + myHalf) * static_cast<T>(i_t) / static_cast<T>(M));
     v[row] *= mathTraits<T>::mathCos(myPi * (static_cast<T>(j) + myHalf) * static_cast<T>(j_t) / static_cast<T>(N));
+  }
+}
+
+template <typename T>
+void getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, const std::vector<int> &dims, const std::vector<T> &homoParas)
+{
+  int M{dims[0]}, N{dims[1]}, P{dims[2]};
+  int i{0}, j{0};
+  T   myPi{static_cast<T>(M_PI)};
+  T   k_x_ref{homoParas[0]}, k_y_ref{homoParas[1]}, k_z_ref{homoParas[2]};
+  T   k_in_ref{homoParas[3]}, k_out_ref{homoParas[4]};
+#pragma omp parallel for
+  for (int matIdx{0}; matIdx < M * N; ++matIdx) {
+    i = matIdx / N;
+    j = matIdx % N;
+    T temp_i{2 * (1 - mathTraits<T>::mathCos(static_cast<T>(i) / static_cast<T>(M) * myPi))};
+    T temp_j{2 * (1 - mathTraits<T>::mathCos(static_cast<T>(j) / static_cast<T>(N) * myPi))};
+    dl[matIdx * P] = 0;
+    d[matIdx * P]  = k_x_ref * temp_i + k_y_ref * temp_j + k_z_ref + 2 * k_in_ref;
+    du[matIdx * P] = -k_z_ref;
+    for (int k = 1; k < P - 1; ++k) {
+      dl[matIdx * P + k] = -k_z_ref;
+      d[matIdx * P + k]  = k_x_ref * temp_i + k_y_ref * temp_j + 2 * k_z_ref;
+      du[matIdx * P + k] = -k_z_ref;
+    }
+    dl[(matIdx + 1) * P - 1] = -k_z_ref;
+    d[(matIdx + 1) * P - 1]  = k_x_ref * temp_i + k_y_ref * temp_j + k_z_ref + 2 * k_out_ref;
+    du[(matIdx + 1) * P - 1] = 0;
   }
 }
 
@@ -159,3 +187,7 @@ template void getHomoCoeffZ<double>(double &homoCoeffZ, const std::vector<double
 template void setTestVecs<float>(std::vector<float> &v, std::vector<float> &v_hat, const std::vector<int> &dims);
 
 template void setTestVecs<double>(std::vector<double> &v, std::vector<double> &v_hat, const std::vector<int> &dims);
+
+template void getTridSolverData<float>(std::vector<float> &dl, std::vector<float> &d, std::vector<float> &du, const std::vector<int> &dims, const std::vector<float> &homoParas);
+
+template void getTridSolverData<double>(std::vector<double> &dl, std::vector<double> &d, std::vector<double> &du, const std::vector<int> &dims, const std::vector<double> &homoParas);

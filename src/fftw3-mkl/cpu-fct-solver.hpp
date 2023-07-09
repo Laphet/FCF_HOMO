@@ -55,7 +55,8 @@ struct mklTraits<float> {
     cblas_scopy(n, x, 1, r, 1);
     cblas_saxpy(n, -1.0f, y, 1, r, 1);
   }
-  static float mklNorm(const MKL_INT n, const float *r) { return sqrtf(cblas_sdot(n, r, 1, r, 1)); }
+  static float      mklNorm(const MKL_INT n, const float *r) { return sqrtf(cblas_sdot(n, r, 1, r, 1)); }
+  static lapack_int mklTridMatFact(lapack_int n, float *d, float *e) { return LAPACKE_spttrf(n, d, e); }
 };
 
 template <>
@@ -67,7 +68,8 @@ struct mklTraits<double> {
     cblas_dcopy(n, x, 1, r, 1);
     cblas_daxpy(n, -1.0f, y, 1, r, 1);
   }
-  static double mklNorm(const MKL_INT n, const double *r) { return sqrt(cblas_ddot(n, r, 1, r, 1)); }
+  static double     mklNorm(const MKL_INT n, const double *r) { return sqrt(cblas_ddot(n, r, 1, r, 1)); }
+  static lapack_int mklTridMatFact(lapack_int n, double *d, double *e) { return LAPACKE_dpttrf(n, d, e); }
 };
 
 template <typename T>
@@ -104,16 +106,21 @@ class fctSolver {
   using fftw_plan_T = decltype(fftwTraits<T>::planType);
   using fftwVec     = std::vector<T, fftwAllocator<T>>;
   int         dims[3];
-  fftwVec     rhsBuffer;
-  fftwVec     pBuffer;
+  fftwVec     resiBuffer;
   fftw_plan_T forwardPlan;  // in-place data manipulation.
   fftw_plan_T backwardPlan; // in-place data manipulation.
+  T          *dl_ptr;
+  T          *d_ptr;
+  T          *du_ptr;
+
 public:
   fctSolver(const int _M, const int _N, const int _P);
 
   void fctForward(fftwVec &v);
 
   void fctBackward(fftwVec &v);
+
+  void setTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du);
 
   ~fctSolver();
 };

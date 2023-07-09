@@ -30,7 +30,9 @@ Note that we will also use this routine to obtain the residual.
 
 The cuda tridiagonal solver is included in cuSparse.
 We will use the batched tridiagonal solver to maximize efficiency.
-- cusparse<S, D, C, Z>gtsv2StridedBatch()
+- cusparse<S, D, C, Z>gtsv2StridedBatch_bufferSizeExt(),
+- cusparse<S, D, C, Z>gtsv2StridedBatch(),
+the RHS will be overwritten.
 
 Note that there is another batched tridiagonal solver called
 - cusparse<S, D, C, Z>gtsvInterleavedBatch(),
@@ -72,6 +74,13 @@ We will use the following routines:
 - fftw_execute_r2r(), use the same plan;
 - fftw_destroy_plan();
 - fftw_cleanup().
+
+The tridiagonal solver in mkl uses
+- LAPACKE_<s,d>pttrf()
+to factorize the matrix first (the diagonal and sub-diagonal parts will be overwritten).
+Then solve the system by
+- LAPACKE_<s,d>pttrs(),
+and the RHS vector will be overwritten.
 
 
 ### Set up development environment

@@ -10,14 +10,12 @@ struct mathTraits;
 
 template <>
 struct mathTraits<float> {
-  static constexpr float mathPi{static_cast<float>(M_PI)};
-  static float           mathCos(float x) { return cosf(x); }
+  static float mathCos(float x) { return cosf(x); }
 };
 
 template <>
 struct mathTraits<double> {
-  static constexpr double mathPi{M_PI};
-  static double           mathCos(double x) { return cos(x); }
+  static double mathCos(double x) { return cos(x); }
 };
 
 constexpr int STENCIL_WIDTH = 7;
@@ -35,9 +33,8 @@ void getStdRhsVec(std::vector<T> &rhs, const std::vector<int> &dims, const std::
 template <typename T>
 void getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p, const double lenZ);
 
-float mathCos(float x);
-
-double mathCos(double x);
+template <typename T>
+void getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, const std::vector<int> &dims, const std::vector<T> &homoParas);
 
 template <typename T>
 void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat, const std::vector<int> &dims);

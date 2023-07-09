@@ -48,21 +48,6 @@ __device__ void get3dIdxFromThreadIdx(int &i, int &j, int &k, const int glbThrea
   k = (glbThreadIdx % P_mod) % P;
 }
 
-template <typename T>
-__device__ T getPi();
-
-template <>
-__device__ float getPi<float>()
-{
-  return CUDART_PI_F;
-}
-
-template <>
-__device__ double getPi<double>()
-{
-  return CUDART_PI;
-}
-
 __device__ cuComplex getExpItheta(const float theta)
 {
   return make_cuComplex(cosf(theta), sin(theta));
@@ -172,7 +157,7 @@ __global__ void fctPost(T *out_hat, decltype(cuTraits<T>::compVar) const *in_hat
   }
   __syncthreads();
 
-  T         i_theta, j_theta, cuPi{getPi<T>()}, temp0, temp1;
+  T         i_theta, j_theta, cuPi{static_cast<T>(M_PI)}, temp0, temp1;
   complex_T ninj_exp, nipj_exp, tempBuff0, tempBuff1;
 
   if (glbThreadIdx < M * N * P_mod) {
@@ -218,7 +203,6 @@ __global__ void ifctPre(decltype(cuTraits<T>::compVar) *out_hat, T const *in_hat
   size_t       glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
   int          i_p{0}, j_p{0}, k{0}, idx_req{0}, idx_tar{0};
   int          P_mod{(P / WARP_SIZE + 1) * WARP_SIZE};
-  T            myZERO{static_cast<T>(0.0)};
   __shared__ T in_hat_buffer[IFCT_PRE_STENCIL_WIDTH][MAX_THREADS_PER_BLOCK + 1];
   // Avoid bank conflicts, we add a pad to every row here.
 
@@ -237,32 +221,32 @@ __global__ void ifctPre(decltype(cuTraits<T>::compVar) *out_hat, T const *in_hat
       in_hat_buffer[3][threadIdx.x] = in_hat[idx_req];
     }
     if (0 == i_p && 0 < j_p) {
-      in_hat_buffer[1][threadIdx.x] = myZERO;
+      in_hat_buffer[1][threadIdx.x] = 0;
 
-      in_hat_buffer[2][threadIdx.x] = myZERO;
+      in_hat_buffer[2][threadIdx.x] = 0;
 
       idx_req                       = getIdxFrom3dIdx_d(0, N - j_p, k, N, P);
       in_hat_buffer[3][threadIdx.x] = in_hat[idx_req];
     }
     if (0 < i_p && 0 == j_p) {
-      in_hat_buffer[1][threadIdx.x] = myZERO;
+      in_hat_buffer[1][threadIdx.x] = 0;
 
       idx_req                       = getIdxFrom3dIdx_d(M - i_p, 0, k, N, P);
       in_hat_buffer[2][threadIdx.x] = in_hat[idx_req];
 
-      in_hat_buffer[3][threadIdx.x] = myZERO;
+      in_hat_buffer[3][threadIdx.x] = 0;
     }
     if (0 == i_p && 0 == j_p) {
-      in_hat_buffer[1][threadIdx.x] = myZERO;
+      in_hat_buffer[1][threadIdx.x] = 0;
 
-      in_hat_buffer[2][threadIdx.x] = myZERO;
+      in_hat_buffer[2][threadIdx.x] = 0;
 
-      in_hat_buffer[3][threadIdx.x] = myZERO;
+      in_hat_buffer[3][threadIdx.x] = 0;
     }
   }
   __syncthreads();
 
-  T         i_theta{myZERO}, j_theta{myZERO}, cuPi{getPi<T>()};
+  T         i_theta, j_theta, cuPi{static_cast<T>(M_PI)};
   complex_T temp, pipj_exp;
 
   if (glbThreadIdx < M * N * P_mod && j_p <= N / 2) {
@@ -326,7 +310,7 @@ cufftResult cufftReal2Comp(cufftHandle plan, double *idata, cuDoubleComplex *oda
 }
 
 template <typename T>
-void cufctSolver<T>::fctForward(const T *in, T *out_hat)
+void cufctSolver<T>::fctForward(T *v)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int blockSize{0};   // The launch configurator returned block size
@@ -341,7 +325,7 @@ void cufctSolver<T>::fctForward(const T *in, T *out_hat)
     blockSize = MAX_THREADS_PER_BLOCK;
   }
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
-  fctPre<T><<<gridSize, blockSize>>>(&realBuffer[0], &in[0], M, N, P);
+  fctPre<T><<<gridSize, blockSize>>>(&realBuffer[0], &v[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 
   CHECK_CUDA_ERROR(cufftReal2Comp(r2cPlan, &realBuffer[0], &compBuffer[0]));
@@ -353,7 +337,7 @@ void cufctSolver<T>::fctForward(const T *in, T *out_hat)
     blockSize = MAX_THREADS_PER_BLOCK;
   }
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
-  fctPost<T><<<gridSize, blockSize>>>(&out_hat[0], &compBuffer[0], M, N, P);
+  fctPost<T><<<gridSize, blockSize>>>(&v[0], &compBuffer[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 }
 
@@ -368,7 +352,7 @@ cufftResult cufftComp2Real(cufftHandle plan, cuDoubleComplex *idata, double *oda
 }
 
 template <typename T>
-void cufctSolver<T>::fctBackward(const T *in_hat, T *out)
+void cufctSolver<T>::fctBackward(T *v)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int blockSize{0};   // The launch configurator returned block size
@@ -383,7 +367,7 @@ void cufctSolver<T>::fctBackward(const T *in_hat, T *out)
     blockSize = MAX_THREADS_PER_BLOCK;
   }
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
-  ifctPre<T><<<gridSize, blockSize>>>(&compBuffer[0], &in_hat[0], M, N, P);
+  ifctPre<T><<<gridSize, blockSize>>>(&compBuffer[0], &v[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 
   CHECK_CUDA_ERROR(cufftComp2Real(c2rPlan, &compBuffer[0], &realBuffer[0]));
@@ -395,7 +379,7 @@ void cufctSolver<T>::fctBackward(const T *in_hat, T *out)
     blockSize = MAX_THREADS_PER_BLOCK;
   }
   gridSize = (M * N * P_mod + blockSize - 1) / blockSize;
-  ifctPost<T><<<gridSize, blockSize>>>(&out[0], &realBuffer[0], M, N, P);
+  ifctPost<T><<<gridSize, blockSize>>>(&v[0], &realBuffer[0], M, N, P);
   CHECK_LAST_CUDA_ERROR();
 }
 
