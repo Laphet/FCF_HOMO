@@ -23,6 +23,15 @@ void check(cufftResult status, char const *const func, char const *const file, i
   }
 }
 
+void check(cusparseStatus_t status, char const *const func, char const *const file, int const line)
+{
+  if (status != CUSPARSE_STATUS_SUCCESS) {
+    std::cerr << "cusparse Error at: " << file << ":" << line << std::endl;
+    std::cerr << cusparseGetErrorString(status) << " " << func << std::endl;
+    std::exit(EXIT_FAILURE);
+  }
+}
+
 void checkLast(char const *const file, int const line)
 {
   cudaError_t err{cudaGetLastError()};
@@ -71,24 +80,9 @@ __device__ cuDoubleComplex getExpItheta(const double theta)
   return make_cuDoubleComplex(cos(theta), sin(theta));
 }
 
-__device__ cuComplex cuConjWraper(cuComplex cVar)
-{
-  return cuConjf(cVar);
-}
-
-__device__ cuDoubleComplex cuConjWraper(cuDoubleComplex cVar)
-{
-  return cuConj(cVar);
-}
-
-__device__ cuComplex cuMult(cuComplex cVar1, cuComplex cVar2)
+__device__ cuComplex cuCmul(cuComplex cVar1, cuComplex cVar2)
 {
   return cuCmulf(cVar1, cVar2);
-}
-
-__device__ cuDoubleComplex cuMult(cuDoubleComplex cVar1, cuDoubleComplex cVar2)
-{
-  return cuCmul(cVar1, cVar2);
 }
 
 template <typename T>
@@ -113,7 +107,7 @@ __global__ void fctPre(T *out, const T *in, const int M, const int N, const int 
   __syncthreads();
 
   if (glbThreadIdx < M * N * Pmod) {
-    get3dIdxFromThreadIdx(i, j, k, glbThreadIdx, N, P, Pmod);
+    // get3dIdxFromThreadIdx(i, j, k, glbThreadIdx, N, P, Pmod);
     int idx_tar{getIdxFrom3dIdx_d(i, j, k, N, P)};
     out[idx_tar] = in_buffer[threadIdx.x];
   }
@@ -173,15 +167,14 @@ __global__ void fctPost(T *out_hat, const decltype(cuTraits<T>::compVar) *in_hat
   __syncthreads();
 
   if (glbThreadIdx < M * N * Pmod) {
-    get3dIdxFromThreadIdx(i_p, j_p, k, glbThreadIdx, N, P, Pmod);
-    int       idx_tar{0};
+    // get3dIdxFromThreadIdx(i_p, j_p, k, glbThreadIdx, N, P, Pmod);
+    int       idx_tar{getIdxFrom3dIdx_d(i_p, j_p, k, N, P)};
     T         i_theta, j_theta, cuPi{static_cast<T>(M_PI)}, temp0, temp1;
     complex_T ninj_exp, nipj_exp, tempBuff0, tempBuff1;
     i_theta  = static_cast<T>(i_p) / static_cast<T>(2 * M) * cuPi;
     j_theta  = static_cast<T>(j_p) / static_cast<T>(2 * N) * cuPi;
     ninj_exp = getExpItheta(-i_theta - j_theta);
     nipj_exp = getExpItheta(-i_theta + j_theta);
-    idx_tar  = getIdxFrom3dIdx_d(i_p, j_p, k, N, P);
 
     if (1 <= j_p && j_p < N / 2 + 1) {
       tempBuff0.x      = in_hat_buffer[0][threadIdx.x];
@@ -271,7 +264,7 @@ __global__ void ifctPre(decltype(cuTraits<T>::compVar) *out_hat, const T *in_hat
     temp.x   = in_hat_buffer[0][threadIdx.x] - in_hat_buffer[1][threadIdx.x];
     temp.y   = -(in_hat_buffer[2][threadIdx.x] + in_hat_buffer[3][threadIdx.x]);
     int idx_tar{getIdxFrom3dIdxHalf(i_p, j_p, k, N, P)};
-    out_hat[idx_tar] = cuMult(pipj_exp, temp);
+    out_hat[idx_tar] = cuCmul(pipj_exp, temp);
     return;
   } else return;
 }
@@ -280,13 +273,13 @@ template <typename T>
 __global__ void ifctPost(T *out, const T *in, const int M, const int N, const int P)
 {
   size_t       glbThreadIdx{blockIdx.x * blockDim.x + threadIdx.x};
-  int          i{0}, j{0}, k{0}, idx_req{0}, idx_tar{0};
+  int          i{0}, j{0}, k{0};
   int          Pmod{(P / WARP_SIZE + 1) * WARP_SIZE};
   __shared__ T in_buffer[MAX_THREADS_PER_BLOCK];
 
   if (glbThreadIdx < M * N * Pmod) {
     get3dIdxFromThreadIdx(i, j, k, glbThreadIdx, N, P, Pmod);
-
+    int idx_req{0};
     if (0 == i % 2 && 0 == j % 2) idx_req = getIdxFrom3dIdx_d(i / 2, j / 2, k, N, P);
     if (0 == i % 2 && 1 == j % 2) idx_req = getIdxFrom3dIdx_d(i / 2, N - (j + 1) / 2, k, N, P);
     if (1 == i % 2 && 0 == j % 2) idx_req = getIdxFrom3dIdx_d(M - (i + 1) / 2, j / 2, k, N, P);
@@ -297,7 +290,7 @@ __global__ void ifctPost(T *out, const T *in, const int M, const int N, const in
   __syncthreads();
 
   if (glbThreadIdx < M * N * Pmod) {
-    idx_tar = getIdxFrom3dIdx_d(i, j, k, N, P);
+    int     idx_tar{getIdxFrom3dIdx_d(i, j, k, N, P)};
     const T scalFactor{static_cast<T>(1) / (M * N)};
     /* cuFFT performs un-normalized FFTs! */
     out[idx_tar] = in_buffer[threadIdx.x] * scalFactor;
@@ -305,7 +298,7 @@ __global__ void ifctPost(T *out, const T *in, const int M, const int N, const in
 }
 
 template <typename T>
-cufctSolver<T>::cufctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer(nullptr), compBuffer(nullptr), r2cPlan(0), c2rPlan(0)
+cufctSolver<T>::cufctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, realBuffer{nullptr}, compBuffer{nullptr}, dlPtr{nullptr}, dPtr{nullptr}, duPtr{nullptr}, tridSolverBuffer{nullptr}
 {
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&realBuffer), sizeof(T) * _M * _N * _P));
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&compBuffer), sizeof(cuCompType) * _M * (_N / 2 + 1) * _P));
@@ -322,6 +315,9 @@ cufctSolver<T>::cufctSolver(const int _M, const int _N, const int _P) : dims{_M,
   CHECK_CUDA_ERROR(cufftPlanMany(&c2rPlan, 2, &dims[0], &dimsHalf[0], _P, 1, &dims[0], _P, 1, cuTraits<T>::c2rType, _P));
   // CHECK_CUDA_ERROR(cufftCreate(&c2cPlan));
   // CHECK_CUDA_ERROR(cufftPlanMany(&c2rPlan, 2, &dims[0], &dims[0], dims[2], 1, &dims[0], dims[2], 1, cuTraits<T>::c2cType, dims[2]));
+
+  /* Works on the cusparse context. */
+  CHECK_CUDA_ERROR(cusparseCreate(&cusprHandle));
 }
 
 cufftResult cufftReal2Comp(cufftHandle plan, float *idata, cuComplex *odata)
@@ -344,7 +340,11 @@ void viewRealVec(std::vector<T> &vec)
 template <typename T>
 void viewCompVec(std::vector<decltype(cuTraits<T>::compVar)> &vec)
 {
-  for (int i{0}; i < vec.size(); ++i) std::cout << '[' << i << "]=" << vec[i].x << '+' << vec[i].y << "i\n";
+  for (int i{0}; i < vec.size(); ++i) {
+    std::cout << '[' << i << "]=" << vec[i].x;
+    if (vec[i].y >= 0) std::cout << '+';
+    std::cout << vec[i].y << "I\n"
+  };
   std::cout << '\n';
 }
 
@@ -451,13 +451,85 @@ void cufctSolver<T>::fctBackward(T *v)
   // viewRealVec(reViewer);
 }
 
+void gtsv2StridedBatch_bufferSizeExt(cusparseHandle_t handle, int m, const float *dl, const float *d, const float *du, const float *x, int batchCount, int batchStride, size_t *bufferSizeInBytes)
+{
+  CHECK_CUDA_ERROR(cusparseSgtsv2StridedBatch_bufferSizeExt(handle, m, dl, d, du, x, batchCount, batchStride, bufferSizeInBytes));
+}
+
+void gtsv2StridedBatch_bufferSizeExt(cusparseHandle_t handle, int m, const double *dl, const double *d, const double *du, const double *x, int batchCount, int batchStride, size_t *bufferSizeInBytes)
+{
+  CHECK_CUDA_ERROR(cusparseDgtsv2StridedBatch_bufferSizeExt(handle, m, dl, d, du, x, batchCount, batchStride, bufferSizeInBytes));
+}
+
+template <typename T>
+void cufctSolver<T>::setTridSolverData(T *dl, T *d, T *du)
+{
+  if (dlPtr != nullptr || dPtr != nullptr || duPtr != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
+  size_t size{dims[0] * dims[1] * dims[2]};
+
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&dlPtr), size * sizeof(T)));
+  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(dlPtr), reinterpret_cast<void *>(dl), size * sizeof(T), cudaMemcpyHostToDevice));
+
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&dPtr), size * sizeof(T)));
+  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(dPtr), reinterpret_cast<void *>(d), size * sizeof(T), cudaMemcpyHostToDevice));
+
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&duPtr), size * sizeof(T)));
+  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(duPtr), reinterpret_cast<void *>(du), size * sizeof(T), cudaMemcpyHostToDevice));
+
+  size_t bufferSizeInBytes{0};
+  int    M{dims[0]}, N{dims[1]}, P{dims[2]};
+  gtsv2StridedBatch_bufferSizeExt(cusprHandle, P, dlPtr, dPtr, duPtr, realBuffer, M * N, P, &bufferSizeInBytes);
+  if (tridSolverBuffer != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void *>(&tridSolverBuffer), bufferSizeInBytes));
+}
+
+void gtsv2StridedBatch(cusparseHandle_t handle, int m, const float *dl, const float *d, const float *du, float *x, int batchCount, int batchStride, void *pBuffer)
+{
+  CHECK_CUDA_ERROR(cusparseSgtsv2StridedBatch(handle, m, dl, d, du, x, batchCount, batchStride, pBuffer));
+}
+
+void gtsv2StridedBatch(cusparseHandle_t handle, int m, const double *dl, const double *d, const double *du, double *x, int batchCount, int batchStride, void *pBuffer)
+{
+  CHECK_CUDA_ERROR(cusparseDgtsv2StridedBatch(handle, m, dl, d, du, x, batchCount, batchStride, pBuffer));
+}
+
+template <typename T>
+void cufctSolver<T>::precondSolver(T *rhs)
+{
+  if (dlPtr == nullptr || dPtr == nullptr || duPtr == nullptr || tridSolverBuffer == nullptr) {
+    std::cerr << "The internal data have not been initialized!\n";
+    std::cerr << "There will be nothing to do in this routine.\n";
+    return;
+  }
+
+  fctForward(rhs);
+
+  int M{dims[0]}, N{dims[1]}, P{dims[2]};
+  gtsv2StridedBatch(cusprHandle, P, dlPtr, dPtr, duPtr, rhs, M * N, P, tridSolverBuffer);
+
+  fctBackward(rhs);
+}
+
+template <typename T>
+void cuFreeMod(T *&ptr)
+{
+  if (ptr != nullptr) {
+    CHECK_CUDA_ERROR(cudaFree(ptr));
+    ptr = nullptr;
+  }
+}
+
 template <typename T>
 cufctSolver<T>::~cufctSolver()
 {
+  cuFreeMod(tridSolverBuffer);
+  cuFreeMod(duPtr);
+  cuFreeMod(dPtr);
+  cuFreeMod(dlPtr);
+
   CHECK_CUDA_ERROR(cufftDestroy(c2rPlan));
   CHECK_CUDA_ERROR(cufftDestroy(r2cPlan));
-  CHECK_CUDA_ERROR(cudaFree(compBuffer));
-  compBuffer = nullptr;
-  CHECK_CUDA_ERROR(cudaFree(realBuffer));
-  realBuffer = nullptr;
+
+  cuFreeMod(compBuffer);
+  cuFreeMod(realBuffer);
 }

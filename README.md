@@ -55,6 +55,8 @@ We need the following routines from cuFFT:
 - cufftExecR2C(), cufftExecD2Z(),
 - cufftExecC2R(), cufftExecZ2D(),
 - cufftDestroy().
+Be careful that cufftMakePlanMany() is different from fftw3's routine, that is,
+you should provide "iembed" and "oembed" (**not** the dimension "n"!) in the C2R and R2C transforms.
 
 ### FFTW and oneapi implementation
 Use the following commands to configure fftw:

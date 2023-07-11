@@ -139,8 +139,8 @@ void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat, const std::vector<int
     if (i_t == i && j_t == j) v_hat[row] = 1;
     else v_hat[row] = 0;
     v[row] = static_cast<T>(4) / static_cast<T>(M * N);
-    v[row] *= mathTraits<T>::mathCos(myPi * (static_cast<T>(i) + myHalf) * static_cast<T>(i_t) / static_cast<T>(M));
-    v[row] *= mathTraits<T>::mathCos(myPi * (static_cast<T>(j) + myHalf) * static_cast<T>(j_t) / static_cast<T>(N));
+    v[row] *= std::cos(myPi * (static_cast<T>(i) + myHalf) * static_cast<T>(i_t) / static_cast<T>(M));
+    v[row] *= std::cos(myPi * (static_cast<T>(j) + myHalf) * static_cast<T>(j_t) / static_cast<T>(N));
   }
 }
 
@@ -156,8 +156,8 @@ void getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du
   for (int matIdx{0}; matIdx < M * N; ++matIdx) {
     i = matIdx / N;
     j = matIdx % N;
-    T temp_i{2 * (1 - mathTraits<T>::mathCos(static_cast<T>(i) / static_cast<T>(M) * myPi))};
-    T temp_j{2 * (1 - mathTraits<T>::mathCos(static_cast<T>(j) / static_cast<T>(N) * myPi))};
+    T temp_i{2 * (1 - std::cos(i / static_cast<T>(M) * myPi))};
+    T temp_j{2 * (1 - std::cos(j / static_cast<T>(N) * myPi))};
     dl[matIdx * P] = 0;
     d[matIdx * P]  = k_x_ref * temp_i + k_y_ref * temp_j + k_z_ref + 2 * k_in_ref;
     du[matIdx * P] = -k_z_ref;

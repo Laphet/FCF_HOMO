@@ -55,8 +55,17 @@ struct mklTraits<float> {
     cblas_scopy(n, x, 1, r, 1);
     cblas_saxpy(n, -1.0f, y, 1, r, 1);
   }
-  static float      mklNorm(const MKL_INT n, const float *r) { return sqrtf(cblas_sdot(n, r, 1, r, 1)); }
-  static lapack_int mklTridMatFact(lapack_int n, float *d, float *e) { return LAPACKE_spttrf(n, d, e); }
+  static float mklNorm(const MKL_INT n, const float *r) { return sqrtf(cblas_sdot(n, r, 1, r, 1)); }
+  static void  mklTridMatFact(lapack_int n, float *d, float *e)
+  {
+    lapack_int info{LAPACKE_spttrf(n, d, e)};
+    if (info != 0) std::cerr << "mkl ?pttrf fails, info=" << info << "!\n";
+  }
+  static void mklTridMatSolve(lapack_int n, const float *d, const float *e, float *b)
+  {
+    lapack_int info{LAPACKE_spttrs(LAPACK_ROW_MAJOR, n, 1, d, e, b, 1)};
+    if (info != 0) std::cerr << "mkl ?pttrs fails, info=" << info << "!\n";
+  }
 };
 
 template <>
@@ -66,10 +75,19 @@ struct mklTraits<double> {
   static void mklResi(const MKL_INT n, const double *x, const double *y, double *r)
   {
     cblas_dcopy(n, x, 1, r, 1);
-    cblas_daxpy(n, -1.0f, y, 1, r, 1);
+    cblas_daxpy(n, -1.0, y, 1, r, 1);
   }
-  static double     mklNorm(const MKL_INT n, const double *r) { return sqrt(cblas_ddot(n, r, 1, r, 1)); }
-  static lapack_int mklTridMatFact(lapack_int n, double *d, double *e) { return LAPACKE_dpttrf(n, d, e); }
+  static double mklNorm(const MKL_INT n, const double *r) { return sqrt(cblas_ddot(n, r, 1, r, 1)); }
+  static void   mklTridMatFact(lapack_int n, double *d, double *e)
+  {
+    lapack_int info{LAPACKE_dpttrf(n, d, e)};
+    if (info != 0) std::cerr << "mkl ?pttrf fails, info=" << info << "!\n";
+  }
+  static void mklTridMatSolve(lapack_int n, const double *d, const double *e, double *b)
+  {
+    lapack_int info{LAPACKE_dpttrs(LAPACK_ROW_MAJOR, n, 1, d, e, b, 1)};
+    if (info != 0) std::cerr << "mkl ?pttrs fails, info=" << info << "!\n";
+  }
 };
 
 template <typename T>
@@ -109,9 +127,9 @@ class fctSolver {
   fftwVec     resiBuffer;
   fftw_plan_T forwardPlan;  // in-place data manipulation.
   fftw_plan_T backwardPlan; // in-place data manipulation.
-  T          *dl_ptr;
-  T          *d_ptr;
-  T          *du_ptr;
+  T          *dlPtr;
+  T          *dPtr;
+  T          *duPtr;
 
 public:
   fctSolver(const int _M, const int _N, const int _P);
@@ -121,6 +139,8 @@ public:
   void fctBackward(fftwVec &v);
 
   void setTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du);
+
+  void precondSolver(fftwVec &rhs);
 
   ~fctSolver();
 };

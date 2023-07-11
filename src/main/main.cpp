@@ -7,7 +7,7 @@
 
 int main(int argc, char *argv[])
 {
-  using T = double;
+  using T = float;
   int                 M{7}, N{11}, P{5};
   int                 size{M * N * P};
   double              delta_p{1.0}, lenZ{1.0};

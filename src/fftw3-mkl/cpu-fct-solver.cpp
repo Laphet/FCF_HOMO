@@ -14,7 +14,7 @@ void fftwAllocator<T>::deallocate(T *p, std::size_t n) noexcept
 }
 
 template <typename T>
-fctSolver<T>::fctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, resiBuffer(_M * _N * _P), dl_ptr{nullptr}, d_ptr{nullptr}, du_ptr{nullptr}
+fctSolver<T>::fctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, resiBuffer(_M * _N * _P), dlPtr{nullptr}, dPtr{nullptr}, duPtr{nullptr}
 {
   const decltype(fftwTraits<T>::r2rKind) r2rKinds[4]{FFTW_REDFT10, FFTW_REDFT10, FFTW_REDFT01, FFTW_REDFT01};
   fftwTraits<T>::fftwInitThreads();
@@ -53,13 +53,28 @@ void fctSolver<T>::fctBackward(fftwVec &v)
 template <typename T>
 void fctSolver<T>::setTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du)
 {
-  if (dl_ptr == nullptr || d_ptr == nullptr || du_ptr == nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
-  dl_ptr = &dl[0];
-  d_ptr  = &d[0];
-  du_ptr = &du[0];
-  lapack_int info;
-  info = mklTraits<T>::mklTridMatFact(dims[0] * dims[1] * dims[2], d_ptr, du_ptr);
-  if (info != 0) std::cerr << "mkl fails, info=" << info << "!\n";
+  if (dlPtr != nullptr || dPtr != nullptr || duPtr != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
+  dlPtr = &dl[0];
+  dPtr  = &d[0];
+  duPtr = &du[0];
+
+  mklTraits<T>::mklTridMatFact(dims[0] * dims[1] * dims[2], dPtr, duPtr);
+}
+
+template <typename T>
+void fctSolver<T>::precondSolver(fftwVec &rhs)
+{
+  if (dlPtr == nullptr || dPtr == nullptr || duPtr == nullptr) {
+    std::cerr << "The internal data have not been initialized!\n";
+    std::cerr << "There will be nothing to do in this routine.\n";
+    return;
+  }
+
+  fctForward(rhs);
+
+  mklTraits<T>::mklTridMatSolve(dims[0] * dims[1] * dims[2], dPtr, duPtr, &rhs[0]);
+
+  fctBackward(rhs);
 }
 
 template <typename T>
@@ -68,9 +83,9 @@ fctSolver<T>::~fctSolver()
   fftwTraits<T>::fftwDestroyPlan(backwardPlan);
   fftwTraits<T>::fftwDestroyPlan(forwardPlan);
   fftwTraits<T>::fftwCleanupThreads();
-  dl_ptr = nullptr;
-  d_ptr  = nullptr;
-  du_ptr = nullptr;
+  dlPtr = nullptr;
+  dPtr  = nullptr;
+  duPtr = nullptr;
 }
 
 template class fctSolver<float>;

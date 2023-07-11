@@ -4,6 +4,7 @@
 #include <math.h>
 #include <cuComplex.h>
 #include <cufft.h>
+#include <cusparse.h>
 #include <iostream>
 #include <vector>
 #include <iomanip>
@@ -13,6 +14,7 @@
 #define CHECK_CUDA_ERROR(val) check((val), #val, __FILE__, __LINE__)
 void check(cudaError_t status, char const *const func, char const *const file, int const line);
 void check(cufftResult status, char const *const func, char const *const file, int const line);
+void check(cusparseStatus_t status, char const *const func, char const *const file, int const line);
 
 #define CHECK_LAST_CUDA_ERROR() checkLast(__FILE__, __LINE__)
 void checkLast(char const *const file, int const line);
@@ -39,11 +41,16 @@ struct cuTraits<double> {
 template <typename T>
 class cufctSolver {
   using cuCompType = decltype(cuTraits<T>::compVar);
-  int         dims[3];
-  T          *realBuffer;
-  cuCompType *compBuffer;
-  cufftHandle r2cPlan;
-  cufftHandle c2rPlan;
+  int              dims[3];
+  T               *realBuffer;
+  cuCompType      *compBuffer;
+  cufftHandle      r2cPlan;
+  cufftHandle      c2rPlan;
+  cusparseHandle_t cusprHandle;
+  T               *dlPtr;
+  T               *dPtr;
+  T               *duPtr;
+  void            *tridSolverBuffer;
   // cufftHandle c2cPlan;
 
 public:
@@ -52,6 +59,10 @@ public:
   void fctForward(T *v);
 
   void fctBackward(T *v);
+
+  void setTridSolverData(T *dl, T *d, T *du);
+
+  void precondSolver(T *rhs);
 
   ~cufctSolver();
 };

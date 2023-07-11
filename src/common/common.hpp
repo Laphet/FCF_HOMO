@@ -5,19 +5,6 @@
 #include <vector>
 #include <cmath>
 
-template <typename T>
-struct mathTraits;
-
-template <>
-struct mathTraits<float> {
-  static float mathCos(float x) { return cosf(x); }
-};
-
-template <>
-struct mathTraits<double> {
-  static double mathCos(double x) { return cos(x); }
-};
-
 constexpr int STENCIL_WIDTH = 7;
 
 int getIdxFrom3dIdx(const int i, const int j, const int k, const int N, const int P);
