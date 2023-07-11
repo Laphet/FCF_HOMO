@@ -46,7 +46,7 @@ void fctSolver<T>::fctBackward(fftwVec &v)
   T *v_ptr{&v[0]}, *resiBuffer_ptr{&resiBuffer[0]};
   if (v_ptr == resiBuffer_ptr && v.size() == resiBuffer.size()) fftwTraits<T>::fftwExec(backwardPlan);
   else fftwTraits<T>::fftwExecNewArray(backwardPlan, &v[0], &v[0]);
-  const T scalFactor{1 / static_cast<T>(dims[0] * dims[1])};
+  const T scalFactor{static_cast<T>(1) / (dims[0] * dims[1])};
   mklTraits<T>::mklScal(dims[0] * dims[1] * dims[2], scalFactor, &v[0]);
 }
 

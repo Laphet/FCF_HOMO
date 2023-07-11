@@ -33,7 +33,10 @@ def dct_forward(M, N, x):
     v[(M + 1) // 2 :, : (N + 1) // 2] = x_2d[(-1 - M % 2) :: -2, ::2]
     v[: (M + 1) // 2, (N + 1) // 2 :] = x_2d[::2, (-1 - N % 2) :: -2]
     v[(M + 1) // 2 :, (N + 1) // 2 :] = x_2d[(-1 - M % 2) :: -2, (-1 - N % 2) :: -2]
+    # print(v.reshape(-1))
     v_hat = np.fft.fft2(v)
+    # print(np.fft.rfft2(v).reshape((-1)))
+    # print(v_hat.reshape((-1)))
     x_2d_hat = np.copy(v_hat)
     for i_prime in range(M):
         i_theta = PI * i_prime / (2 * M)
@@ -56,18 +59,22 @@ def dct_forward(M, N, x):
 
 
 def dct_backward(M, N, x_hat):
+    print(x_hat)
     x_2d_hat = x_hat.reshape((M, N))
     v_hat = np.zeros((M, N), dtype=np.cdouble)
     v_hat[:, :] = x_2d_hat[:, :]
     v_hat[1:, 1:] -= x_2d_hat[-1:0:-1, -1:0:-1]
     v_hat[1:, :] -= 1.0j * x_2d_hat[-1:0:-1, :]
     v_hat[:, 1:] -= 1.0j * x_2d_hat[:, -1:0:-1]
+
     for i_prime in range(M):
         i_theta = PI * i_prime / (2 * M)
         for j_prime in range(N):
             j_theta = PI * j_prime / (2 * N)
             v_hat[i_prime, j_prime] *= np.exp(1.0j * (i_theta + j_theta))
+    print(v_hat.reshape((-1)))
     v = np.fft.ifft2(v_hat)
+    print(v.reshape((-1)))
     v = np.real(v)
     x_2d = np.zeros((M, N))
     x_2d[::2, ::2] = v[: (M + 1) // 2, : (N + 1) // 2]
@@ -75,12 +82,14 @@ def dct_backward(M, N, x_hat):
     x_2d[1::2, ::2] = v[-1 : (M + 1) // 2 - 1 : -1, : (N + 1) // 2]
     x_2d[1::2, 1::2] = v[-1 : (M + 1) // 2 - 1 : -1, -1 : (N + 1) // 2 - 1 : -1]
     x = x_2d.reshape((-1))
+    print(x)
     return x
 
 
-M, N = 7, 5
+np.set_printoptions(precision=3)
+M, N = 3, 4
 mat, mat_inv = get_dct_mats(M, N)
-diag = np.ones((M, N))
+diag = np.zeros((M, N))
 diag[0, :] *= 0.5
 diag[:, 0] *= 0.5
 diag_mat = np.diag(diag.reshape((-1)))
@@ -89,7 +98,16 @@ iden_mat = np.eye(M * N)
 print(np.linalg.norm(mat @ mat_inv - iden_mat))
 print(np.linalg.norm(4.0 / (M * N) * mat.T @ diag_mat @ mat - iden_mat))
 
-x = np.random.rand(M * N)
+x = np.zeros((M, N))
+i_t, j_t = 1, 2
+for i in range(M):
+    for j in range(N):
+        x[i, j] = 4.0 / (M * N)
+        x[i, j] *= np.cos(np.pi * (i + 0.5) * i_t / M)
+        x[i, j] *= np.cos(np.pi * (j + 0.5) * j_t / N)
+x = x.reshape((-1))
+print(x)
+# x = np.random.rand(M * N)
 x_hat = dct_forward(M, N, x)
 print(np.linalg.norm(mat @ x - x_hat))
 x_ = dct_backward(M, N, x_hat)
