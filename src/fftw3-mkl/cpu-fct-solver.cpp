@@ -35,7 +35,7 @@ bool operator!=(const fftwAllocator<T> &, const fftwAllocator<U> &)
 /* Create a fftw allocator (end). */
 
 template <typename T>
-fctSolver<T>::fctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, resiBuffer(_M * _N * _P), dlPtr{nullptr}, dPtr{nullptr}, duPtr{nullptr}, useTridSolverParallelLoop{true}
+fctSolver<T>::fctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, resiBuffer(_M * _N * _P), dlPtr{nullptr}, dPtr{nullptr}, duPtr{nullptr}, useTridSolverParallelLoop{true}, csrMat{nullptr}
 {
   const decltype(fftwTraits<T>::r2rKind) r2rKinds[4]{FFTW_REDFT10, FFTW_REDFT10, FFTW_REDFT01, FFTW_REDFT01};
   fftwTraits<T>::fftwInitThreads();
@@ -45,11 +45,11 @@ fctSolver<T>::fctSolver(const int _M, const int _N, const int _P) : dims{_M, _N,
 }
 
 template <typename T>
-void fctSolver<T>::fctForward(fftwVec &v)
+void fctSolver<T>::fctForward(T *v)
 {
   // std::cout << "fftw3 uses " << fftw_planner_nthreads() << " threads.\n";
-  T *v_ptr{&v[0]}, *resiBuffer_ptr{&resiBuffer[0]};
-  if (v_ptr == resiBuffer_ptr && v.size() == resiBuffer.size()) {
+  T *resiBuffer_ptr{&resiBuffer[0]};
+  if (v == resiBuffer_ptr) {
     //   if (&v[0] == &rhsBuffer[0] && v.size() == rhsBuffer.size()) {
     std::cout << "Use fftwExec!\n";
     // It is wired that "if (&v[0] == &rhsBuffer[0])" enters this branch.
@@ -62,17 +62,17 @@ void fctSolver<T>::fctForward(fftwVec &v)
 }
 
 template <typename T>
-void fctSolver<T>::fctBackward(fftwVec &v)
+void fctSolver<T>::fctBackward(T *v)
 {
-  T *v_ptr{&v[0]}, *resiBuffer_ptr{&resiBuffer[0]};
-  if (v_ptr == resiBuffer_ptr && v.size() == resiBuffer.size()) fftwTraits<T>::fftwExec(backwardPlan);
+  T *resiBuffer_ptr{&resiBuffer[0]};
+  if (v == resiBuffer_ptr) fftwTraits<T>::fftwExec(backwardPlan);
   else fftwTraits<T>::fftwExecNewArray(backwardPlan, &v[0], &v[0]);
   const T scalFactor{static_cast<T>(1) / (dims[0] * dims[1])};
   mklTraits<T>::mklScal(dims[0] * dims[1] * dims[2], scalFactor, &v[0]);
 }
 
 template <typename T>
-void fctSolver<T>::setTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, bool _parallelFor)
+void fctSolver<T>::setTridSolverData(T *dl, T *d, T *du, bool _parallelFor)
 {
   if (dlPtr != nullptr || dPtr != nullptr || duPtr != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
   dlPtr = &dl[0];
@@ -89,7 +89,7 @@ void fctSolver<T>::setTridSolverData(std::vector<T> &dl, std::vector<T> &d, std:
 }
 
 template <typename T>
-void fctSolver<T>::precondSolver(fftwVec &rhs)
+void fctSolver<T>::precondSolver(T *rhs)
 {
   if (dlPtr == nullptr || dPtr == nullptr || duPtr == nullptr) {
     std::cerr << "The internal data have not been initialized!\n";
@@ -110,8 +110,51 @@ void fctSolver<T>::precondSolver(fftwVec &rhs)
 }
 
 template <typename T>
+void fctSolver<T>::setSprMatData(MKL_INT *csrRowOffsets, MKL_INT *csrColInd, T *csrValues)
+{
+  if (csrMat != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
+
+  MKL_INT size = dims[0] * dims[1] * dims[2];
+  mklTraits<T>::mklCreateSprMat(&csrMat, size, size, &csrRowOffsets[0], &csrRowOffsets[1], &csrColInd[0], &csrValues[0]);
+  // matrix_descr    descr{SPARSE_MATRIX_TYPE_SYMMETRIC, SPARSE_FILL_MODE_UPPER, SPARSE_DIAG_NON_UNIT};
+  sparse_status_t info{mkl_sparse_set_mv_hint(csrMat, SPARSE_OPERATION_NON_TRANSPOSE, DESCR, EXPECTED_CALLS)};
+  if (info != SPARSE_STATUS_SUCCESS) std::cerr << "mkl_sparse_set_mv_hint fails, info=" << info << "!\n";
+  // info = mkl_sparse_set_dotmv_hint(csrMat, SPARSE_OPERATION_NON_TRANSPOSE, DESCR, EXPECTED_CALLS);
+  // if (info != SPARSE_STATUS_SUCCESS) std::cerr << "mkl_sparse_set_dotmv_hint fails, info=" << info << "!\n";
+  info = mkl_sparse_optimize(csrMat);
+  if (info != SPARSE_STATUS_SUCCESS) std::cerr << "mkl_sparse_optimize fails, info=" << info << "!\n";
+}
+
+template <typename T>
+void fctSolver<T>::solve(T *u, T *rhs, int maxIter, T *rtol, T *atol)
+{
+  if (dlPtr == nullptr || dPtr == nullptr || duPtr == nullptr || csrMat == nullptr) {
+    std::cerr << "The internal data have not been initialized!\n";
+    std::cerr << "There will be nothing to do in this routine.\n";
+    return;
+  }
+
+  int size{dims[0] * dims[1] * dims[2]};
+  /* Use the zero vector as the initial guess. */
+  /* rhs <- rhs - A*u */
+  T myMinusOne{static_cast<T>(-1.0)}, myOne{static_cast<T>(1.0)};
+  mklTraits<T>::mklSprMatMulVec(myMinusOne, csrMat, u, myOne, rhs);
+  /* resi <= rhs, resi <- inv(M)*resi */
+  mklTraits<T>::mklCopy(size, &rhs[0], &resiBuffer[0]);
+  precondSolver(&resiBuffer[0]);
+  /* p <= resi */
+  std::vector<T> p(size);
+  mklTraits<T>::mklCopy(size, &resiBuffer[0], &p[0]);
+  for (int itrIdx{0}; itrIdx < maxIter; ++itrIdx) { }
+}
+
+template <typename T>
 fctSolver<T>::~fctSolver()
 {
+  if (csrMat != nullptr) {
+    mkl_sparse_destroy(csrMat);
+    csrMat = nullptr;
+  }
   duPtr = nullptr;
   dPtr  = nullptr;
   dlPtr = nullptr;

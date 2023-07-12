@@ -84,6 +84,13 @@ Then solve the system by
 - LAPACKE_<s,d>pttrs(),
 and the RHS vector will be overwritten.
 
+Now the old sparse MV routines are deprecated, we should use new functions:
+- mkl_sparse_<s,d>_create_csr();
+- mkl_sparse_set_mv_hint();
+- mkl_sparse_optimize();
+- mkl_sparse_<s,d>_mv();
+
+
 
 ### Set up development environment
 - Install oneapi in the home directory, and use oneapi.config to (only) enable compilers (icx, icpx).

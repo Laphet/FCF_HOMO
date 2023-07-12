@@ -39,7 +39,7 @@ int oldMain(int argc, char *argv[])
   std::vector<double> kappa(size, 1.0);
   std::vector<T>      csrValues(size * STENCIL_WIDTH, {static_cast<T>(0)}), rhs(size, {static_cast<T>(0)});
 
-  getCsrMatData<T>(csrRowOffsets, csrColInd, csrValues, dims, kappa, kappa, kappa);
+  getSprMatData<T>(csrRowOffsets, csrColInd, csrValues, dims, kappa, kappa, kappa);
   getStdRhsVec<T>(rhs, dims, kappa, delta_p);
   getHomoCoeffZ<T>(homoCoeffZ, rhs, dims, kappa, delta_p, lenZ);
 
@@ -50,7 +50,7 @@ int oldMain(int argc, char *argv[])
   fftwVec v_fftw(size);
   mklTraits<T>::mklCopy(size, &v[0], &v_fftw[0]);
   fctSolver<T> cpuSolver(M, N, P);
-  cpuSolver.fctForward(v_fftw);
+  cpuSolver.fctForward(&v_fftw[0]);
 
   T             *v_d{nullptr}; // A vector in the device.
   std::vector<T> w_h(size);    // Save the result of the cuda function.
@@ -73,7 +73,7 @@ int oldMain(int argc, char *argv[])
   err = mklTraits<T>::mklNorm(size, &r[0]);
   std::cout << "cuda Error=" << err << '\n';
 
-  cpuSolver.fctBackward(v_fftw);
+  cpuSolver.fctBackward(&v_fftw[0]);
 
   cudaSolver.fctBackward(v_d);
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(&w_h[0]), reinterpret_cast<void *>(v_d), sizeof(T) * M * N * P, cudaMemcpyDeviceToHost));
@@ -135,11 +135,11 @@ int main(int argc, char *argv[])
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(&u_h[0]), reinterpret_cast<void *>(rhs_d), size * sizeof(T), cudaMemcpyDeviceToHost));
 
   fctSolver<T> cpuSolver(M, N, P);
-  cpuSolver.setTridSolverData(dl, d, du);
+  cpuSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
   using fftwVec = std::vector<T, fftwAllocator<T>>;
   fftwVec rhs_fftw(size);
   mklTraits<T>::mklCopy(size, &rhs[0], &rhs_fftw[0]);
-  cpuSolver.precondSolver(rhs_fftw);
+  cpuSolver.precondSolver(&rhs_fftw[0]);
 
   std::vector<T> r(size);
   T              err{static_cast<T>(0)};

@@ -9,6 +9,8 @@
 #include <iostream>
 
 // constexpr int DIM{3};
+const int          EXPECTED_CALLS{1024};
+const matrix_descr DESCR{SPARSE_MATRIX_TYPE_SYMMETRIC, SPARSE_FILL_MODE_UPPER, SPARSE_DIAG_NON_UNIT};
 
 template <typename T>
 struct fftwTraits;
@@ -66,6 +68,16 @@ struct mklTraits<float> {
     lapack_int info{LAPACKE_spttrs(LAPACK_ROW_MAJOR, n, 1, d, e, b, 1)};
     if (info != 0) std::cerr << "mkl ?pttrs fails, info=" << info << "!\n";
   }
+  static void mklCreateSprMat(sparse_matrix_t *A, const MKL_INT rows, const MKL_INT cols, MKL_INT *rows_start, MKL_INT *rows_end, MKL_INT *col_indx, float *values)
+  {
+    sparse_status_t info{mkl_sparse_s_create_csr(A, SPARSE_INDEX_BASE_ZERO, rows, cols, rows_start, rows_end, col_indx, values)};
+    if (info != SPARSE_STATUS_SUCCESS) std::cerr << "mkl mkl_sparse_?_create_csr fails, info=" << info << "!\n";
+  }
+  static void mklSprMatMulVec(const float alpha, const sparse_matrix_t A, const float *x, const float beta, float *y)
+  {
+    sparse_status_t info{mkl_sparse_s_mv(SPARSE_OPERATION_NON_TRANSPOSE, alpha, A, DESCR, x, beta, y)};
+    if (info != SPARSE_STATUS_SUCCESS) std::cerr << "mkl mmkl_sparse_?_mv fails, info=" << info << "!\n";
+  }
 };
 
 template <>
@@ -87,6 +99,16 @@ struct mklTraits<double> {
   {
     lapack_int info{LAPACKE_dpttrs(LAPACK_ROW_MAJOR, n, 1, d, e, b, 1)};
     if (info != 0) std::cerr << "mkl ?pttrs fails, info=" << info << "!\n";
+  }
+  static void mklCreateSprMat(sparse_matrix_t *A, const MKL_INT rows, const MKL_INT cols, MKL_INT *rows_start, MKL_INT *rows_end, MKL_INT *col_indx, double *values)
+  {
+    sparse_status_t info{mkl_sparse_d_create_csr(A, SPARSE_INDEX_BASE_ZERO, rows, cols, rows_start, rows_end, col_indx, values)};
+    if (info != SPARSE_STATUS_SUCCESS) std::cerr << "mkl mkl_sparse_?_create_csr fails, info=" << info << "!\n";
+  }
+  static void mklSprMatMulVec(const double alpha, const sparse_matrix_t A, const double *x, const double beta, double *y)
+  {
+    sparse_status_t info{mkl_sparse_d_mv(SPARSE_OPERATION_NON_TRANSPOSE, alpha, A, DESCR, x, beta, y)};
+    if (info != SPARSE_STATUS_SUCCESS) std::cerr << "mkl mmkl_sparse_?_mv fails, info=" << info << "!\n";
   }
 };
 
@@ -116,25 +138,31 @@ template <typename T>
 class fctSolver {
   using fftw_plan_T = decltype(fftwTraits<T>::planType);
   using fftwVec     = std::vector<T, fftwAllocator<T>>;
-  int         dims[3];
-  fftwVec     resiBuffer;
-  fftw_plan_T forwardPlan;  // in-place data manipulation.
-  fftw_plan_T backwardPlan; // in-place data manipulation.
-  T          *dlPtr;        // Use the data in the wider scope, and also modify it.
-  T          *dPtr;
-  T          *duPtr;
-  bool        useTridSolverParallelLoop;
+  int             dims[3];
+  fftwVec         resiBuffer;
+  fftw_plan_T     forwardPlan;  // in-place data manipulation.
+  fftw_plan_T     backwardPlan; // in-place data manipulation.
+  T              *dlPtr;        // Use the data in the wider scope, and also modify it.
+  T              *dPtr;
+  T              *duPtr;
+  bool            useTridSolverParallelLoop;
+  sparse_matrix_t csrMat;
 
 public:
   fctSolver(const int _M, const int _N, const int _P);
 
-  void fctForward(fftwVec &v);
+  void fctForward(T *v);
 
-  void fctBackward(fftwVec &v);
+  void fctBackward(T *v);
 
-  void setTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, bool _parallelFor = true);
+  void precondSolver(T *rhs);
+  /* rhs should be a pointer from a fftw vector. */
 
-  void precondSolver(fftwVec &rhs);
+  void setSprMatData(MKL_INT *csrRowOffsets, MKL_INT *csrColInd, T *csrValues);
+
+  void setTridSolverData(T *dl, T *d, T *du, bool _parallelFor = true);
+
+  void solve(T *u, T *rhs, int maxIter = 1024, T *rtol = 1.0e-5, T *atol = 1.0e-8);
 
   ~fctSolver();
 };

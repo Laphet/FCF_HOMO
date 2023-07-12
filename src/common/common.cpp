@@ -13,7 +13,7 @@ void get3dIdxFromIdx(int &i, int &j, int &k, const int idx, const int N, const i
 }
 
 template <typename T>
-void getCsrMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z)
+void getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int size{M * N * P}, row{0};
@@ -196,9 +196,9 @@ void setTestPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const std::vec
   }
 }
 
-template void getCsrMatData<float>(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<float> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
+template void getSprMatData<float>(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<float> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
 
-template void getCsrMatData<double>(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<double> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
+template void getSprMatData<double>(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<double> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
 
 template void getStdRhsVec<float>(std::vector<float> &rhs, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p);
 

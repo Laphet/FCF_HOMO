@@ -526,6 +526,7 @@ cufctSolver<T>::~cufctSolver()
   cuFreeMod(duPtr);
   cuFreeMod(dPtr);
   cuFreeMod(dlPtr);
+  CHECK_CUDA_ERROR(cusparseDestroy(cusprHandle));
 
   CHECK_CUDA_ERROR(cufftDestroy(c2rPlan));
   CHECK_CUDA_ERROR(cufftDestroy(r2cPlan));
