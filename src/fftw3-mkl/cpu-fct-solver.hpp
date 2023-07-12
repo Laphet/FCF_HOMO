@@ -90,6 +90,7 @@ struct mklTraits<double> {
   }
 };
 
+/* Create a fftw allocator (begin). */
 template <typename T>
 struct fftwAllocator {
   typedef T value_type;
@@ -97,10 +98,7 @@ struct fftwAllocator {
   fftwAllocator() = default;
 
   template <class U>
-  constexpr fftwAllocator(const fftwAllocator<U> &) noexcept
-  {
-    ;
-  }
+  constexpr fftwAllocator(const fftwAllocator<U> &) noexcept;
 
   [[nodiscard]] T *allocate(std::size_t n);
 
@@ -108,16 +106,11 @@ struct fftwAllocator {
 };
 
 template <class T, class U>
-bool operator==(const fftwAllocator<T> &, const fftwAllocator<U> &)
-{
-  return true;
-}
+bool operator==(const fftwAllocator<T> &, const fftwAllocator<U> &);
 
 template <class T, class U>
-bool operator!=(const fftwAllocator<T> &, const fftwAllocator<U> &)
-{
-  return false;
-}
+bool operator!=(const fftwAllocator<T> &, const fftwAllocator<U> &);
+/* Create a fftw allocator (end). */
 
 template <typename T>
 class fctSolver {
@@ -127,9 +120,10 @@ class fctSolver {
   fftwVec     resiBuffer;
   fftw_plan_T forwardPlan;  // in-place data manipulation.
   fftw_plan_T backwardPlan; // in-place data manipulation.
-  T          *dlPtr;
+  T          *dlPtr;        // Use the data in the wider scope, and also modify it.
   T          *dPtr;
   T          *duPtr;
+  bool        useTridSolverParallelLoop;
 
 public:
   fctSolver(const int _M, const int _N, const int _P);
@@ -138,7 +132,7 @@ public:
 
   void fctBackward(fftwVec &v);
 
-  void setTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du);
+  void setTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, bool _parallelFor = true);
 
   void precondSolver(fftwVec &rhs);
 

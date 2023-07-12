@@ -148,27 +148,51 @@ template <typename T>
 void getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, const std::vector<int> &dims, const std::vector<T> &homoParas)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
-  int i{0}, j{0};
   T   myPi{static_cast<T>(M_PI)};
   T   k_x_ref{homoParas[0]}, k_y_ref{homoParas[1]}, k_z_ref{homoParas[2]};
   T   k_in_ref{homoParas[3]}, k_out_ref{homoParas[4]};
 #pragma omp parallel for
   for (int matIdx{0}; matIdx < M * N; ++matIdx) {
-    i = matIdx / N;
-    j = matIdx % N;
-    T temp_i{2 * (1 - std::cos(i / static_cast<T>(M) * myPi))};
-    T temp_j{2 * (1 - std::cos(j / static_cast<T>(N) * myPi))};
+    int i{matIdx / N}, j{matIdx % N};
+    T   temp_i{2 * (1 - std::cos(static_cast<T>(i) / M * myPi))};
+    T   temp_j{2 * (1 - std::cos(static_cast<T>(j) / N * myPi))};
     dl[matIdx * P] = 0;
-    d[matIdx * P]  = k_x_ref * temp_i + k_y_ref * temp_j + k_z_ref + 2 * k_in_ref;
+    d[matIdx * P]  = (k_x_ref * temp_i) + (k_y_ref * temp_j) + k_z_ref + 2 * k_in_ref;
     du[matIdx * P] = -k_z_ref;
     for (int k = 1; k < P - 1; ++k) {
       dl[matIdx * P + k] = -k_z_ref;
-      d[matIdx * P + k]  = k_x_ref * temp_i + k_y_ref * temp_j + 2 * k_z_ref;
+      d[matIdx * P + k]  = (k_x_ref * temp_i) + (k_y_ref * temp_j) + (2 * k_z_ref);
       du[matIdx * P + k] = -k_z_ref;
     }
     dl[(matIdx + 1) * P - 1] = -k_z_ref;
-    d[(matIdx + 1) * P - 1]  = k_x_ref * temp_i + k_y_ref * temp_j + k_z_ref + 2 * k_out_ref;
+    d[(matIdx + 1) * P - 1]  = (k_x_ref * temp_i) + (k_y_ref * temp_j) + k_z_ref + (2 * k_out_ref);
     du[(matIdx + 1) * P - 1] = 0;
+  }
+}
+
+template <typename T>
+void setTestPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const std::vector<int> &dims, const T k_x, const T k_y, const T k_z)
+{
+  int M{dims[0]}, N{dims[1]}, P{dims[2]};
+  T   h_x{static_cast<T>(1) / M}, h_y{static_cast<T>(1) / N}, h_z{static_cast<T>(1) / P};
+  T   myHalf{static_cast<T>(0.5)}, myPi{static_cast<T>(M_PI)};
+  for (int idx{0}; idx < M * N * P; ++idx) {
+    int i{0}, j{0}, k{0};
+    get3dIdxFromIdx(i, j, k, idx, N, P);
+    T x{(i + myHalf) * h_x}, y{(j + myHalf) * h_y}, z{(k + myHalf) * h_z};
+    /* This is the solution. */
+    u[idx]   = std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
+    rhs[idx] = k_x * myPi * myPi * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
+    rhs[idx] += k_y * myPi * myPi * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
+    rhs[idx] -= k_z * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
+    if (0 == k) {
+      z = static_cast<T>(0);
+      rhs[idx] += 2 * k_z / (h_z * h_z) * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
+    }
+    if (P - 1 == k) {
+      z = static_cast<T>(1);
+      rhs[idx] += 2 * k_z / (h_z * h_z) * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
+    }
   }
 }
 
@@ -191,3 +215,7 @@ template void setTestVecs<double>(std::vector<double> &v, std::vector<double> &v
 template void getTridSolverData<float>(std::vector<float> &dl, std::vector<float> &d, std::vector<float> &du, const std::vector<int> &dims, const std::vector<float> &homoParas);
 
 template void getTridSolverData<double>(std::vector<double> &dl, std::vector<double> &d, std::vector<double> &du, const std::vector<int> &dims, const std::vector<double> &homoParas);
+
+template void setTestPrecondSolver<float>(std::vector<float> &u, std::vector<float> &rhs, const std::vector<int> &dims, const float k_x, const float k_y, const float k_z);
+
+template void setTestPrecondSolver<double>(std::vector<double> &u, std::vector<double> &rhs, const std::vector<int> &dims, const double k_x, const double k_y, const double k_z);

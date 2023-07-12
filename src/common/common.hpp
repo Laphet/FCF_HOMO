@@ -25,3 +25,6 @@ void getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du
 
 template <typename T>
 void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat, const std::vector<int> &dims);
+
+template <typename T>
+void setTestPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const std::vector<int> &dims, const T k_x, const T k_y, const T k_z);

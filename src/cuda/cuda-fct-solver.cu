@@ -343,8 +343,8 @@ void viewCompVec(std::vector<decltype(cuTraits<T>::compVar)> &vec)
   for (int i{0}; i < vec.size(); ++i) {
     std::cout << '[' << i << "]=" << vec[i].x;
     if (vec[i].y >= 0) std::cout << '+';
-    std::cout << vec[i].y << "I\n"
-  };
+    std::cout << vec[i].y << "I\n";
+  }
   std::cout << '\n';
 }
 
@@ -465,7 +465,7 @@ template <typename T>
 void cufctSolver<T>::setTridSolverData(T *dl, T *d, T *du)
 {
   if (dlPtr != nullptr || dPtr != nullptr || duPtr != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
-  size_t size{dims[0] * dims[1] * dims[2]};
+  size_t size = dims[0] * dims[1] * dims[2];
 
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&dlPtr), size * sizeof(T)));
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(dlPtr), reinterpret_cast<void *>(dl), size * sizeof(T), cudaMemcpyHostToDevice));
@@ -480,7 +480,7 @@ void cufctSolver<T>::setTridSolverData(T *dl, T *d, T *du)
   int    M{dims[0]}, N{dims[1]}, P{dims[2]};
   gtsv2StridedBatch_bufferSizeExt(cusprHandle, P, dlPtr, dPtr, duPtr, realBuffer, M * N, P, &bufferSizeInBytes);
   if (tridSolverBuffer != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void *>(&tridSolverBuffer), bufferSizeInBytes));
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&tridSolverBuffer), bufferSizeInBytes));
 }
 
 void gtsv2StridedBatch(cusparseHandle_t handle, int m, const float *dl, const float *d, const float *du, float *x, int batchCount, int batchStride, void *pBuffer)
