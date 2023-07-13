@@ -12,19 +12,20 @@ int getIdxFrom3dIdx(const int i, const int j, const int k, const int N, const in
 void get3dIdxFromIdx(int &i, int &j, int &k, const int idx, const int N, const int P);
 
 template <typename T>
-void getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
+struct common {
+  int dims[3];
 
-template <typename T>
-void getStdRhsVec(std::vector<T> &rhs, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p);
+  common(int _M, int _N, int _P) : dims{_M, _N, _P} {};
 
-template <typename T>
-void getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p, const double lenZ);
+  void getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
 
-template <typename T>
-void getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, const std::vector<int> &dims, const std::vector<T> &homoParas);
+  void getStdRhsVec(std::vector<T> &rhs, const std::vector<double> &k_z, const double delta_p);
 
-template <typename T>
-void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat, const std::vector<int> &dims);
+  void getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<double> &k_z, const double delta_p, const double lenZ);
 
-template <typename T>
-void setTestPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const std::vector<int> &dims, const T k_x, const T k_y, const T k_z);
+  void getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, const std::vector<T> &homoParas);
+
+  void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat);
+
+  void setTestPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const T k_x, const T k_y, const T k_z);
+};

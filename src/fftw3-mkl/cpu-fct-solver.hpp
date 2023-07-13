@@ -5,7 +5,6 @@
 #include <omp.h>
 #include <vector>
 #include <cmath>
-#include <cstddef>
 #include <iostream>
 
 // constexpr int DIM{3};
@@ -52,11 +51,13 @@ template <>
 struct mklTraits<float> {
   static void mklScal(const MKL_INT n, const float a, float *x) { cblas_sscal(n, a, x, 1); }
   static void mklCopy(const MKL_INT n, const float *a, float *b) { cblas_scopy(n, a, 1, b, 1); }
+  static void mklAXPY(const MKL_INT n, const float a, const float *x, float *y) { cblas_saxpy(n, a, x, 1, y, 1); }
   static void mklResi(const MKL_INT n, const float *x, const float *y, float *r)
   {
     cblas_scopy(n, x, 1, r, 1);
     cblas_saxpy(n, -1.0f, y, 1, r, 1);
   }
+  static float mklDot(const MKL_INT n, const float *x, const float *y) { return cblas_sdot(n, x, 1, y, 1); }
   static float mklNorm(const MKL_INT n, const float *r) { return sqrtf(cblas_sdot(n, r, 1, r, 1)); }
   static void  mklTridMatFact(lapack_int n, float *d, float *e)
   {
@@ -84,11 +85,13 @@ template <>
 struct mklTraits<double> {
   static void mklScal(const MKL_INT n, const double a, double *x) { cblas_dscal(n, a, x, 1); }
   static void mklCopy(const MKL_INT n, const double *a, double *b) { cblas_dcopy(n, a, 1, b, 1); }
+  static void mklAXPY(const MKL_INT n, const double a, const double *x, double *y) { cblas_daxpy(n, a, x, 1, y, 1); }
   static void mklResi(const MKL_INT n, const double *x, const double *y, double *r)
   {
     cblas_dcopy(n, x, 1, r, 1);
     cblas_daxpy(n, -1.0, y, 1, r, 1);
   }
+  static double mklDot(const MKL_INT n, const double *x, const double *y) { return cblas_ddot(n, x, 1, y, 1); }
   static double mklNorm(const MKL_INT n, const double *r) { return sqrt(cblas_ddot(n, r, 1, r, 1)); }
   static void   mklTridMatFact(lapack_int n, double *d, double *e)
   {
@@ -155,14 +158,16 @@ public:
 
   void fctBackward(T *v);
 
+  void setTridSolverData(T *dl, T *d, T *du, bool _parallelFor = true);
+
   void precondSolver(T *rhs);
   /* rhs should be a pointer from a fftw vector. */
 
   void setSprMatData(MKL_INT *csrRowOffsets, MKL_INT *csrColInd, T *csrValues);
 
-  void setTridSolverData(T *dl, T *d, T *du, bool _parallelFor = true);
+  void solve(T *u, const T *b, int maxIter = 1024, T rtol = 1.0e-5, T atol = 1.0e-8);
 
-  void solve(T *u, T *rhs, int maxIter = 1024, T *rtol = 1.0e-5, T *atol = 1.0e-8);
+  void solveWithoutPrecond(T *u, const T *b, int maxIter = 1024, T rtol = 1.0e-5, T atol = 1.0e-8);
 
   ~fctSolver();
 };

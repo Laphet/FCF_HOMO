@@ -28,68 +28,68 @@ private:
   std::vector<std::string> tokens;
 };
 
-int oldMain(int argc, char *argv[])
-{
-  using T = float;
-  int                 M{7}, N{11}, P{5};
-  int                 size{M * N * P};
-  double              delta_p{1.0}, lenZ{1.0};
-  T                   homoCoeffZ{static_cast<T>(0)};
-  std::vector<int>    dims{M, N, P}, csrRowOffsets(size + 1, -1), csrColInd(size * STENCIL_WIDTH, -1);
-  std::vector<double> kappa(size, 1.0);
-  std::vector<T>      csrValues(size * STENCIL_WIDTH, {static_cast<T>(0)}), rhs(size, {static_cast<T>(0)});
+// int main(int argc, char *argv[])
+// {
+//   using T = float;
+//   int                 M{7}, N{11}, P{5};
+//   int                 size{M * N * P};
+//   double              delta_p{1.0}, lenZ{1.0};
+//   T                   homoCoeffZ{static_cast<T>(0)};
+//   std::vector<int>    dims{M, N, P}, csrRowOffsets(size + 1, -1), csrColInd(size * STENCIL_WIDTH, -1);
+//   std::vector<double> kappa(size, 1.0);
+//   std::vector<T>      csrValues(size * STENCIL_WIDTH, {static_cast<T>(0)}), rhs(size, {static_cast<T>(0)});
 
-  getSprMatData<T>(csrRowOffsets, csrColInd, csrValues, dims, kappa, kappa, kappa);
-  getStdRhsVec<T>(rhs, dims, kappa, delta_p);
-  getHomoCoeffZ<T>(homoCoeffZ, rhs, dims, kappa, delta_p, lenZ);
+//   getSprMatData<T>(csrRowOffsets, csrColInd, csrValues, dims, kappa, kappa, kappa);
+//   getStdRhsVec<T>(rhs, dims, kappa, delta_p);
+//   getHomoCoeffZ<T>(homoCoeffZ, rhs, dims, kappa, delta_p, lenZ);
 
-  std::vector<T> v(size), w(size);
-  setTestVecs<T>(v, w, dims);
+//   std::vector<T> v(size), w(size);
+//   setTestVecs<T>(v, w, dims);
 
-  using fftwVec = std::vector<T, fftwAllocator<T>>;
-  fftwVec v_fftw(size);
-  mklTraits<T>::mklCopy(size, &v[0], &v_fftw[0]);
-  fctSolver<T> cpuSolver(M, N, P);
-  cpuSolver.fctForward(&v_fftw[0]);
+//   using fftwVec = std::vector<T, fftwAllocator<T>>;
+//   fftwVec v_fftw(size);
+//   mklTraits<T>::mklCopy(size, &v[0], &v_fftw[0]);
+//   fctSolver<T> cpuSolver(M, N, P);
+//   cpuSolver.fctForward(&v_fftw[0]);
 
-  T             *v_d{nullptr}; // A vector in the device.
-  std::vector<T> w_h(size);    // Save the result of the cuda function.
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&v_d), sizeof(T) * M * N * P));
-  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(v_d), reinterpret_cast<void *>(&v[0]), sizeof(T) * M * N * P, cudaMemcpyHostToDevice));
+//   T             *v_d{nullptr}; // A vector in the device.
+//   std::vector<T> w_h(size);    // Save the result of the cuda function.
+//   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&v_d), sizeof(T) * M * N * P));
+//   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(v_d), reinterpret_cast<void *>(&v[0]), sizeof(T) * M * N * P, cudaMemcpyHostToDevice));
 
-  cufctSolver<T> cudaSolver(M, N, P);
-  cudaSolver.fctForward(v_d);
+//   cufctSolver<T> cudaSolver(M, N, P);
+//   cudaSolver.fctForward(v_d);
 
-  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(&w_h[0]), reinterpret_cast<void *>(v_d), sizeof(T) * M * N * P, cudaMemcpyDeviceToHost));
+//   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(&w_h[0]), reinterpret_cast<void *>(v_d), sizeof(T) * M * N * P, cudaMemcpyDeviceToHost));
 
-  std::vector<T> r(size);
-  T              err{static_cast<T>(0)};
+//   std::vector<T> r(size);
+//   T              err{static_cast<T>(0)};
 
-  mklTraits<T>::mklResi(size, &w[0], &v_fftw[0], &r[0]);
-  err = mklTraits<T>::mklNorm(size, &r[0]);
-  std::cout << "fftw Error=" << err << '\n';
+//   mklTraits<T>::mklResi(size, &w[0], &v_fftw[0], &r[0]);
+//   err = mklTraits<T>::mklNorm(size, &r[0]);
+//   std::cout << "fftw Error=" << err << '\n';
 
-  mklTraits<T>::mklResi(size, &w[0], &w_h[0], &r[0]);
-  err = mklTraits<T>::mklNorm(size, &r[0]);
-  std::cout << "cuda Error=" << err << '\n';
+//   mklTraits<T>::mklResi(size, &w[0], &w_h[0], &r[0]);
+//   err = mklTraits<T>::mklNorm(size, &r[0]);
+//   std::cout << "cuda Error=" << err << '\n';
 
-  cpuSolver.fctBackward(&v_fftw[0]);
+//   cpuSolver.fctBackward(&v_fftw[0]);
 
-  cudaSolver.fctBackward(v_d);
-  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(&w_h[0]), reinterpret_cast<void *>(v_d), sizeof(T) * M * N * P, cudaMemcpyDeviceToHost));
+//   cudaSolver.fctBackward(v_d);
+//   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(&w_h[0]), reinterpret_cast<void *>(v_d), sizeof(T) * M * N * P, cudaMemcpyDeviceToHost));
 
-  mklTraits<T>::mklResi(size, &v[0], &v_fftw[0], &r[0]);
-  err = mklTraits<T>::mklNorm(size, &r[0]);
-  std::cout << "fftw Error=" << err << '\n';
+//   mklTraits<T>::mklResi(size, &v[0], &v_fftw[0], &r[0]);
+//   err = mklTraits<T>::mklNorm(size, &r[0]);
+//   std::cout << "fftw Error=" << err << '\n';
 
-  mklTraits<T>::mklResi(size, &v[0], &w_h[0], &r[0]);
-  err = mklTraits<T>::mklNorm(size, &r[0]);
-  std::cout << "cuda Error=" << err << '\n';
+//   mklTraits<T>::mklResi(size, &v[0], &w_h[0], &r[0]);
+//   err = mklTraits<T>::mklNorm(size, &r[0]);
+//   std::cout << "cuda Error=" << err << '\n';
 
-  CHECK_CUDA_ERROR(cudaFree(v_d));
+//   CHECK_CUDA_ERROR(cudaFree(v_d));
 
-  return EXIT_SUCCESS;
-}
+//   return EXIT_SUCCESS;
+// }
 
 int main(int argc, char *argv[])
 {
@@ -109,12 +109,12 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  std::vector<int> dims{M, N, P};
   using T = double;
+  common<T>      cmmn(M, N, P);
   T              k_x{static_cast<T>(1)}, k_y{static_cast<T>(2)}, k_z{static_cast<T>(3)};
   int            size{M * N * P};
   std::vector<T> u(size), rhs(size);
-  setTestPrecondSolver<T>(u, rhs, dims, k_x, k_y, k_z);
+  cmmn.setTestPrecondSolver(u, rhs, k_x, k_y, k_z);
 
   std::vector<T> homoParas(5);
   homoParas[0] = k_x * M * M;
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
   homoParas[3] = k_z * P * P;
   homoParas[4] = k_z * P * P;
   std::vector<T> dl(size), d(size), du(size);
-  getTridSolverData<T>(dl, d, du, dims, homoParas);
+  cmmn.getTridSolverData(dl, d, du, homoParas);
 
   cufctSolver<T> cudaSolver(M, N, P);
   T             *rhs_d;

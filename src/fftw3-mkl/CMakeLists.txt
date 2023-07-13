@@ -20,3 +20,5 @@ target_link_libraries(cpu-fct-solver
   PUBLIC PkgConfig::MKL)
   # PUBLIC PkgConfig::TBB)
   # PUBLIC "${TBBROOT}/lib/intel64/gcc4.8/libtbb.so")
+target_compile_definitions(cpu-fct-solver
+  PRIVATE $<$<CONFIG:Debug>:DEBUG>)

@@ -126,7 +126,7 @@ void fctSolver<T>::setSprMatData(MKL_INT *csrRowOffsets, MKL_INT *csrColInd, T *
 }
 
 template <typename T>
-void fctSolver<T>::solve(T *u, T *rhs, int maxIter, T *rtol, T *atol)
+void fctSolver<T>::solve(T *u, const T *b, int maxIter, T rtol, T atol)
 {
   if (dlPtr == nullptr || dPtr == nullptr || duPtr == nullptr || csrMat == nullptr) {
     std::cerr << "The internal data have not been initialized!\n";
@@ -135,17 +135,134 @@ void fctSolver<T>::solve(T *u, T *rhs, int maxIter, T *rtol, T *atol)
   }
 
   int size{dims[0] * dims[1] * dims[2]};
-  /* Use the zero vector as the initial guess. */
-  /* rhs <- rhs - A*u */
-  T myMinusOne{static_cast<T>(-1.0)}, myOne{static_cast<T>(1.0)};
-  mklTraits<T>::mklSprMatMulVec(myMinusOne, csrMat, u, myOne, rhs);
-  /* resi <= rhs, resi <- inv(M)*resi */
-  mklTraits<T>::mklCopy(size, &rhs[0], &resiBuffer[0]);
+  T   myOne{static_cast<T>(1)}, myZero{static_cast<T>(0)};
+  /* r <= b, r <- r - A*u */
+  std::vector<T> r(size);
+  mklTraits<T>::mklCopy(size, &b[0], &r[0]);
+  mklTraits<T>::mklSprMatMulVec(-myOne, csrMat, &u[0], myOne, &r[0]);
+
+  /* resi <= r, resi <- inv(A)*resi */
+  mklTraits<T>::mklCopy(size, &r[0], &resiBuffer[0]);
   precondSolver(&resiBuffer[0]);
+
   /* p <= resi */
   std::vector<T> p(size);
   mklTraits<T>::mklCopy(size, &resiBuffer[0], &p[0]);
-  for (int itrIdx{0}; itrIdx < maxIter; ++itrIdx) { }
+
+  /* Some variables will be used in iterations. */
+  T              alpha{myZero};
+  T              bNorm{mklTraits<T>::mklNorm(size, &b[0])}, rNorm{myZero};
+  T              rDresi{mklTraits<T>::mklDot(size, &r[0], &resiBuffer[0])}, rDresiNew{myZero};
+  std::vector<T> aux(size);
+
+  for (int itrIdx{0}; itrIdx < maxIter; ++itrIdx) {
+    /* aux <- A*p + 0*aux, alpha <- rDresi / p (dot) aux */
+    mklTraits<T>::mklSprMatMulVec(myOne, csrMat, &p[0], myZero, &aux[0]);
+    alpha = rDresi / mklTraits<T>::mklDot(size, &p[0], &aux[0]);
+
+    /* u <- u + alpha*p */
+    mklTraits<T>::mklAXPY(size, alpha, &p[0], &u[0]);
+
+    /* r <- r - alpha*aux */
+    mklTraits<T>::mklAXPY(size, -alpha, &aux[0], &r[0]);
+
+    /* Check convergence reasons. */
+    rNorm = mklTraits<T>::mklNorm(size, &r[0]);
+    if (rNorm <= bNorm * rtol) {
+      std::printf("Reach rtol=%.6e, the solver exits with residual=%.6e and iterations=%d.\n", rtol, rNorm, itrIdx + 1);
+      break;
+    }
+    if (rNorm <= atol) {
+      std::printf("Reach atol=%.6e, the solver exits with residual=%.6e and iterations=%d.\n", atol, rNorm, itrIdx + 1);
+      break;
+    }
+    if (maxIter - 1 == itrIdx) {
+      std::printf("Reach maxIter=%d, the solver exits with residual=%.6e and iterations=%d.\n", maxIter, rNorm, itrIdx + 1);
+      break;
+    }
+#ifdef DEBUG
+    std::printf("itrIdx=%d,\tresidual=%.6e.\n", itrIdx, rNorm);
+#endif
+
+    /* resi <= r, resi <- inv(A)*resi */
+    mklTraits<T>::mklCopy(size, &r[0], &resiBuffer[0]);
+    precondSolver(&resiBuffer[0]);
+
+    /* rDresiNew <- r (dot) resi, beta <- rDresiNew / rDresi */
+    rDresiNew = mklTraits<T>::mklDot(size, &r[0], &resiBuffer[0]);
+
+    /* p <- beta*p, p <- resi + p */
+    mklTraits<T>::mklScal(size, rDresiNew / rDresi, &p[0]);
+    mklTraits<T>::mklAXPY(size, myOne, &resiBuffer[0], &p[0]);
+
+    /* rDresi <- rDresiNew */
+    rDresi = rDresiNew;
+  }
+}
+
+template <typename T>
+void fctSolver<T>::solveWithoutPrecond(T *u, const T *b, int maxIter, T rtol, T atol)
+{
+  if (csrMat == nullptr) {
+    std::cerr << "The internal data have not been initialized!\n";
+    std::cerr << "There will be nothing to do in this routine.\n";
+    return;
+  }
+
+  int size{dims[0] * dims[1] * dims[2]};
+  T   myOne{static_cast<T>(1)}, myZero{static_cast<T>(0)};
+  /* r <= b, r <- r - A*u */
+  std::vector<T> r(size);
+  mklTraits<T>::mklCopy(size, &b[0], &r[0]);
+  mklTraits<T>::mklSprMatMulVec(-myOne, csrMat, &u[0], myOne, &r[0]);
+
+  /* p <= r */
+  std::vector<T> p(size);
+  mklTraits<T>::mklCopy(size, &r[0], &p[0]);
+
+  T              alpha{myZero};
+  T              bNorm{mklTraits<T>::mklNorm(size, &b[0])}, rNorm{myZero};
+  T              rDr{mklTraits<T>::mklDot(size, &r[0], &r[0])}, rDrNew{myZero};
+  std::vector<T> aux(size);
+
+  for (int itrIdx{0}; itrIdx < maxIter; ++itrIdx) {
+    /* aux <- A*p - 0*aux, alpha <- rDr / p (dot) aux */
+    mklTraits<T>::mklSprMatMulVec(myOne, csrMat, &p[0], myZero, &aux[0]);
+    alpha = rDr / mklTraits<T>::mklDot(size, &p[0], &aux[0]);
+
+    /* u <- u + alpha*p */
+    mklTraits<T>::mklAXPY(size, alpha, &p[0], &u[0]);
+
+    /* r <- r - alpha*aux */
+    mklTraits<T>::mklAXPY(size, -alpha, &aux[0], &r[0]);
+
+    /* Check convergence reasons. */
+    /* rDrNew <- r (dot) r */
+    rDrNew = mklTraits<T>::mklDot(size, &r[0], &r[0]);
+    rNorm  = std::sqrt(rDrNew);
+    if (rNorm <= bNorm * rtol) {
+      std::printf("Reach rtol=%.6e, the solver exits with residual=%.6e and iterations=%d.\n", rtol, rNorm, itrIdx + 1);
+      break;
+    }
+    if (rNorm <= atol) {
+      std::printf("Reach atol=%.6e, the solver exits with residual=%.6e and iterations=%d.\n", atol, rNorm, itrIdx + 1);
+      break;
+    }
+    if (maxIter - 1 == itrIdx) {
+      std::printf("Reach maxIter=%d, the solver exits with residual=%.6e and iterations=%d.\n", maxIter, rNorm, itrIdx + 1);
+      break;
+    }
+#ifdef DEBUG
+    std::printf("itrIdx=%d,\tresidual=%.6e.\n", itrIdx, rNorm);
+#endif
+
+    /* p <- beta*p, p <- resi + p */
+    mklTraits<T>::mklScal(size, rDrNew / rDr, &p[0]);
+    mklTraits<T>::mklAXPY(size, myOne, &r[0], &p[0]);
+
+    /* rDresi <- rDresiNew */
+    rDr = rDrNew;
+  }
 }
 
 template <typename T>

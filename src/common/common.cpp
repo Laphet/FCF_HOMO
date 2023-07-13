@@ -13,7 +13,7 @@ void get3dIdxFromIdx(int &i, int &j, int &k, const int idx, const int N, const i
 }
 
 template <typename T>
-void getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z)
+void common<T>::getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int size{M * N * P}, row{0};
@@ -96,7 +96,7 @@ void getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd,
 }
 
 template <typename T>
-void getStdRhsVec(std::vector<T> &rhs, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p)
+void common<T>::getStdRhsVec(std::vector<T> &rhs, const std::vector<double> &k_z, const double delta_p)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   int size{M * N * P}, row{0};
@@ -111,7 +111,7 @@ void getStdRhsVec(std::vector<T> &rhs, const std::vector<int> &dims, const std::
 }
 
 template <typename T>
-void getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p, const double lenZ)
+void common<T>::getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<double> &k_z, const double delta_p, const double lenZ)
 {
   int    M{dims[0]}, N{dims[1]}, P{dims[2]}, i{0}, j{0}, row{0};
   double temp{0.0};
@@ -128,24 +128,7 @@ void getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<int
 }
 
 template <typename T>
-void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat, const std::vector<int> &dims)
-{
-  int M{dims[0]}, N{dims[1]}, P{dims[2]};
-  int size{M * N * P};
-  int i{0}, j{0}, k{0}, i_t{1}, j_t{2};
-  T   myPi{static_cast<T>(M_PI)}, myHalf{static_cast<T>(0.5)};
-  for (int row{0}; row < size; ++row) {
-    get3dIdxFromIdx(i, j, k, row, N, P);
-    if (i_t == i && j_t == j) v_hat[row] = 1;
-    else v_hat[row] = 0;
-    v[row] = static_cast<T>(4) / static_cast<T>(M * N);
-    v[row] *= std::cos(myPi * (static_cast<T>(i) + myHalf) * static_cast<T>(i_t) / static_cast<T>(M));
-    v[row] *= std::cos(myPi * (static_cast<T>(j) + myHalf) * static_cast<T>(j_t) / static_cast<T>(N));
-  }
-}
-
-template <typename T>
-void getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, const std::vector<int> &dims, const std::vector<T> &homoParas)
+void common<T>::getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, const std::vector<T> &homoParas)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   T   myPi{static_cast<T>(M_PI)};
@@ -171,7 +154,24 @@ void getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du
 }
 
 template <typename T>
-void setTestPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const std::vector<int> &dims, const T k_x, const T k_y, const T k_z)
+void common<T>::setTestVecs(std::vector<T> &v, std::vector<T> &v_hat)
+{
+  int M{dims[0]}, N{dims[1]}, P{dims[2]};
+  int size{M * N * P};
+  int i{0}, j{0}, k{0}, i_t{1}, j_t{2};
+  T   myPi{static_cast<T>(M_PI)}, myHalf{static_cast<T>(0.5)};
+  for (int row{0}; row < size; ++row) {
+    get3dIdxFromIdx(i, j, k, row, N, P);
+    if (i_t == i && j_t == j) v_hat[row] = 1;
+    else v_hat[row] = 0;
+    v[row] = static_cast<T>(4) / static_cast<T>(M * N);
+    v[row] *= std::cos(myPi * (static_cast<T>(i) + myHalf) * static_cast<T>(i_t) / static_cast<T>(M));
+    v[row] *= std::cos(myPi * (static_cast<T>(j) + myHalf) * static_cast<T>(j_t) / static_cast<T>(N));
+  }
+}
+
+template <typename T>
+void common<T>::setTestPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const T k_x, const T k_y, const T k_z)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   T   h_x{static_cast<T>(1) / M}, h_y{static_cast<T>(1) / N}, h_z{static_cast<T>(1) / P};
@@ -196,26 +196,6 @@ void setTestPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const std::vec
   }
 }
 
-template void getSprMatData<float>(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<float> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
+template struct common<float>;
 
-template void getSprMatData<double>(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<double> &csrValues, const std::vector<int> &dims, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
-
-template void getStdRhsVec<float>(std::vector<float> &rhs, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p);
-
-template void getStdRhsVec<double>(std::vector<double> &rhs, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p);
-
-template void getHomoCoeffZ<float>(float &homoCoeffZ, const std::vector<float> &p, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p, const double lenZ);
-
-template void getHomoCoeffZ<double>(double &homoCoeffZ, const std::vector<double> &p, const std::vector<int> &dims, const std::vector<double> &k_z, const double delta_p, const double lenZ);
-
-template void setTestVecs<float>(std::vector<float> &v, std::vector<float> &v_hat, const std::vector<int> &dims);
-
-template void setTestVecs<double>(std::vector<double> &v, std::vector<double> &v_hat, const std::vector<int> &dims);
-
-template void getTridSolverData<float>(std::vector<float> &dl, std::vector<float> &d, std::vector<float> &du, const std::vector<int> &dims, const std::vector<float> &homoParas);
-
-template void getTridSolverData<double>(std::vector<double> &dl, std::vector<double> &d, std::vector<double> &du, const std::vector<int> &dims, const std::vector<double> &homoParas);
-
-template void setTestPrecondSolver<float>(std::vector<float> &u, std::vector<float> &rhs, const std::vector<int> &dims, const float k_x, const float k_y, const float k_z);
-
-template void setTestPrecondSolver<double>(std::vector<double> &u, std::vector<double> &rhs, const std::vector<int> &dims, const double k_x, const double k_y, const double k_z);
+template struct common<double>;
