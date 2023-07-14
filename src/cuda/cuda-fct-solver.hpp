@@ -49,23 +49,28 @@ struct dnVec {
 };
 
 template <typename T>
+struct spMat {
+  cusparseSpMatDescr_t descr;
+  int                 *rowOffsetsPtr;
+  int                 *colIndPtr;
+  T                   *valuesPtr;
+};
+
+template <typename T>
 class cufctSolver {
   using cuCompType = decltype(cuTraits<T>::compVar);
-  int                  dims[3];
-  T                   *realBuffer;
-  cuCompType          *compBuffer;
-  cufftHandle          r2cPlan;
-  cufftHandle          c2rPlan;
-  cusparseHandle_t     sprHandle;
-  T                   *dlPtr;
-  T                   *dPtr;
-  T                   *duPtr;
-  void                *tridSolverBuffer;
-  int                 *csrRowOffsetsPtr;
-  int                 *csrColIndPtr;
-  T                   *csrValuesPtr;
-  cusparseSpMatDescr_t csrMat;
-  cublasHandle_t       blasHandle;
+  int              dims[3];
+  T               *realBuffer;
+  cuCompType      *compBuffer;
+  cufftHandle      r2cPlan;
+  cufftHandle      c2rPlan;
+  cusparseHandle_t sprHandle;
+  T               *dlPtr;
+  T               *dPtr;
+  T               *duPtr;
+  void            *tridSolverBuffer;
+  spMat<T>         csrMat;
+  cublasHandle_t   blasHandle;
 
 public:
   cufctSolver(const int _M, const int _N, const int _P);
