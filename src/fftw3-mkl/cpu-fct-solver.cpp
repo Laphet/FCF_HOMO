@@ -276,7 +276,9 @@ fctSolver<T>::~fctSolver()
   dPtr  = nullptr;
   dlPtr = nullptr;
   fftwTraits<T>::fftwDestroyPlan(backwardPlan);
+  backwardPlan = nullptr;
   fftwTraits<T>::fftwDestroyPlan(forwardPlan);
+  forwardPlan = nullptr;
   fftwTraits<T>::fftwCleanupThreads();
 }
 
