@@ -102,7 +102,7 @@ PPIndentWidth: -1
 ReferenceAlignment: Pointer
 ReflowComments: false
 ShortNamespaceLines: 0
-SortIncludes: Never
+# SortIncludes: Never
 SortUsingDeclarations: false
 SpaceAfterCStyleCast: false
 SpaceAfterLogicalNot: false

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <cuda_runtime.h>
-#include <math.h>
+#include <cmath>
 #include <cuComplex.h>
+#include <cublas_v2.h>
+#include <cuda_runtime.h>
 #include <cufft.h>
 #include <cusparse.h>
-#include <cublas_v2.h>
 #include <iostream>
 #include <vector>
-#include <iomanip>
+// #include <iomanip>
 
 // static constexpr int DIM{3};
 

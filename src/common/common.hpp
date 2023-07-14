@@ -1,9 +1,9 @@
 #pragma once
 
+#include <cmath>
 #include <cstring>
 #include <omp.h>
 #include <vector>
-#include <cmath>
 
 constexpr int STENCIL_WIDTH = 7;
 

@@ -1,11 +1,11 @@
 #pragma once
 
+#include <cmath>
 #include <fftw3.h>
+#include <iostream>
 #include <mkl.h>
 #include <omp.h>
 #include <vector>
-#include <cmath>
-#include <iostream>
 
 // constexpr int DIM{3};
 const int          EXPECTED_CALLS{1024};
@@ -160,8 +160,7 @@ public:
 
   void setTridSolverData(T *dl, T *d, T *du, bool _parallelFor = true);
 
-  void precondSolver(T *rhs);
-  /* rhs should be a pointer from a fftw vector. */
+  void precondSolver(T *rhs); // rhs should be a pointer from a fftw vector.
 
   void setSprMatData(MKL_INT *csrRowOffsets, MKL_INT *csrColInd, T *csrValues);
 

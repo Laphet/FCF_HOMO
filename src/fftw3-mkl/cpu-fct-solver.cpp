@@ -50,7 +50,6 @@ void fctSolver<T>::fctForward(T *v)
   // std::cout << "fftw3 uses " << fftw_planner_nthreads() << " threads.\n";
   T *resiBuffer_ptr{&resiBuffer[0]};
   if (v == resiBuffer_ptr) {
-    //   if (&v[0] == &rhsBuffer[0] && v.size() == rhsBuffer.size()) {
     std::cout << "Use fftwExec!\n";
     // It is wired that "if (&v[0] == &rhsBuffer[0])" enters this branch.
     fftwTraits<T>::fftwExec(forwardPlan);
@@ -116,11 +115,9 @@ void fctSolver<T>::setSprMatData(MKL_INT *csrRowOffsets, MKL_INT *csrColInd, T *
 
   MKL_INT size = dims[0] * dims[1] * dims[2];
   mklTraits<T>::mklCreateSprMat(&csrMat, size, size, &csrRowOffsets[0], &csrRowOffsets[1], &csrColInd[0], &csrValues[0]);
-  // matrix_descr    descr{SPARSE_MATRIX_TYPE_SYMMETRIC, SPARSE_FILL_MODE_UPPER, SPARSE_DIAG_NON_UNIT};
   sparse_status_t info{mkl_sparse_set_mv_hint(csrMat, SPARSE_OPERATION_NON_TRANSPOSE, DESCR, EXPECTED_CALLS)};
   if (info != SPARSE_STATUS_SUCCESS) std::cerr << "mkl_sparse_set_mv_hint fails, info=" << info << "!\n";
-  // info = mkl_sparse_set_dotmv_hint(csrMat, SPARSE_OPERATION_NON_TRANSPOSE, DESCR, EXPECTED_CALLS);
-  // if (info != SPARSE_STATUS_SUCCESS) std::cerr << "mkl_sparse_set_dotmv_hint fails, info=" << info << "!\n";
+
   info = mkl_sparse_optimize(csrMat);
   if (info != SPARSE_STATUS_SUCCESS) std::cerr << "mkl_sparse_optimize fails, info=" << info << "!\n";
 }

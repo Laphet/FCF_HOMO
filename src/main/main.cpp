@@ -1,10 +1,10 @@
 #include "common.hpp"
-#include "cuda-fct-solver.hpp"
 #include "cpu-fct-solver.hpp"
+#include "cuda-fct-solver.hpp"
 // #include <thrust/host_vector.h>
 // #include <thrust/device_vector.h>
-#include <iostream>
 #include <algorithm>
+#include <iostream>
 
 class InputParser {
 public:

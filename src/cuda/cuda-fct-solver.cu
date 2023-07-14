@@ -116,7 +116,6 @@ __global__ void fctPre(T *out, const T *in, const int M, const int N, const int 
   __syncthreads();
 
   if (glbThreadIdx < M * N * Pmod) {
-    // get3dIdxFromThreadIdx(i, j, k, glbThreadIdx, N, P, Pmod);
     int idx_tar{getIdxFrom3dIdx_d(i, j, k, N, P)};
     out[idx_tar] = in_buffer[threadIdx.x];
   }
@@ -176,7 +175,6 @@ __global__ void fctPost(T *out_hat, const decltype(cuTraits<T>::compVar) *in_hat
   __syncthreads();
 
   if (glbThreadIdx < M * N * Pmod) {
-    // get3dIdxFromThreadIdx(i_p, j_p, k, glbThreadIdx, N, P, Pmod);
     int       idx_tar{getIdxFrom3dIdx_d(i_p, j_p, k, N, P)};
     T         i_theta, j_theta, cuPi{static_cast<T>(M_PI)}, temp0, temp1;
     complex_T ninj_exp, nipj_exp, tempBuff0, tempBuff1;
@@ -312,15 +310,14 @@ cufctSolver<T>::cufctSolver(const int _M, const int _N, const int _P) :
 {
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&realBuffer), sizeof(T) * _M * _N * _P));
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&compBuffer), sizeof(cuCompType) * _M * (_N / 2 + 1) * _P));
-  // CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&compBuffer), sizeof(cuCompType) * _M * _N * _P));
-  /* Due to the C2R transformation, we could use less memory for complex vectors. */
+  /* Thanks to the C2R transformation, we could use less memory for complex vectors. */
   /* Works on the cufft context. */
   int dimsHalf[3]{_M, _N / 2 + 1, _P};
 
   CHECK_CUDA_ERROR(cufftCreate(&r2cPlan));
   CHECK_CUDA_ERROR(cufftPlanMany(&r2cPlan, 2, &dims[0], &dims[0], _P, 1, &dimsHalf[0], _P, 1, cuTraits<T>::r2cType, _P));
   /* It is strange that cufft does not explain why need dimsHalf here. */
-  /* There are some mismatch between fftw and cufft. */
+  /* There is some mismatch between fftw and cufft. */
   CHECK_CUDA_ERROR(cufftCreate(&c2rPlan));
   CHECK_CUDA_ERROR(cufftPlanMany(&c2rPlan, 2, &dims[0], &dimsHalf[0], _P, 1, &dims[0], _P, 1, cuTraits<T>::c2rType, _P));
   // CHECK_CUDA_ERROR(cufftCreate(&c2cPlan));
@@ -329,8 +326,6 @@ cufctSolver<T>::cufctSolver(const int _M, const int _N, const int _P) :
   /* Works on the cusparse cublas context. */
   CHECK_CUDA_ERROR(cusparseCreate(&sprHandle));
   CHECK_CUDA_ERROR(cublasCreate(&blasHandle));
-  // z.ptr = &realBuffer[0];
-  // CHECK_CUDA_ERROR(cusparseCreateDnVec(&z.descr, static_cast<int64_t>(_M * _N * _P), reinterpret_cast<void *>(z.ptr), cuTraits<T>::valueType));
 }
 
 cufftResult cufftReal2Comp(cufftHandle plan, float *idata, cuComplex *odata)
@@ -477,16 +472,16 @@ void gtsv2StridedBatch_bufferSizeExt(cusparseHandle_t handle, int m, const doubl
 template <typename T>
 void cufctSolver<T>::setTridSolverData(T *dl, T *d, T *du)
 {
-  if (dlPtr != nullptr || dPtr != nullptr || duPtr != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
   size_t size = dims[0] * dims[1] * dims[2];
 
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&dlPtr), size * sizeof(T)));
+  if (dlPtr != nullptr || dPtr != nullptr || duPtr != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
+
+  if (dlPtr == nullptr) CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&dlPtr), size * sizeof(T)));
+  if (dPtr == nullptr) CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&dPtr), size * sizeof(T)));
+  if (duPtr == nullptr) CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&duPtr), size * sizeof(T)));
+
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(dlPtr), reinterpret_cast<void *>(dl), size * sizeof(T), cudaMemcpyHostToDevice));
-
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&dPtr), size * sizeof(T)));
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(dPtr), reinterpret_cast<void *>(d), size * sizeof(T), cudaMemcpyHostToDevice));
-
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&duPtr), size * sizeof(T)));
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(duPtr), reinterpret_cast<void *>(du), size * sizeof(T), cudaMemcpyHostToDevice));
 
   size_t bufferSizeInBytes{0};
@@ -528,11 +523,12 @@ void cufctSolver<T>::setSprMatData(int *csrRowOffsets, int *csrColInd, T *csrVal
 {
   int size{dims[0] * dims[1] * dims[2]};
   int nnz{csrRowOffsets[size]};
-  if (csrRowOffsetsPtr == nullptr && csrColIndPtr == nullptr && csrValuesPtr == nullptr) {
-    CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&csrRowOffsetsPtr), (size + 1) * sizeof(int)));
-    CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&csrColIndPtr), nnz * sizeof(int)));
-    CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&csrValuesPtr), nnz * sizeof(T)));
-  } else std::cerr << "The internal data have been initialized, be careful!\n";
+
+  if (csrRowOffsetsPtr != nullptr || csrColIndPtr != nullptr || csrValuesPtr != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
+
+  if (csrRowOffsetsPtr == nullptr) CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&csrRowOffsetsPtr), (size + 1) * sizeof(int)));
+  if (csrColIndPtr == nullptr) CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&csrColIndPtr), nnz * sizeof(int)));
+  if (csrValuesPtr == nullptr) CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&csrValuesPtr), nnz * sizeof(T)));
 
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(csrRowOffsetsPtr), reinterpret_cast<void *>(csrRowOffsets), (size + 1) * sizeof(int), cudaMemcpyHostToDevice));
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(csrColIndPtr), reinterpret_cast<void *>(csrColInd), nnz * sizeof(int), cudaMemcpyHostToDevice));
