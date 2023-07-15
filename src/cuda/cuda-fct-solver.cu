@@ -631,7 +631,8 @@ void cufctSolver<T>::solve(T *u, const T *b, int maxIter, T rtol, T atol)
 
   /* Malloc aux */
   dnVec<T> aux{nullptr, nullptr};
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&aux.ptr), size * sizeof(T)));
+  //   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&aux.ptr), size * sizeof(T)));
+  aux.ptr = realBuffer;
   CHECK_CUDA_ERROR(cusparseCreateDnVec(&aux.descr, static_cast<int64_t>(size), reinterpret_cast<void *>(aux.ptr), cuTraits<T>::valueType));
 
   T rDz, rDzNew, rNorm;
@@ -646,10 +647,10 @@ void cufctSolver<T>::solve(T *u, const T *b, int maxIter, T rtol, T atol)
     cublasDot(blasHandle, size, &p.ptr[0], &aux.ptr[0], &beta);
     alpha = rDz / beta;
 
-    /* u <- alpha p + u, r <- -alpha p + r */
+    /* u <- alpha p + u, r <- -alpha aux + r */
     cublasAXPY(blasHandle, size, &alpha, &p.ptr[0], &u_d.ptr[0]);
     alpha *= -1;
-    cublasAXPY(blasHandle, size, &alpha, &p.ptr[0], &r.ptr[0]);
+    cublasAXPY(blasHandle, size, &alpha, &aux.ptr[0], &r.ptr[0]);
 
     /* Check convergence reasons. */
     cublasNorm(blasHandle, size, &r.ptr[0], &rNorm);
@@ -691,7 +692,8 @@ void cufctSolver<T>::solve(T *u, const T *b, int maxIter, T rtol, T atol)
 
   /* Free all resources. */
   CHECK_CUDA_ERROR(cusparseDestroyDnVec(aux.descr));
-  cuFreeMod(aux.ptr);
+  // Use realBuffer instead.
+  //   cuFreeMod(aux.ptr);
 
   CHECK_CUDA_ERROR(cusparseDestroyDnVec(p.descr));
   cuFreeMod(p.ptr);
@@ -740,13 +742,15 @@ void cufctSolver<T>::solveWithoutPrecond(T *u, const T *b, int maxIter, T rtol, 
 
   /* Malloc p, p <= z */
   dnVec<T> p{nullptr, nullptr};
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&p.ptr), size * sizeof(T)));
+  //   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&p.ptr), size * sizeof(T)));
+  p.ptr = reinterpret_cast<T *>(compBuffer);
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(p.ptr), reinterpret_cast<void *>(&r.ptr[0]), size * sizeof(T), cudaMemcpyDeviceToDevice));
   CHECK_CUDA_ERROR(cusparseCreateDnVec(&p.descr, static_cast<int64_t>(size), reinterpret_cast<void *>(p.ptr), cuTraits<T>::valueType));
 
   /* Malloc aux */
   dnVec<T> aux{nullptr, nullptr};
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&aux.ptr), size * sizeof(T)));
+  //   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&aux.ptr), size * sizeof(T)));
+  aux.ptr = realBuffer;
   CHECK_CUDA_ERROR(cusparseCreateDnVec(&aux.descr, static_cast<int64_t>(size), reinterpret_cast<void *>(aux.ptr), cuTraits<T>::valueType));
 
   T rDr, rDrNew, rNorm;
@@ -762,13 +766,15 @@ void cufctSolver<T>::solveWithoutPrecond(T *u, const T *b, int maxIter, T rtol, 
     cublasDot(blasHandle, size, &p.ptr[0], &aux.ptr[0], &beta);
     alpha = rDr / beta;
 
-    /* u <- alpha p + u, r <- -alpha p + r */
+    /* u <- alpha p + u, r <- -alpha aux + r */
     cublasAXPY(blasHandle, size, &alpha, &p.ptr[0], &u_d.ptr[0]);
     alpha *= -1;
-    cublasAXPY(blasHandle, size, &alpha, &p.ptr[0], &r.ptr[0]);
+    cublasAXPY(blasHandle, size, &alpha, &aux.ptr[0], &r.ptr[0]);
 
     /* Check convergence reasons. */
-    rNorm = std::sqrt(rDr);
+    /* rDrNew <- r (dot) r */
+    cublasDot(blasHandle, size, &r.ptr[0], &r.ptr[0], &rDrNew);
+    rNorm = std::sqrt(rDrNew);
     if (rNorm <= bNorm * rtol) {
       std::printf("Reach rtol=%.6e, the solver exits with residual=%.6e and iterations=%d.\n", rtol, rNorm, itrIdx + 1);
       break;
@@ -785,8 +791,7 @@ void cufctSolver<T>::solveWithoutPrecond(T *u, const T *b, int maxIter, T rtol, 
     std::printf("itrIdx=%d,\tresidual=%.6e.\n", itrIdx, rNorm);
 #endif
 
-    /* rDrNew <- r (dot) r, beta <- rDrNew / rDr */
-    cublasDot(blasHandle, size, &r.ptr[0], &r.ptr[0], &rDrNew);
+    /* beta <- rDrNew / rDr */
     beta = rDrNew / rDr;
 
     /* p <- beta p, p <- r + p */
@@ -802,10 +807,12 @@ void cufctSolver<T>::solveWithoutPrecond(T *u, const T *b, int maxIter, T rtol, 
 
   /* Free all resources. */
   CHECK_CUDA_ERROR(cusparseDestroyDnVec(aux.descr));
-  cuFreeMod(aux.ptr);
+  // Use realBuffer instead.
+  //   cuFreeMod(aux.ptr);
 
   CHECK_CUDA_ERROR(cusparseDestroyDnVec(p.descr));
-  cuFreeMod(p.ptr);
+  // Use compBuffer instead.
+  //   cuFreeMod(p.ptr);
 
   cuFreeMod(bufferMV);
 
