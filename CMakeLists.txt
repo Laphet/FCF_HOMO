@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.20.5 FATAL_ERROR)
 project(fct-homo LANGUAGES CXX)
 set(CMAKE_BUILD_TYPE Debug)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -6,7 +6,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   # message(CMAKE_CXX_FLAGS_DEBUG="${CMAKE_CXX_FLAGS_DEBUG}")
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -36,6 +36,7 @@ if(USE_FFTW3_MKL)
   
   # message("$ENV{PKG_CONFIG_PATH}")
   # The import modules should be {NAME} which are taken from {NAME}.pc filenames.
+  
   pkg_check_modules(FFTW3_OMP REQUIRED IMPORTED_TARGET fftw3_omp)
   # message("${FFTW3_OMP_LIBRARIES}")
   # message("${FFTW3_OMP_LINK_LIBRARIES}")
@@ -63,6 +64,7 @@ if(USE_FFTW3_MKL)
   # message("${CMAKE_PREFIX_PATH}")
   # find_package(TBB 2021.9.0 CONFIG REQUIRED)
   # message("${TBB_IMPORTED_TARGETS}")
+  # find_package(IntelSYCL REQUIRED)
 
   add_subdirectory(src/fftw3-mkl)
 endif()

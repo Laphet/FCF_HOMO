@@ -177,6 +177,7 @@ void fctSolver<T>::solve(T *u, const T *b, int maxIter, T rtol, T atol)
       std::printf("Reach maxIter=%d, the solver exits with residual=%.6e and iterations=%d.\n", maxIter, rNorm, itrIdx + 1);
       break;
     }
+
 #ifdef DEBUG
     std::printf("itrIdx=%d,\tresidual=%.6e.\n", itrIdx, rNorm);
 #endif
@@ -195,6 +196,14 @@ void fctSolver<T>::solve(T *u, const T *b, int maxIter, T rtol, T atol)
     /* rDresi <- rDresiNew */
     rDresi = rDresiNew;
   }
+
+/* Check residual again, this is the true residual of the solution. */
+#ifdef DEBUG
+  mklTraits<T>::mklCopy(size, &b[0], &r[0]);
+  mklTraits<T>::mklSprMatMulVec(-myOne, csrMat, &u[0], myOne, &r[0]);
+  rNorm = mklTraits<T>::mklNorm(size, &r[0]);
+  std::printf("The true residual norm=%.6e.\n", rNorm);
+#endif
 }
 
 template <typename T>
@@ -260,6 +269,14 @@ void fctSolver<T>::solveWithoutPrecond(T *u, const T *b, int maxIter, T rtol, T 
     /* rDresi <- rDresiNew */
     rDr = rDrNew;
   }
+
+  /* Check residual again, this is the true residual of the solution. */
+#ifdef DEBUG
+  mklTraits<T>::mklCopy(size, &b[0], &r[0]);
+  mklTraits<T>::mklSprMatMulVec(-myOne, csrMat, &u[0], myOne, &r[0]);
+  rNorm = mklTraits<T>::mklNorm(size, &r[0]);
+  std::printf("The true residual norm=%.6e.\n", rNorm);
+#endif
 }
 
 template <typename T>

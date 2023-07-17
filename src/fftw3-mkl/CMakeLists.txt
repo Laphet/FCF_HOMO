@@ -1,10 +1,6 @@
-# set(TBBROOT "$ENV{HOME}/intel/oneapi/tbb/latest")
-# list(APPEND CMAKE_PREFIX_PATH "${TBBROOT}/lib/cmake")
-# message("${CMAKE_PREFIX_PATH}")
-# find_package(TBB 2021.9.0 CONFIG REQUIRED)
-# message("${TBB_IMPORTED_TARGETS}")
-
 add_library(cpu-fct-solver OBJECT cpu-fct-solver.cpp)
+# enable sycl
+# add_sycl_to_target(TARGET cpu-fct-solver SOURCES cpu-fct-solver.cpp)
 target_include_directories(cpu-fct-solver 
   PUBLIC ${FFTW3_OMP_INCLUDE_DIRS}
   PUBLIC ${MKL_INCLUDE_DIRS}

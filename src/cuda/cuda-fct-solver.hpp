@@ -89,6 +89,8 @@ public:
 
   void solveWithoutPrecond(T *u, const T *b, int maxIter = 1024, T rtol = 1.0e-5, T atol = 1.0e-8);
 
+  void solveWithICC(T *u, const T *b, int maxIter = 1024, T rtol = 1.0e-5, T atol = 1.0e-8); // Use the cusparse incomplete Cholesky factorization, will not be available in the next major release.
+
   ~cufctSolver();
 };
 
