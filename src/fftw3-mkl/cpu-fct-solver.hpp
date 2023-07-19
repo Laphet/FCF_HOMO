@@ -39,17 +39,6 @@ struct traits<double> {
   static void          cleanupThreads(void);
 };
 
-template <typename T>
-class vector {
-  size_t size;
-  T     *data;
-
-public:
-  vector(size_t size);
-  T &operator[](size_t idx);
-  ~vector();
-};
-
 auto planManyR2R(int rank, const int *n, int howmany, float *in, const int *inembed, int istride, int idist, float *out, const int *onembed, int ostride, int odist, const fftwf_r2r_kind *kind, unsigned flags);
 auto planManyR2R(int rank, const int *n, int howmany, double *in, const int *inembed, int istride, int idist, double *out, const int *onembed, int ostride, int odist, const fftw_r2r_kind *kind, unsigned flags);
 void execute(fftwf_plan _plan);
@@ -100,9 +89,8 @@ void mv(const sparse_operation_t operation, const double alpha, const sparse_mat
 template <typename T>
 class fctSolver {
   using fftw_plan_T = decltype(fftw::traits<T>::planType);
-  using fftwVec     = fftw::vector<T>;
   int             dims[3];
-  fftwVec         resiBuffer;
+  T              *resiBuffer;
   fftw_plan_T     forwardPlan;  // in-place data manipulation.
   fftw_plan_T     backwardPlan; // in-place data manipulation.
   T              *dlPtr;        // Use the data in the wider scope, and also modify it.

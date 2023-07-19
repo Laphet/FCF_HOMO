@@ -20,7 +20,7 @@ struct common {
 
   common(int _M, int _N, int _P) : dims{_M, _N, _P} {};
 
-  void analysisCoeff(const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
+  void analysisCoeff(const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z, std::vector<double> &k_vals);
 
   void getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
 

@@ -337,6 +337,7 @@ cufftResult cufftReal2Comp(cufftHandle plan, double *idata, cuDoubleComplex *oda
   return cufftExecD2Z(plan, reinterpret_cast<cufftDoubleReal *>(idata), reinterpret_cast<cufftDoubleComplex *>(odata));
 }
 
+/* Use those vectors to debug device functions.
 template <typename T>
 void viewRealVec(std::vector<T> &vec)
 {
@@ -354,6 +355,7 @@ void viewCompVec(std::vector<decltype(cuTraits<T>::compVar)> &vec)
   }
   std::cout << '\n';
 }
+*/
 
 template <typename T>
 void cufctSolver<T>::fctForward(T *v)

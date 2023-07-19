@@ -165,6 +165,7 @@ int main(int argc, char *argv[])
   InputParser cmdInputs(argc, argv);
 
   int         M{5}, N{7}, P{11};
+  bool        withoutPrecond{false};
   std::string input;
   input = cmdInputs.getCmdOption("-M");
   if (!input.empty()) M = std::stoi(input);
@@ -172,6 +173,7 @@ int main(int argc, char *argv[])
   if (!input.empty()) N = std::stoi(input);
   input = cmdInputs.getCmdOption("-P");
   if (!input.empty()) P = std::stoi(input);
+  withoutPrecond = cmdInputs.cmdOptionExists("-no-pc");
 
   if (M <= 0 || N <= 0 || P <= 0) {
     std::cerr << "Input wrong arguments, M=" << M << ", N=" << N << ", P=" << P << ".\n";
@@ -181,53 +183,37 @@ int main(int argc, char *argv[])
   int                 size{M * N * P};
   std::vector<double> k_x(size), k_y(size), k_z(size);
 
-  using T = double;
-  std::vector<T> u(size), rhs(size);
+  using T = float;
+  std::vector<T> u_ref(size), rhs(size);
 
   common<T> cmmn(M, N, P);
-  cmmn.setTestForSolver(k_x, k_y, k_z, u, rhs);
-  cmmn.analysisCoeff(k_x, k_y, k_z);
+  cmmn.setTestForSolver(k_x, k_y, k_z, u_ref, rhs);
 
-  // std::vector<T> homoParas(5);
-  // homoParas[0] = 1.0;
-  // homoParas[1] = 1.0;
-  // homoParas[2] = 1.0;
-  // homoParas[3] = 1.0;
-  // homoParas[4] = 1.0;
-  // std::vector<T> dl(size), d(size), du(size);
-  // cmmn.getTridSolverData(dl, d, du, homoParas);
+  constexpr int       VALS_LENGHT{5};
+  std::vector<double> kvals(3 * VALS_LENGHT);
+  cmmn.analysisCoeff(k_x, k_y, k_z, kvals);
+  std::vector<T> homoParas(5);
+  std::copy(kvals.begin() + 10, kvals.end(), homoParas.begin());
+  // std::vector<T> homoParas{12.44583946f, 42.59784597f, 138.76648458f, 138.76648458f, 138.76648458f};
 
-  // cufctSolver<T> cudaSolver(M, N, P);
-  // T             *rhs_d;
-  // CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&rhs_d), size * sizeof(T)));
-  // CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(rhs_d), reinterpret_cast<void *>(&rhs[0]), size * sizeof(T), cudaMemcpyHostToDevice));
-  // cudaSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
-  // cudaSolver.precondSolver(rhs_d);
-  // std::vector<T> u_h(size);
-  // CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(&u_h[0]), reinterpret_cast<void *>(rhs_d), size * sizeof(T), cudaMemcpyDeviceToHost));
+  std::vector<T> dl(size), d(size), du(size);
+  cmmn.getTridSolverData(dl, d, du, homoParas);
 
-  // fctSolver<T> cpuSolver(M, N, P);
-  // cpuSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
-  // using fftwVec = std::vector<T, fftwAllocator<T>>;
-  // fftwVec rhs_fftw(size);
-  // mklTraits<T>::mklCopy(size, &rhs[0], &rhs_fftw[0]);
-  // cpuSolver.precondSolver(&rhs_fftw[0]);
+  std::vector<int> csrRowOffsets(size + 1, -1), csrColInd(size * STENCIL_WIDTH, -1);
+  std::vector<T>   csrValues(size * STENCIL_WIDTH);
+  cmmn.getSprMatData(csrRowOffsets, csrColInd, csrValues, k_x, k_y, k_z);
 
-  // std::vector<T> r(size);
-  // T              err{static_cast<T>(0)};
-  // T              scalFactor{1 / std::sqrt(static_cast<T>(size))};
+  fctSolver<T> cpuSolver(M, N, P);
+  cpuSolver.setSprMatData(&csrRowOffsets[0], &csrColInd[0], &csrValues[0]);
+  cpuSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
+  std::vector<T> u_cpu(size);
+  if (withoutPrecond) cpuSolver.solveWithoutPrecond(&u_cpu[0], &rhs[0]);
+  else cpuSolver.solve(&u_cpu[0], &rhs[0]);
 
-  // mklTraits<T>::mklResi(size, &u[0], &u_h[0], &r[0]);
-  // err = mklTraits<T>::mklNorm(size, &r[0]);
-  // err *= scalFactor;
-  // std::cout << "cuda L^2 Error=" << err << '\n';
-
-  // mklTraits<T>::mklResi(size, &u[0], &rhs_fftw[0], &r[0]);
-  // err = mklTraits<T>::mklNorm(size, &r[0]);
-  // err *= scalFactor;
-  // std::cout << "fftw L^2 Error=" << err << '\n';
-
-  // CHECK_CUDA_ERROR(cudaFree(rhs_d));
+  std::vector<T> r(size);
+  mkl::cblas::getResidual(size, &u_ref[0], &u_cpu[0], &r[0]);
+  T scalFactor{1 / std::sqrt(static_cast<T>(size))};
+  std::printf("cpu L^2 Error=%.6e.\n", scalFactor * mkl::cblas::nrm2(size, &r[0], 1));
 
   return EXIT_SUCCESS;
 }

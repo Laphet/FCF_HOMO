@@ -13,13 +13,14 @@ void get3dIdxFromIdx(int &i, int &j, int &k, const int idx, const int N, const i
 }
 
 template <typename T>
-void common<T>::analysisCoeff(const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z)
+void common<T>::analysisCoeff(const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z, std::vector<double> &k_vals)
 {
-  int    M{dims[0]}, N{dims[1]}, P{dims[2]};
-  int    size{M * N * P};
-  double kmax[5]{0.0, 0.0, 0.0, 0.0, 0.0};
-  double doubleMax{std::numeric_limits<double>::max()};
-  double kmin[5]{doubleMax, doubleMax, doubleMax, doubleMax, doubleMax};
+  constexpr int VALS_LENGTH{5};
+  int           M{dims[0]}, N{dims[1]}, P{dims[2]};
+  int           size{M * N * P};
+  double        kmax[]{0.0, 0.0, 0.0, 0.0, 0.0};
+  double        doubleMax{std::numeric_limits<double>::max()};
+  double        kmin[]{doubleMax, doubleMax, doubleMax, doubleMax, doubleMax};
 
 #pragma omp parallel for reduction(max : kmax[ : 5]) reduction(min : kmin[ : 5])
   for (int idx{0}; idx < size; ++idx) {
@@ -50,19 +51,38 @@ void common<T>::analysisCoeff(const std::vector<double> &k_x, const std::vector<
       kmin[4] = std::min(kmin[4], k_z[idx]);
     }
   }
-#ifdef DEBUG
-  for (int i{0}; i < 5; ++i) std::printf("%.6e\t", kmax[i]);
-  std::cout << '\n';
-  for (int i{0}; i < 5; ++i) std::printf("%.6e\t", kmin[i]);
-  std::cout << '\n';
-#endif
-  std::ofstream     binFile;
-  const std::string finename("k-maxmin-vals.bin");
-  binFile.open(finename, std::ios::out | std::ios::binary);
-  binFile.write(reinterpret_cast<char *>(&kmax[0]), 5 * sizeof(double));
-  binFile.write(reinterpret_cast<char *>(&kmin[0]), 5 * sizeof(double));
-  binFile.close();
-  std::cout << "Write k min/max values into [" << finename << "].\n";
+  std::cout << "kmax=[";
+  for (int i{0}; i < VALS_LENGTH; ++i) std::printf("%.6e, ", kmax[i]);
+  std::cout << "]\n";
+  std::cout << "kmin=[";
+  for (int i{0}; i < VALS_LENGTH; ++i) std::printf("%.6e, ", kmin[i]);
+  std::cout << "]\n";
+
+  std::string   finename("bin/k-maxmin-vals.bin");
+  std::ofstream binFileWriter(finename, std::ios::out | std::ios::binary);
+  binFileWriter.write(reinterpret_cast<char *>(&kmax[0]), VALS_LENGTH * sizeof(double));
+  binFileWriter.write(reinterpret_cast<char *>(&kmin[0]), VALS_LENGTH * sizeof(double));
+  binFileWriter.close();
+  std::cout << "Write kmax/min values into [" << finename << "].\n";
+
+  std::cout << "Please cd to the project root directory.\n";
+  const std::string cmd = "python script/optimal_ref_parameters.py";
+  std::system(cmd.c_str());
+
+  finename = "bin/k-ref-vals.bin";
+  std::cout << "Read kref values from [" << finename << "].\n";
+  std::ifstream binFileReader(finename, std::ios::in | std::ios::binary);
+  char          buffer[1024];
+  binFileReader.read(buffer, VALS_LENGTH * sizeof(double));
+  binFileReader.close();
+
+  std::memcpy(reinterpret_cast<void *>(&k_vals[0]), reinterpret_cast<void *>(&kmax[0]), VALS_LENGTH * sizeof(double));
+  std::memcpy(reinterpret_cast<void *>(&k_vals[5]), reinterpret_cast<void *>(&kmin[0]), VALS_LENGTH * sizeof(double));
+  std::memcpy(reinterpret_cast<void *>(&k_vals[10]), reinterpret_cast<void *>(&buffer[0]), VALS_LENGTH * sizeof(double));
+
+  std::cout << "kref=[";
+  for (int i{0}; i < VALS_LENGTH; ++i) std::printf("%.6e, ", k_vals[i + 10]);
+  std::cout << "]\n";
 }
 
 template <typename T>

@@ -52,28 +52,6 @@ void traits<double>::cleanupThreads(void)
   fftw_cleanup_threads();
 }
 
-template <typename T>
-vector<T>::vector(size_t size)
-{
-  this->size = size;
-  data       = reinterpret_cast<T *>(fftw::traits<T>::malloc(size));
-  std::memset(reinterpret_cast<void *>(data), 0x0, size * sizeof(T));
-}
-
-template <typename T>
-T &vector<T>::operator[](size_t idx)
-{
-  return data[idx];
-}
-
-template <typename T>
-vector<T>::~vector()
-{
-  size = 0;
-  fftw::traits<T>::free(reinterpret_cast<void *>(data));
-  data = nullptr;
-}
-
 auto planManyR2R(int rank, const int *n, int howmany, float *in, const int *inembed, int istride, int idist, float *out, const int *onembed, int ostride, int odist, const fftwf_r2r_kind *kind, unsigned flags)
 {
   return fftwf_plan_many_r2r(rank, n, howmany, in, inembed, istride, idist, out, onembed, ostride, odist, kind, flags);
@@ -250,10 +228,11 @@ void mv(const sparse_operation_t operation, const double alpha, const sparse_mat
 } // namespace mkl
 
 template <typename T>
-fctSolver<T>::fctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, resiBuffer(_M * _N * _P), dlPtr{nullptr}, dPtr{nullptr}, duPtr{nullptr}, useTridSolverParallelLoop{true}, csrMat{nullptr}
+fctSolver<T>::fctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, resiBuffer{nullptr}, dlPtr{nullptr}, dPtr{nullptr}, duPtr{nullptr}, useTridSolverParallelLoop{true}, csrMat{nullptr}
 {
   const decltype(fftw::traits<T>::r2rKind) r2rKinds[4]{FFTW_REDFT10, FFTW_REDFT10, FFTW_REDFT01, FFTW_REDFT01};
   fftw::traits<T>::initThreads();
+  resiBuffer = reinterpret_cast<T *>(fftw::traits<T>::malloc(_M * _N * _P * sizeof(T)));
   fftw::traits<T>::planWithNthreads(omp_get_max_threads());
   forwardPlan  = fftw::planManyR2R(2, &dims[0], dims[2], &resiBuffer[0], nullptr, dims[2], 1, &resiBuffer[0], nullptr, dims[2], 1, &r2rKinds[0], FFTW_PATIENT);
   backwardPlan = fftw::planManyR2R(2, &dims[0], dims[2], &resiBuffer[0], nullptr, dims[2], 1, &resiBuffer[0], nullptr, dims[2], 1, &r2rKinds[2], FFTW_PATIENT);
@@ -265,7 +244,7 @@ void fctSolver<T>::fctForward(T *v)
   // std::cout << "fftw3 uses " << fftw_planner_nthreads() << " threads.\n";
   T *resiBuffer_ptr{&resiBuffer[0]};
   if (v == resiBuffer_ptr) {
-    std::cout << "Use fftwExec!\n";
+    // std::cout << "Use fftwExec!\n";
     // It is wired that "if (&v[0] == &rhsBuffer[0])" enters this branch.
     fftw::execute(forwardPlan);
   } else {
@@ -391,7 +370,7 @@ void fctSolver<T>::solve(T *u, const T *b, int maxIter, T rtol, T atol)
     }
 
 #ifdef DEBUG
-    std::printf("itrIdx=%d,\tresidual=%.6e.\n", itrIdx, rNorm);
+    std::printf("itrIdx=%d,\tresidual=%.6e.\n", itrIdx + 1, rNorm);
 #endif
 
     /* resi <= r, resi <- inv(A)*resi */
@@ -471,7 +450,7 @@ void fctSolver<T>::solveWithoutPrecond(T *u, const T *b, int maxIter, T rtol, T 
       break;
     }
 #ifdef DEBUG
-    std::printf("itrIdx=%d,\tresidual=%.6e.\n", itrIdx, rNorm);
+    std::printf("itrIdx=%d,\tresidual=%.6e.\n", itrIdx + 1, rNorm);
 #endif
 
     /* p <- beta*p, p <- resi + p */
@@ -504,6 +483,8 @@ fctSolver<T>::~fctSolver()
   backwardPlan = nullptr;
   fftw::destroyPlan(forwardPlan);
   forwardPlan = nullptr;
+  fftw::traits<T>::free(resiBuffer);
+  resiBuffer = nullptr;
   fftw::traits<T>::cleanupThreads();
 }
 
