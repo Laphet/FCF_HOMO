@@ -13,6 +13,59 @@ void get3dIdxFromIdx(int &i, int &j, int &k, const int idx, const int N, const i
 }
 
 template <typename T>
+void common<T>::analysisCoeff(const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z)
+{
+  int    M{dims[0]}, N{dims[1]}, P{dims[2]};
+  int    size{M * N * P};
+  double kmax[5]{0.0, 0.0, 0.0, 0.0, 0.0};
+  double doubleMax{std::numeric_limits<double>::max()};
+  double kmin[5]{doubleMax, doubleMax, doubleMax, doubleMax, doubleMax};
+
+#pragma omp parallel for reduction(max : kmax[ : 5]) reduction(min : kmin[ : 5])
+  for (int idx{0}; idx < size; ++idx) {
+    int i{0}, j{0}, k{0};
+    int adjIdx{0};
+    get3dIdxFromIdx(i, j, k, idx, N, P);
+    if (1 <= i) {
+      adjIdx  = getIdxFrom3dIdx(i - 1, j, k, N, P);
+      kmax[0] = std::max(kmax[0], 2.0 / (1.0 / k_x[idx] + 1.0 / k_x[adjIdx]));
+      kmin[0] = std::min(kmin[0], 2.0 / (1.0 / k_x[idx] + 1.0 / k_x[adjIdx]));
+    }
+    if (1 <= j) {
+      adjIdx  = getIdxFrom3dIdx(i, j - 1, k, N, P);
+      kmax[1] = std::max(kmax[1], 2.0 / (1.0 / k_y[idx] + 1.0 / k_y[adjIdx]));
+      kmin[1] = std::min(kmin[1], 2.0 / (1.0 / k_y[idx] + 1.0 / k_y[adjIdx]));
+    }
+    if (1 <= k) {
+      adjIdx  = getIdxFrom3dIdx(i, j, k - 1, N, P);
+      kmax[2] = std::max(kmax[2], 2.0 / (1.0 / k_z[idx] + 1.0 / k_z[adjIdx]));
+      kmin[2] = std::min(kmin[2], 2.0 / (1.0 / k_z[idx] + 1.0 / k_z[adjIdx]));
+    }
+    if (0 == k) {
+      kmax[3] = std::max(kmax[3], k_z[idx]);
+      kmin[3] = std::min(kmin[3], k_z[idx]);
+    }
+    if (P - 1 == k) {
+      kmax[4] = std::max(kmax[4], k_z[idx]);
+      kmin[4] = std::min(kmin[4], k_z[idx]);
+    }
+  }
+#ifdef DEBUG
+  for (int i{0}; i < 5; ++i) std::printf("%.6e\t", kmax[i]);
+  std::cout << '\n';
+  for (int i{0}; i < 5; ++i) std::printf("%.6e\t", kmin[i]);
+  std::cout << '\n';
+#endif
+  std::ofstream     binFile;
+  const std::string finename("k-maxmin-vals.bin");
+  binFile.open(finename, std::ios::out | std::ios::binary);
+  binFile.write(reinterpret_cast<char *>(&kmax[0]), 5 * sizeof(double));
+  binFile.write(reinterpret_cast<char *>(&kmin[0]), 5 * sizeof(double));
+  binFile.close();
+  std::cout << "Write k min/max values into [" << finename << "].\n";
+}
+
+template <typename T>
 void common<T>::getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
@@ -171,7 +224,7 @@ void common<T>::setTestVecs(std::vector<T> &v, std::vector<T> &v_hat)
 }
 
 template <typename T>
-void common<T>::setTestPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const T k_x, const T k_y, const T k_z)
+void common<T>::setTestForPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const T k_x, const T k_y, const T k_z)
 {
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   T   h_x{static_cast<T>(1) / M}, h_y{static_cast<T>(1) / N}, h_z{static_cast<T>(1) / P};
@@ -192,6 +245,38 @@ void common<T>::setTestPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, con
     if (P - 1 == k) {
       z = static_cast<T>(1);
       rhs[idx] += 2 * k_z / (h_z * h_z) * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
+    }
+  }
+}
+
+template <typename T>
+void common<T>::setTestForSolver(std::vector<double> &k_x, std::vector<double> &k_y, std::vector<double> &k_z, std::vector<T> &u, std::vector<T> &rhs)
+{
+  int M{dims[0]}, N{dims[1]}, P{dims[2]};
+  T   h_x{static_cast<T>(1) / M}, h_y{static_cast<T>(1) / N}, h_z{static_cast<T>(1) / P};
+  T   myHalf{static_cast<T>(0.5)}, myPi{static_cast<T>(M_PI)};
+#pragma omp parallel for
+  for (int idx{0}; idx < M * N * P; ++idx) {
+    int i{0}, j{0}, k{0};
+    get3dIdxFromIdx(i, j, k, idx, N, P);
+    T      x{(i + myHalf) * h_x}, y{(j + myHalf) * h_y}, z{(k + myHalf) * h_z};
+    double x_d{(i + 0.5) / M}, y_d{(j + 0.5) / N}, z_d{(k + 0.5) / P};
+    /* This is the solution. */
+    u[idx] = std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
+    /* Those are the coefficients. */
+    k_x[idx] = (std::cos(y_d * M_PI) + 2) * M * M;
+    k_y[idx] = (2 * std::exp(z_d)) * N * N;
+    k_z[idx] = (3 * std::cos(x_d * M_PI) + 4) * P * P;
+    /* f = Exp[z]  Cos[Pi x] Cos[Pi y] (2 (-2 + Pi^2 + Exp[z] Pi^2) - 3 Cos[Pi x] + Pi^2 Cos[Pi y]) */
+    rhs[idx] = u[idx];
+    rhs[idx] *= 2 * (-2 + myPi * myPi + std::exp(z) * myPi * myPi) - 3 * std::cos(myPi * x) + myPi * myPi * std::cos(myPi * y);
+    if (0 == k) {
+      z = static_cast<T>(0);
+      rhs[idx] += 2 * k_z[idx] * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
+    }
+    if (P - 1 == k) {
+      z = static_cast<T>(1);
+      rhs[idx] += 2 * k_z[idx] * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
     }
   }
 }

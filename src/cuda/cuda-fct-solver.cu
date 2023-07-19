@@ -1106,3 +1106,7 @@ cufctSolver<T>::~cufctSolver()
   cuFreeMod(compBuffer);
   cuFreeMod(realBuffer);
 }
+
+template class cufctSolver<float>;
+
+template class cufctSolver<double>;

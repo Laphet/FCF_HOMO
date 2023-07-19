@@ -91,11 +91,80 @@ private:
 //   return EXIT_SUCCESS;
 // }
 
+// int main(int argc, char *argv[])
+// {
+//   InputParser cmdInputs(argc, argv);
+
+//   int         M{3}, N{4}, P{5};
+//   std::string input;
+//   input = cmdInputs.getCmdOption("-M");
+//   if (!input.empty()) M = std::stoi(input);
+//   input = cmdInputs.getCmdOption("-N");
+//   if (!input.empty()) N = std::stoi(input);
+//   input = cmdInputs.getCmdOption("-P");
+//   if (!input.empty()) P = std::stoi(input);
+
+//   if (M <= 0 || N <= 0 || P <= 0) {
+//     std::cerr << "Input wrong arguments, M=" << M << ", N=" << N << ", P=" << P << ".\n";
+//     return EXIT_FAILURE;
+//   }
+
+//   using T = double;
+//   common<T>      cmmn(M, N, P);
+//   T              k_x{static_cast<T>(1)}, k_y{static_cast<T>(2)}, k_z{static_cast<T>(3)};
+//   int            size{M * N * P};
+//   std::vector<T> u(size), rhs(size);
+//   cmmn.setTestForPrecondSolver(u, rhs, k_x, k_y, k_z);
+
+//   std::vector<T> homoParas(5);
+//   homoParas[0] = k_x * M * M;
+//   homoParas[1] = k_y * N * N;
+//   homoParas[2] = k_z * P * P;
+//   homoParas[3] = k_z * P * P;
+//   homoParas[4] = k_z * P * P;
+//   std::vector<T> dl(size), d(size), du(size);
+//   cmmn.getTridSolverData(dl, d, du, homoParas);
+
+//   cufctSolver<T> cudaSolver(M, N, P);
+//   T             *rhs_d;
+//   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&rhs_d), size * sizeof(T)));
+//   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(rhs_d), reinterpret_cast<void *>(&rhs[0]), size * sizeof(T), cudaMemcpyHostToDevice));
+//   cudaSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
+//   cudaSolver.precondSolver(rhs_d);
+//   std::vector<T> u_h(size);
+//   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(&u_h[0]), reinterpret_cast<void *>(rhs_d), size * sizeof(T), cudaMemcpyDeviceToHost));
+
+//   fctSolver<T> cpuSolver(M, N, P);
+//   cpuSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
+//   using fftwVec = std::vector<T, fftwAllocator<T>>;
+//   fftwVec rhs_fftw(size);
+//   mklTraits<T>::mklCopy(size, &rhs[0], &rhs_fftw[0]);
+//   cpuSolver.precondSolver(&rhs_fftw[0]);
+
+//   std::vector<T> r(size);
+//   T              err{static_cast<T>(0)};
+//   T              scalFactor{1 / std::sqrt(static_cast<T>(size))};
+
+//   mklTraits<T>::mklResi(size, &u[0], &u_h[0], &r[0]);
+//   err = mklTraits<T>::mklNorm(size, &r[0]);
+//   err *= scalFactor;
+//   std::cout << "cuda L^2 Error=" << err << '\n';
+
+//   mklTraits<T>::mklResi(size, &u[0], &rhs_fftw[0], &r[0]);
+//   err = mklTraits<T>::mklNorm(size, &r[0]);
+//   err *= scalFactor;
+//   std::cout << "fftw L^2 Error=" << err << '\n';
+
+//   CHECK_CUDA_ERROR(cudaFree(rhs_d));
+
+//   return EXIT_SUCCESS;
+// }
+
 int main(int argc, char *argv[])
 {
   InputParser cmdInputs(argc, argv);
 
-  int         M{3}, N{4}, P{5};
+  int         M{5}, N{7}, P{11};
   std::string input;
   input = cmdInputs.getCmdOption("-M");
   if (!input.empty()) M = std::stoi(input);
@@ -109,53 +178,56 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
+  int                 size{M * N * P};
+  std::vector<double> k_x(size), k_y(size), k_z(size);
+
   using T = double;
-  common<T>      cmmn(M, N, P);
-  T              k_x{static_cast<T>(1)}, k_y{static_cast<T>(2)}, k_z{static_cast<T>(3)};
-  int            size{M * N * P};
   std::vector<T> u(size), rhs(size);
-  cmmn.setTestPrecondSolver(u, rhs, k_x, k_y, k_z);
 
-  std::vector<T> homoParas(5);
-  homoParas[0] = k_x * M * M;
-  homoParas[1] = k_y * N * N;
-  homoParas[2] = k_z * P * P;
-  homoParas[3] = k_z * P * P;
-  homoParas[4] = k_z * P * P;
-  std::vector<T> dl(size), d(size), du(size);
-  cmmn.getTridSolverData(dl, d, du, homoParas);
+  common<T> cmmn(M, N, P);
+  cmmn.setTestForSolver(k_x, k_y, k_z, u, rhs);
+  cmmn.analysisCoeff(k_x, k_y, k_z);
 
-  cufctSolver<T> cudaSolver(M, N, P);
-  T             *rhs_d;
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&rhs_d), size * sizeof(T)));
-  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(rhs_d), reinterpret_cast<void *>(&rhs[0]), size * sizeof(T), cudaMemcpyHostToDevice));
-  cudaSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
-  cudaSolver.precondSolver(rhs_d);
-  std::vector<T> u_h(size);
-  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(&u_h[0]), reinterpret_cast<void *>(rhs_d), size * sizeof(T), cudaMemcpyDeviceToHost));
+  // std::vector<T> homoParas(5);
+  // homoParas[0] = 1.0;
+  // homoParas[1] = 1.0;
+  // homoParas[2] = 1.0;
+  // homoParas[3] = 1.0;
+  // homoParas[4] = 1.0;
+  // std::vector<T> dl(size), d(size), du(size);
+  // cmmn.getTridSolverData(dl, d, du, homoParas);
 
-  fctSolver<T> cpuSolver(M, N, P);
-  cpuSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
-  using fftwVec = std::vector<T, fftwAllocator<T>>;
-  fftwVec rhs_fftw(size);
-  mklTraits<T>::mklCopy(size, &rhs[0], &rhs_fftw[0]);
-  cpuSolver.precondSolver(&rhs_fftw[0]);
+  // cufctSolver<T> cudaSolver(M, N, P);
+  // T             *rhs_d;
+  // CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&rhs_d), size * sizeof(T)));
+  // CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(rhs_d), reinterpret_cast<void *>(&rhs[0]), size * sizeof(T), cudaMemcpyHostToDevice));
+  // cudaSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
+  // cudaSolver.precondSolver(rhs_d);
+  // std::vector<T> u_h(size);
+  // CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(&u_h[0]), reinterpret_cast<void *>(rhs_d), size * sizeof(T), cudaMemcpyDeviceToHost));
 
-  std::vector<T> r(size);
-  T              err{static_cast<T>(0)};
-  T              scalFactor{1 / std::sqrt(static_cast<T>(size))};
+  // fctSolver<T> cpuSolver(M, N, P);
+  // cpuSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
+  // using fftwVec = std::vector<T, fftwAllocator<T>>;
+  // fftwVec rhs_fftw(size);
+  // mklTraits<T>::mklCopy(size, &rhs[0], &rhs_fftw[0]);
+  // cpuSolver.precondSolver(&rhs_fftw[0]);
 
-  mklTraits<T>::mklResi(size, &u[0], &u_h[0], &r[0]);
-  err = mklTraits<T>::mklNorm(size, &r[0]);
-  err *= scalFactor;
-  std::cout << "cuda L^2 Error=" << err << '\n';
+  // std::vector<T> r(size);
+  // T              err{static_cast<T>(0)};
+  // T              scalFactor{1 / std::sqrt(static_cast<T>(size))};
 
-  mklTraits<T>::mklResi(size, &u[0], &rhs_fftw[0], &r[0]);
-  err = mklTraits<T>::mklNorm(size, &r[0]);
-  err *= scalFactor;
-  std::cout << "fftw L^2 Error=" << err << '\n';
+  // mklTraits<T>::mklResi(size, &u[0], &u_h[0], &r[0]);
+  // err = mklTraits<T>::mklNorm(size, &r[0]);
+  // err *= scalFactor;
+  // std::cout << "cuda L^2 Error=" << err << '\n';
 
-  CHECK_CUDA_ERROR(cudaFree(rhs_d));
+  // mklTraits<T>::mklResi(size, &u[0], &rhs_fftw[0], &r[0]);
+  // err = mklTraits<T>::mklNorm(size, &r[0]);
+  // err *= scalFactor;
+  // std::cout << "fftw L^2 Error=" << err << '\n';
+
+  // CHECK_CUDA_ERROR(cudaFree(rhs_d));
 
   return EXIT_SUCCESS;
 }

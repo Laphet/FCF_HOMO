@@ -2,6 +2,9 @@
 
 #include <cmath>
 #include <cstring>
+#include <fstream>
+#include <iostream>
+#include <limits>
 #include <omp.h>
 #include <vector>
 
@@ -17,6 +20,8 @@ struct common {
 
   common(int _M, int _N, int _P) : dims{_M, _N, _P} {};
 
+  void analysisCoeff(const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
+
   void getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
 
   void getStdRhsVec(std::vector<T> &rhs, const std::vector<double> &k_z, const double delta_p);
@@ -27,5 +32,7 @@ struct common {
 
   void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat);
 
-  void setTestPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const T k_x, const T k_y, const T k_z);
+  void setTestForPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, const T k_x, const T k_y, const T k_z);
+
+  void setTestForSolver(std::vector<double> &k_x, std::vector<double> &k_y, std::vector<double> &k_z, std::vector<T> &u, std::vector<T> &rhs);
 };
