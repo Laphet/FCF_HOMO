@@ -28,6 +28,13 @@ private:
   std::vector<std::string> tokens;
 };
 
+struct op {
+  bool withoutPrecond;
+  bool withSsor;
+};
+
+op glbOps{false, false};
+
 // int main(int argc, char *argv[])
 // {
 //   using T = float;
@@ -162,10 +169,10 @@ private:
 
 int main(int argc, char *argv[])
 {
+  /* Analysis cmd options. */
   InputParser cmdInputs(argc, argv);
+  int         M{4}, N{4}, P{4};
 
-  int         M{5}, N{7}, P{11};
-  bool        withoutPrecond{false};
   std::string input;
   input = cmdInputs.getCmdOption("-M");
   if (!input.empty()) M = std::stoi(input);
@@ -173,17 +180,20 @@ int main(int argc, char *argv[])
   if (!input.empty()) N = std::stoi(input);
   input = cmdInputs.getCmdOption("-P");
   if (!input.empty()) P = std::stoi(input);
-  withoutPrecond = cmdInputs.cmdOptionExists("-no-pc");
+
+  glbOps.withoutPrecond = cmdInputs.cmdOptionExists("-no-pc");
+  glbOps.withSsor       = cmdInputs.cmdOptionExists("-ssor");
 
   if (M <= 0 || N <= 0 || P <= 0) {
     std::cerr << "Input wrong arguments, M=" << M << ", N=" << N << ", P=" << P << ".\n";
     return EXIT_FAILURE;
   }
 
+  /* Prepare data for solvers. */
   int                 size{M * N * P};
   std::vector<double> k_x(size), k_y(size), k_z(size);
 
-  using T = float;
+  using T = double;
   std::vector<T> u_ref(size), rhs(size);
 
   common<T> cmmn(M, N, P);
@@ -194,7 +204,6 @@ int main(int argc, char *argv[])
   cmmn.analysisCoeff(k_x, k_y, k_z, kvals);
   std::vector<T> homoParas(5);
   std::copy(kvals.begin() + 10, kvals.end(), homoParas.begin());
-  // std::vector<T> homoParas{12.44583946f, 42.59784597f, 138.76648458f, 138.76648458f, 138.76648458f};
 
   std::vector<T> dl(size), d(size), du(size);
   cmmn.getTridSolverData(dl, d, du, homoParas);
@@ -203,16 +212,43 @@ int main(int argc, char *argv[])
   std::vector<T>   csrValues(size * STENCIL_WIDTH);
   cmmn.getSprMatData(csrRowOffsets, csrColInd, csrValues, k_x, k_y, k_z);
 
+  size_t         nnz = csrRowOffsets[size];
+  std::vector<T> ssorValues(nnz);
+  T              omega = static_cast<T>(1.0);
+  cmmn.getSsorData(csrRowOffsets, csrColInd, csrValues, omega, ssorValues);
+  std::vector<int> lRowOffsets(size + 1), uRowOffsets(size + 1);
+  size_t           nnzHalf = (nnz + size) / 2;
+  std::vector<int> lColInd(nnzHalf), uColInd(nnzHalf);
+  std::vector<T>   lValues(nnzHalf), uValues(nnzHalf);
+  cmmn.getSsorDataSplit(csrRowOffsets, csrColInd, ssorValues, lRowOffsets, lColInd, lValues, uRowOffsets, uColInd, uValues);
+
+  /* The GPU solver. */
+  cufctSolver<T> gpuSolver(M, N, P);
+  gpuSolver.setSprMatData(&csrRowOffsets[0], &csrColInd[0], &csrValues[0]);
+  gpuSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
+  std::vector<T> u_gpu(size);
+  if (glbOps.withoutPrecond) gpuSolver.solveWithoutPrecond(&u_gpu[0], &rhs[0]);
+  else if (glbOps.withSsor) {
+    gpuSolver.solveWithSsor(&u_gpu[0], &rhs[0], &ssorValues[0], 3);
+    // gpuSolver.solveWithSsorSplit(&u_gpu[0], &rhs[0], &lRowOffsets[0], &lColInd[0], &lValues[0], &uRowOffsets[0], &uColInd[0], &uValues[0], 3);
+  } else gpuSolver.solve(&u_gpu[0], &rhs[0]);
+
+  /* The CPU solver. */
   fctSolver<T> cpuSolver(M, N, P);
   cpuSolver.setSprMatData(&csrRowOffsets[0], &csrColInd[0], &csrValues[0]);
   cpuSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
   std::vector<T> u_cpu(size);
-  if (withoutPrecond) cpuSolver.solveWithoutPrecond(&u_cpu[0], &rhs[0]);
-  else cpuSolver.solve(&u_cpu[0], &rhs[0]);
+  if (glbOps.withoutPrecond) cpuSolver.solveWithoutPrecond(&u_cpu[0], &rhs[0]);
+  else if (glbOps.withSsor) {
+    cpuSolver.solveWithSsor(&u_cpu[0], &rhs[0], &csrRowOffsets[0], &csrColInd[0], &ssorValues[0], 3);
+  } else cpuSolver.solve(&u_cpu[0], &rhs[0]);
 
+  /* Get errors comparing with the reference solution. */
   std::vector<T> r(size);
+  T              scalFactor{1 / std::sqrt(static_cast<T>(size))};
+  mkl::cblas::getResidual(size, &u_ref[0], &u_gpu[0], &r[0]);
+  std::printf("gpu L^2 Error=%.6e.\n", scalFactor * mkl::cblas::nrm2(size, &r[0], 1));
   mkl::cblas::getResidual(size, &u_ref[0], &u_cpu[0], &r[0]);
-  T scalFactor{1 / std::sqrt(static_cast<T>(size))};
   std::printf("cpu L^2 Error=%.6e.\n", scalFactor * mkl::cblas::nrm2(size, &r[0], 1));
 
   return EXIT_SUCCESS;

@@ -1,11 +1,23 @@
 cmake_minimum_required(VERSION 3.20.5 FATAL_ERROR)
 project(fct-homo LANGUAGES CXX)
+
 set(CMAKE_BUILD_TYPE Debug)
-add_compile_definitions(DEBUG)
+
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+  set(CMAKE_CXX_FLAGS_DEBUG "")
+  add_compile_options(-g -O0)
+  add_compile_definitions(DEBUG)
   # message(CMAKE_CXX_FLAGS_DEBUG="${CMAKE_CXX_FLAGS_DEBUG}")
 endif()
+
+# Recommended by vtune, inspector
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  add_compile_options(-g)
+endif()
+
+add_link_options(-shared-intel)
+# Use the macro definition DEBUG
+
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -74,6 +86,7 @@ add_subdirectory(src/main)
 
 
 # message(CMAKE_RUNTIME_OUTPUT_DIRECTORY="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+message(CMAKE_CXX_FLAGS_DEBUG="${CMAKE_CXX_FLAGS_DEBUG}")
 
 
 

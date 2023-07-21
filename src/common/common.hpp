@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <cmath>
 #include <cstring>
 #include <fstream>
@@ -29,6 +30,10 @@ struct common {
   void getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<double> &k_z, const double delta_p, const double lenZ);
 
   void getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, const std::vector<T> &homoParas);
+
+  void getSsorData(const std::vector<int> &csrRowOffsets, const std::vector<int> &csrColInd, const std::vector<T> &csrValues, const T omega, std::vector<T> &ssorValues);
+
+  void getSsorDataSplit(const std::vector<int> &csrRowOffsets, const std::vector<int> &csrColInd, const std::vector<T> &csrValues, std::vector<int> &lRowOffsets, std::vector<int> &lColInd, std::vector<T> &lValues, std::vector<int> &uRowOffsets, std::vector<int> &uColInd, std::vector<T> &uValues);
 
   void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat);
 

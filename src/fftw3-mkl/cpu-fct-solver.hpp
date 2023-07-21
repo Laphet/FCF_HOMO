@@ -9,8 +9,9 @@
 #include <vector>
 
 // constexpr int DIM{3};
-const int          EXPECTED_CALLS{1024};
-const matrix_descr DESCR{SPARSE_MATRIX_TYPE_SYMMETRIC, SPARSE_FILL_MODE_UPPER, SPARSE_DIAG_NON_UNIT};
+const matrix_descr DESCR_SYM{SPARSE_MATRIX_TYPE_SYMMETRIC, SPARSE_FILL_MODE_LOWER, SPARSE_DIAG_NON_UNIT};
+const matrix_descr DESCR_L{SPARSE_MATRIX_TYPE_TRIANGULAR, SPARSE_FILL_MODE_LOWER, SPARSE_DIAG_UNIT};
+const matrix_descr DESCR_U{SPARSE_MATRIX_TYPE_TRIANGULAR, SPARSE_FILL_MODE_UPPER, SPARSE_DIAG_NON_UNIT};
 
 namespace fftw
 {
@@ -79,10 +80,14 @@ namespace sparse
 {
 void createCsr(sparse_matrix_t *A, const sparse_index_base_t indexing, const MKL_INT rows, const MKL_INT cols, MKL_INT *rows_start, MKL_INT *rows_end, MKL_INT *col_indx, float *values);
 void createCsr(sparse_matrix_t *A, const sparse_index_base_t indexing, const MKL_INT rows, const MKL_INT cols, MKL_INT *rows_start, MKL_INT *rows_end, MKL_INT *col_indx, double *values);
+void destroy(sparse_matrix_t A);
 void setMvHint(const sparse_matrix_t A, const sparse_operation_t operation, const struct matrix_descr descr, const MKL_INT expected_calls);
+void setSvHint(const sparse_matrix_t A, const sparse_operation_t operation, const struct matrix_descr descr, const MKL_INT expected_calls);
 void optimize(sparse_matrix_t A);
 void mv(const sparse_operation_t operation, const float alpha, const sparse_matrix_t A, const struct matrix_descr descr, const float *x, const float beta, float *y);
 void mv(const sparse_operation_t operation, const double alpha, const sparse_matrix_t A, const struct matrix_descr descr, const double *x, const double beta, double *y);
+void trsv(const sparse_operation_t operation, const float alpha, const sparse_matrix_t A, const struct matrix_descr descr, const float *x, float *y);
+void trsv(const sparse_operation_t operation, const double alpha, const sparse_matrix_t A, const struct matrix_descr descr, const double *x, double *y);
 } // namespace sparse
 } // namespace mkl
 
@@ -112,9 +117,11 @@ public:
 
   void setSprMatData(MKL_INT *csrRowOffsets, MKL_INT *csrColInd, T *csrValues);
 
-  void solve(T *u, const T *b, int maxIter = 1024, T rtol = 1.0e-5, T atol = 1.0e-8);
+  void solve(T *u, const T *b, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
 
-  void solveWithoutPrecond(T *u, const T *b, int maxIter = 1024, T rtol = 1.0e-5, T atol = 1.0e-8);
+  void solveWithoutPrecond(T *u, const T *b, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
+
+  void solveWithSsor(T *u, const T *b, MKL_INT *ssorRowOffsets, MKL_INT *ssorColInd, T *ssorValues, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
 
   ~fctSolver();
 };

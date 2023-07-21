@@ -6,7 +6,7 @@
 #include <cufft.h>
 #include <cusparse.h>
 #include <iostream>
-// #include <iomanip>
+#include <vector>
 
 // static constexpr int DIM{3};
 
@@ -68,6 +68,7 @@ class cufctSolver {
   T               *duPtr;
   void            *tridSolverBuffer;
   spMat<T>         csrMat;
+  size_t           nnz;
   cublasHandle_t   blasHandle;
 
 public:
@@ -83,11 +84,13 @@ public:
 
   void setSprMatData(int *csrRowOffsets, int *csrColInd, T *csrValues); // All vectors are in the host memory.
 
-  void solve(T *u, const T *b, int maxIter = 1024, T rtol = 1.0e-5, T atol = 1.0e-8);
+  void solve(T *u, const T *b, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
 
-  void solveWithoutPrecond(T *u, const T *b, int maxIter = 1024, T rtol = 1.0e-5, T atol = 1.0e-8);
+  void solveWithoutPrecond(T *u, const T *b, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
 
-  void solveWithICC(T *u, const T *b, int maxIter = 1024, T rtol = 1.0e-5, T atol = 1.0e-8); // Use the cusparse incomplete Cholesky factorization, will not be available in the next major release.
+  void solveWithSsor(T *u, const T *b, T *ssorValues, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
+
+  void solveWithSsorSplit(T *u, const T *b, int *lRowOffsets, int *lColInd, T *lValues, int *uRowOffsets, int *uColInd, T *uValues, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
 
   ~cufctSolver();
 };

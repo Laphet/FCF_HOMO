@@ -160,12 +160,28 @@ void common<T>::getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> 
     csrRowOffsets[row + 1]++;
   }
 
-  // Clean the unused memory.
+  /* Clean the unused memory. */
   for (row = 0; row < size; ++row) {
     std::memmove(&csrColInd[csrRowOffsets[row]], &csrColInd[row * STENCIL_WIDTH], sizeof(int) * csrRowOffsets[row + 1]);
     std::memmove(&csrValues[csrRowOffsets[row]], &csrValues[row * STENCIL_WIDTH], sizeof(T) * csrRowOffsets[row + 1]);
     csrRowOffsets[row + 1] += csrRowOffsets[row];
   }
+
+  /* Now, csrValues[csrRowoffsets[i]] = diag_i. */
+
+  /* Sort column indexes. 
+#pragma omp parallel for
+  for (row = 0; row < size; ++row) {
+    int nnzCurrentRow = csrRowOffsets[row + 1] - csrRowOffsets[row];
+    for (int i{0}; i < nnzCurrentRow; ++i)
+      for (int j{0}; j < nnzCurrentRow - 1 - i; ++j) {
+        if (csrColInd[csrRowOffsets[row] + j] > csrColInd[csrRowOffsets[row] + j + 1]) {
+          std::swap(csrColInd[csrRowOffsets[row] + j], csrColInd[csrRowOffsets[row] + j + 1]);
+          std::swap(csrValues[csrRowOffsets[row] + j], csrValues[csrRowOffsets[row] + j + 1]);
+        }
+      }
+  }
+  */
 }
 
 template <typename T>
@@ -223,6 +239,77 @@ void common<T>::getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::ve
     dl[(matIdx + 1) * P - 1] = -k_z_ref;
     d[(matIdx + 1) * P - 1]  = (k_x_ref * temp_i) + (k_y_ref * temp_j) + k_z_ref + (2 * k_out_ref);
     du[(matIdx + 1) * P - 1] = 0;
+  }
+}
+
+template <typename T>
+void common<T>::getSsorData(const std::vector<int> &csrRowOffsets, const std::vector<int> &csrColInd, const std::vector<T> &csrValues, const T omega, std::vector<T> &ssorValues)
+{
+  if (!(static_cast<T>(0) < omega && omega < static_cast<T>(2))) {
+    std::cerr << "omega=" << omega << " does not satisfy (0, 2)." << std::endl;
+    std::cerr << "There is nothing to do in this routine." << std::endl;
+    return;
+  }
+
+  size_t         size = dims[0] * dims[1] * dims[2];
+  size_t         nnz  = csrRowOffsets[size];
+  std::vector<T> diag(size);
+  T              temp{1 / (2 - omega)};
+
+#pragma omp parallel for
+  for (int row{0}; row < size; ++row) diag[row] = csrValues[csrRowOffsets[row]];
+
+#pragma omp parallel for
+  for (int row{0}; row < size; ++row) {
+    int col{0};
+    for (int i{0}; i < csrRowOffsets[row + 1] - csrRowOffsets[row]; ++i) {
+      col = csrColInd[csrRowOffsets[row] + i];
+      /* Diagonal */
+      if (col == row) ssorValues[csrRowOffsets[row] + i] = diag[row] * temp / omega;
+      /* L part. */
+      if (col < row) ssorValues[csrRowOffsets[row] + i] = csrValues[csrRowOffsets[row] + i] * omega / diag[col];
+      /* U part. */
+      if (col > row) ssorValues[csrRowOffsets[row] + i] = csrValues[csrRowOffsets[row] + i] * temp;
+    }
+  }
+}
+
+template <typename T>
+void common<T>::getSsorDataSplit(const std::vector<int> &csrRowOffsets, const std::vector<int> &csrColInd, const std::vector<T> &csrValues, std::vector<int> &lRowOffsets, std::vector<int> &lColInd, std::vector<T> &lValues, std::vector<int> &uRowOffsets, std::vector<int> &uColInd, std::vector<T> &uValues)
+{
+  size_t size = dims[0] * dims[1] * dims[2];
+  int    lIdx{0}, uIdx{0};
+
+  for (int row{0}; row < size; ++row) {
+    lRowOffsets[row + 1] = 1;
+    lColInd[lIdx]        = row;
+    lValues[lIdx]        = 1;
+    lIdx++;
+    // lRowOffsets[row] = 0;
+
+    uRowOffsets[row + 1] = 0;
+    int col{0};
+    for (int i{0}; i < csrRowOffsets[row + 1] - csrRowOffsets[row]; ++i) {
+      col = csrColInd[csrRowOffsets[row] + i];
+      /* L part, no diagonal. */
+      if (col < row) {
+        lRowOffsets[row + 1]++;
+        lColInd[lIdx] = col;
+        lValues[lIdx] = csrValues[i + csrRowOffsets[row]];
+        lIdx++;
+      }
+      /* U part, contains diagonal. */
+      else {
+        uRowOffsets[row + 1]++;
+        uColInd[uIdx] = col;
+        uValues[uIdx] = csrValues[i + csrRowOffsets[row]];
+        uIdx++;
+      }
+    }
+  }
+  for (int row{1}; row < size + 1; ++row) {
+    lRowOffsets[row] += lRowOffsets[row - 1];
+    uRowOffsets[row] += uRowOffsets[row - 1];
   }
 }
 
