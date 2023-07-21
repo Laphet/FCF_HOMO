@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
   std::vector<T> u_cpu(size);
   if (glbOps.withoutPrecond) cpuSolver.solveWithoutPrecond(&u_cpu[0], &rhs[0]);
   else if (glbOps.withSsor) {
-    cpuSolver.solveWithSsor(&u_cpu[0], &rhs[0], &csrRowOffsets[0], &csrColInd[0], &ssorValues[0], 3);
+    cpuSolver.solveWithSsor(&u_cpu[0], &rhs[0], &ssorValues[0], 3);
   } else cpuSolver.solve(&u_cpu[0], &rhs[0]);
 
   /* Get errors comparing with the reference solution. */

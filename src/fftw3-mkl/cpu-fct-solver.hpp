@@ -89,20 +89,28 @@ void mv(const sparse_operation_t operation, const double alpha, const sparse_mat
 void trsv(const sparse_operation_t operation, const float alpha, const sparse_matrix_t A, const struct matrix_descr descr, const float *x, float *y);
 void trsv(const sparse_operation_t operation, const double alpha, const sparse_matrix_t A, const struct matrix_descr descr, const double *x, double *y);
 } // namespace sparse
+
+template <typename T>
+struct spMat {
+  sparse_matrix_t descr;
+  MKL_INT        *rowOffsetsPtr;
+  MKL_INT        *colIndPtr;
+  T              *valuesPtr;
+};
 } // namespace mkl
 
 template <typename T>
 class fctSolver {
   using fftw_plan_T = decltype(fftw::traits<T>::planType);
-  int             dims[3];
-  T              *resiBuffer;
-  fftw_plan_T     forwardPlan;  // in-place data manipulation.
-  fftw_plan_T     backwardPlan; // in-place data manipulation.
-  T              *dlPtr;        // Use the data in the wider scope, and also modify it.
-  T              *dPtr;
-  T              *duPtr;
-  bool            useTridSolverParallelLoop;
-  sparse_matrix_t csrMat;
+  int            dims[3];
+  T             *resiBuffer;
+  fftw_plan_T    forwardPlan;  // in-place data manipulation.
+  fftw_plan_T    backwardPlan; // in-place data manipulation.
+  T             *dlPtr;        // Just a placeholder.
+  std::vector<T> d;            // copy the data first.
+  std::vector<T> du;
+  bool           useTridSolverParallelLoop;
+  mkl::spMat<T>  csrMat;
 
 public:
   fctSolver(const int _M, const int _N, const int _P);
@@ -121,7 +129,7 @@ public:
 
   void solveWithoutPrecond(T *u, const T *b, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
 
-  void solveWithSsor(T *u, const T *b, MKL_INT *ssorRowOffsets, MKL_INT *ssorColInd, T *ssorValues, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
+  void solveWithSsor(T *u, const T *b, T *ssorValues, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
 
   ~fctSolver();
 };

@@ -252,7 +252,8 @@ void trsv(const sparse_operation_t operation, const double alpha, const sparse_m
 } // namespace mkl
 
 template <typename T>
-fctSolver<T>::fctSolver(const int _M, const int _N, const int _P) : dims{_M, _N, _P}, resiBuffer{nullptr}, forwardPlan{nullptr}, backwardPlan{nullptr}, dlPtr{nullptr}, dPtr{nullptr}, duPtr{nullptr}, useTridSolverParallelLoop{true}, csrMat{nullptr}
+fctSolver<T>::fctSolver(const int _M, const int _N, const int _P) :
+  dims{_M, _N, _P}, resiBuffer{nullptr}, forwardPlan{nullptr}, backwardPlan{nullptr}, dlPtr{nullptr}, d(_M * _N * _P), du(_M * _N * _P), useTridSolverParallelLoop{true}, csrMat{nullptr, nullptr, nullptr}
 {
   const decltype(fftw::traits<T>::r2rKind) r2rKinds[]{FFTW_REDFT10, FFTW_REDFT10, FFTW_REDFT01, FFTW_REDFT01};
   fftw::traits<T>::initThreads();
@@ -291,24 +292,26 @@ void fctSolver<T>::fctBackward(T *v)
 template <typename T>
 void fctSolver<T>::setTridSolverData(T *dl, T *d, T *du, bool _parallelFor)
 {
-  if (dlPtr != nullptr || dPtr != nullptr || duPtr != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
+  if (this->dlPtr != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
   dlPtr = &dl[0];
-  dPtr  = &d[0];
-  duPtr = &du[0];
+
+  size_t size = dims[0] * dims[1] * dims[2];
+  mkl::cblas::copy(size, &d[0], 1, &this->d[0], 1);
+  mkl::cblas::copy(size, &du[0], 1, &this->du[0], 1);
 
   if (_parallelFor) {
 #pragma omp parallel for
-    for (int idx{0}; idx < dims[0] * dims[1]; ++idx) mkl::LAPACKE::pttrf(dims[2], &dPtr[idx * dims[2]], &duPtr[idx * dims[2]]);
+    for (int idx{0}; idx < dims[0] * dims[1]; ++idx) mkl::LAPACKE::pttrf(dims[2], &this->d[idx * dims[2]], &this->du[idx * dims[2]]);
   } else {
     useTridSolverParallelLoop = false;
-    mkl::LAPACKE::pttrf(dims[0] * dims[1] * dims[2], dPtr, duPtr);
+    mkl::LAPACKE::pttrf(dims[0] * dims[1] * dims[2], &this->d[0], &this->du[0]);
   }
 }
 
 template <typename T>
 void fctSolver<T>::precondSolver(T *rhs)
 {
-  if (dlPtr == nullptr || dPtr == nullptr || duPtr == nullptr) {
+  if (dlPtr == nullptr) {
     std::cerr << "The internal data have not been initialized!\n";
     std::cerr << "There will be nothing to do in this routine.\n";
     return;
@@ -318,9 +321,9 @@ void fctSolver<T>::precondSolver(T *rhs)
 
   if (useTridSolverParallelLoop) {
 #pragma omp parallel for
-    for (int idx{0}; idx < dims[0] * dims[1]; ++idx) mkl::LAPACKE::pttrs(LAPACK_ROW_MAJOR, dims[2], 1, &dPtr[idx * dims[2]], &duPtr[idx * dims[2]], &rhs[idx * dims[2]], 1);
+    for (int idx{0}; idx < dims[0] * dims[1]; ++idx) mkl::LAPACKE::pttrs(LAPACK_ROW_MAJOR, dims[2], 1, &this->d[idx * dims[2]], &this->du[idx * dims[2]], &rhs[idx * dims[2]], 1);
   } else {
-    mkl::LAPACKE::pttrs(LAPACK_ROW_MAJOR, dims[0] * dims[1] * dims[2], 1, dPtr, duPtr, &rhs[0], 1);
+    mkl::LAPACKE::pttrs(LAPACK_ROW_MAJOR, dims[0] * dims[1] * dims[2], 1, &this->d[0], &this->du[0], &rhs[0], 1);
   }
 
   fctBackward(rhs);
@@ -329,31 +332,35 @@ void fctSolver<T>::precondSolver(T *rhs)
 template <typename T>
 void fctSolver<T>::setSprMatData(MKL_INT *csrRowOffsets, MKL_INT *csrColInd, T *csrValues)
 {
-  if (csrMat != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
+  if (csrMat.descr != nullptr) std::cerr << "The internal data have been initialized, be careful!\n";
+
+  csrMat.rowOffsetsPtr = csrRowOffsets;
+  csrMat.colIndPtr     = csrColInd;
+  csrMat.valuesPtr     = csrValues;
 
   MKL_INT size = dims[0] * dims[1] * dims[2];
-  mkl::sparse::createCsr(&csrMat, SPARSE_INDEX_BASE_ZERO, size, size, &csrRowOffsets[0], &csrRowOffsets[1], &csrColInd[0], &csrValues[0]);
+  mkl::sparse::createCsr(&csrMat.descr, SPARSE_INDEX_BASE_ZERO, size, size, &csrMat.rowOffsetsPtr[0], &csrMat.rowOffsetsPtr[1], &csrMat.colIndPtr[0], &csrMat.valuesPtr[0]);
 }
 
 template <typename T>
 void fctSolver<T>::solve(T *u, const T *b, const int maxIter, const T rtol, const T atol)
 {
-  if (dlPtr == nullptr || dPtr == nullptr || duPtr == nullptr || csrMat == nullptr) {
+  if (dlPtr == nullptr || csrMat.descr == nullptr) {
     std::cerr << "The internal data have not been initialized!\n";
     std::cerr << "There will be nothing to do in this routine.\n";
     return;
   }
 
   /* Prepare mv. */
-  mkl::sparse::setMvHint(csrMat, SPARSE_OPERATION_NON_TRANSPOSE, DESCR_SYM, maxIter + 1);
-  mkl::sparse::optimize(csrMat);
+  mkl::sparse::setMvHint(csrMat.descr, SPARSE_OPERATION_NON_TRANSPOSE, DESCR_SYM, maxIter + 1);
+  mkl::sparse::optimize(csrMat.descr);
 
   int     size{dims[0] * dims[1] * dims[2]};
   const T myOne{static_cast<T>(1)}, myZero{static_cast<T>(0)};
   /* r <= b, r <- r - A*u */
   std::vector<T> r(size);
   mkl::cblas::copy(size, &b[0], 1, &r[0], 1);
-  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat, DESCR_SYM, &u[0], myOne, &r[0]);
+  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat.descr, DESCR_SYM, &u[0], myOne, &r[0]);
 
   /* resi <= r, resi <- inv(A)*resi */
   mkl::cblas::copy(size, &r[0], 1, &resiBuffer[0], 1);
@@ -371,7 +378,7 @@ void fctSolver<T>::solve(T *u, const T *b, const int maxIter, const T rtol, cons
 
   for (int itrIdx{0}; itrIdx < maxIter; ++itrIdx) {
     /* aux <- A*p + 0*aux, alpha <- rDresi / p (dot) aux */
-    mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, csrMat, DESCR_SYM, &p[0], myZero, &aux[0]);
+    mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, csrMat.descr, DESCR_SYM, &p[0], myZero, &aux[0]);
     alpha = rDresi / mkl::cblas::dot(size, &p[0], 1, &aux[0], 1);
 
     /* u <- u + alpha*p */
@@ -417,7 +424,7 @@ void fctSolver<T>::solve(T *u, const T *b, const int maxIter, const T rtol, cons
 /* Check residual again, this is the true residual of the solution. */
 #ifdef DEBUG
   mkl::cblas::copy(size, &b[0], 1, &r[0], 1);
-  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat, DESCR_SYM, &u[0], myOne, &r[0]);
+  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat.descr, DESCR_SYM, &u[0], myOne, &r[0]);
   rNorm = mkl::cblas::nrm2(size, &r[0], 1);
   std::printf("The true residual norm=%.6e.\n", rNorm);
 #endif
@@ -426,22 +433,22 @@ void fctSolver<T>::solve(T *u, const T *b, const int maxIter, const T rtol, cons
 template <typename T>
 void fctSolver<T>::solveWithoutPrecond(T *u, const T *b, const int maxIter, const T rtol, const T atol)
 {
-  if (csrMat == nullptr) {
+  if (csrMat.descr == nullptr) {
     std::cerr << "The internal data have not been initialized!\n";
     std::cerr << "There will be nothing to do in this routine.\n";
     return;
   }
 
   /* Prepare mv. */
-  mkl::sparse::setMvHint(csrMat, SPARSE_OPERATION_NON_TRANSPOSE, DESCR_SYM, maxIter + 1);
-  mkl::sparse::optimize(csrMat);
+  mkl::sparse::setMvHint(csrMat.descr, SPARSE_OPERATION_NON_TRANSPOSE, DESCR_SYM, maxIter + 1);
+  mkl::sparse::optimize(csrMat.descr);
 
   int     size{dims[0] * dims[1] * dims[2]};
   const T myOne{static_cast<T>(1)}, myZero{static_cast<T>(0)};
   /* r <= b, r <- r - A*u */
   std::vector<T> r(size);
   mkl::cblas::copy(size, &b[0], 1, &r[0], 1);
-  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat, DESCR_SYM, &u[0], myOne, &r[0]);
+  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat.descr, DESCR_SYM, &u[0], myOne, &r[0]);
 
   /* p <= r */
   std::vector<T> p(size);
@@ -454,7 +461,7 @@ void fctSolver<T>::solveWithoutPrecond(T *u, const T *b, const int maxIter, cons
 
   for (int itrIdx{0}; itrIdx < maxIter; ++itrIdx) {
     /* aux <- A*p - 0*aux, alpha <- rDr / p (dot) aux */
-    mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, csrMat, DESCR_SYM, &p[0], myZero, &aux[0]);
+    mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, csrMat.descr, DESCR_SYM, &p[0], myZero, &aux[0]);
     alpha = rDr / mkl::cblas::dot(size, &p[0], 1, &aux[0], 1);
 
     /* u <- u + alpha*p */
@@ -493,7 +500,7 @@ void fctSolver<T>::solveWithoutPrecond(T *u, const T *b, const int maxIter, cons
   /* Check residual again, this is the true residual of the solution. */
 #ifdef DEBUG
   mkl::cblas::copy(size, &b[0], 1, &r[0], 1);
-  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat, DESCR_SYM, &u[0], myOne, &r[0]);
+  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat.descr, DESCR_SYM, &u[0], myOne, &r[0]);
   rNorm = mkl::cblas::nrm2(size, &r[0], 1);
   std::printf("The true residual norm=%.6e.\n", rNorm);
 #endif
@@ -507,9 +514,9 @@ void viewRealVec(std::vector<T> &vec)
 }
 
 template <typename T>
-void fctSolver<T>::solveWithSsor(T *u, const T *b, MKL_INT *ssorRowOffsets, MKL_INT *ssorColInd, T *ssorValues, const int maxIter, const T rtol, const T atol)
+void fctSolver<T>::solveWithSsor(T *u, const T *b, T *ssorValues, const int maxIter, const T rtol, const T atol)
 {
-  if (csrMat == nullptr) {
+  if (csrMat.descr == nullptr) {
     std::cerr << "The internal data have not been initialized!\n";
     std::cerr << "There will be nothing to do in this routine.\n";
     return;
@@ -520,26 +527,26 @@ void fctSolver<T>::solveWithSsor(T *u, const T *b, MKL_INT *ssorRowOffsets, MKL_
   std::vector<T> aVec(size);
 
   /* Prepare Ly = b operation. */
-  sparse_matrix_t L{nullptr};
-  mkl::sparse::createCsr(&L, SPARSE_INDEX_BASE_ZERO, size, size, &ssorRowOffsets[0], &ssorRowOffsets[1], &ssorColInd[0], &ssorValues[0]);
-  mkl::sparse::setSvHint(L, SPARSE_OPERATION_NON_TRANSPOSE, DESCR_L, maxIter + 1);
-  mkl::sparse::optimize(L);
+  mkl::spMat<T> L{nullptr, csrMat.rowOffsetsPtr, csrMat.colIndPtr, ssorValues};
+  mkl::sparse::createCsr(&L.descr, SPARSE_INDEX_BASE_ZERO, size, size, &L.rowOffsetsPtr[0], &L.rowOffsetsPtr[1], &L.colIndPtr[0], &L.valuesPtr[0]);
+  mkl::sparse::setSvHint(L.descr, SPARSE_OPERATION_NON_TRANSPOSE, DESCR_L, maxIter + 1);
+  mkl::sparse::optimize(L.descr);
 
   /* Prepare Ux = y operation. */
-  sparse_matrix_t U{nullptr};
-  mkl::sparse::createCsr(&U, SPARSE_INDEX_BASE_ZERO, size, size, &ssorRowOffsets[0], &ssorRowOffsets[1], &ssorColInd[0], &ssorValues[0]);
-  mkl::sparse::setSvHint(U, SPARSE_OPERATION_NON_TRANSPOSE, DESCR_U, maxIter + 1);
-  mkl::sparse::optimize(U);
+  mkl::spMat<T> U{nullptr, csrMat.rowOffsetsPtr, csrMat.colIndPtr, ssorValues};
+  mkl::sparse::createCsr(&U.descr, SPARSE_INDEX_BASE_ZERO, size, size, &U.rowOffsetsPtr[0], &U.rowOffsetsPtr[1], &U.colIndPtr[0], &U.valuesPtr[0]);
+  mkl::sparse::setSvHint(U.descr, SPARSE_OPERATION_NON_TRANSPOSE, DESCR_U, maxIter + 1);
+  mkl::sparse::optimize(U.descr);
 
   /* Prepare mv. */
-  mkl::sparse::setMvHint(csrMat, SPARSE_OPERATION_NON_TRANSPOSE, DESCR_SYM, maxIter + 1);
-  mkl::sparse::optimize(csrMat);
+  mkl::sparse::setMvHint(csrMat.descr, SPARSE_OPERATION_NON_TRANSPOSE, DESCR_SYM, maxIter + 1);
+  mkl::sparse::optimize(csrMat.descr);
 
   const T myOne{static_cast<T>(1)}, myZero{static_cast<T>(0)};
   /* r <= b, r <- r - A*u */
   std::vector<T> r(size);
   mkl::cblas::copy(size, &b[0], 1, &r[0], 1);
-  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat, DESCR_SYM, &u[0], myOne, &r[0]);
+  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat.descr, DESCR_SYM, &u[0], myOne, &r[0]);
 
   std::cout << "cpu r=\n";
   std::memcpy(&aVec[0], &r[0], size * sizeof(T));
@@ -547,13 +554,13 @@ void fctSolver<T>::solveWithSsor(T *u, const T *b, MKL_INT *ssorRowOffsets, MKL_
 
   /* aux <- inv(L) r, resi <- inv(U) aux */
   std::vector<T> aux(size);
-  mkl::sparse::trsv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, L, DESCR_L, &r[0], &aux[0]);
+  mkl::sparse::trsv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, L.descr, DESCR_L, &r[0], &aux[0]);
 
   std::cout << "cpu aux=\n";
   std::memcpy(&aVec[0], &aux[0], size * sizeof(T));
   viewRealVec(aVec);
 
-  mkl::sparse::trsv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, U, DESCR_U, &aux[0], &resiBuffer[0]);
+  mkl::sparse::trsv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, U.descr, DESCR_U, &aux[0], &resiBuffer[0]);
 
   std::cout << "cpu z=\n";
   std::memcpy(&aVec[0], &resiBuffer[0], size * sizeof(T));
@@ -570,7 +577,7 @@ void fctSolver<T>::solveWithSsor(T *u, const T *b, MKL_INT *ssorRowOffsets, MKL_
 
   for (int itrIdx{0}; itrIdx < maxIter; ++itrIdx) {
     /* aux <- A*p + 0*aux, alpha <- rDresi / p (dot) aux */
-    mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, csrMat, DESCR_SYM, &p[0], myZero, &aux[0]);
+    mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, csrMat.descr, DESCR_SYM, &p[0], myZero, &aux[0]);
     alpha = rDresi / mkl::cblas::dot(size, &p[0], 1, &aux[0], 1);
 
     /* u <- u + alpha*p */
@@ -603,9 +610,9 @@ void fctSolver<T>::solveWithSsor(T *u, const T *b, MKL_INT *ssorRowOffsets, MKL_
     /* resi <= r, resi <- inv(A)*resi */
     mkl::cblas::copy(size, &r[0], 1, &resiBuffer[0], 1);
     // mkl::cblas::scal(size, myZero, &aux[0], 1);
-    mkl::sparse::trsv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, L, DESCR_L, &r[0], &aux[0]);
+    mkl::sparse::trsv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, L.descr, DESCR_L, &r[0], &aux[0]);
     // mkl::cblas::scal(size, myZero, &resiBuffer[0], 1);
-    mkl::sparse::trsv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, U, DESCR_U, &aux[0], &resiBuffer[0]);
+    mkl::sparse::trsv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, U.descr, DESCR_U, &aux[0], &resiBuffer[0]);
 
     /* rDresiNew <- r (dot) resi, beta <- rDresiNew / rDresi */
     rDresiNew = mkl::cblas::dot(size, &r[0], 1, &resiBuffer[0], 1);
@@ -621,25 +628,23 @@ void fctSolver<T>::solveWithSsor(T *u, const T *b, MKL_INT *ssorRowOffsets, MKL_
 /* Check residual again, this is the true residual of the solution. */
 #ifdef DEBUG
   mkl::cblas::copy(size, &b[0], 1, &r[0], 1);
-  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat, DESCR_SYM, &u[0], myOne, &r[0]);
+  mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat.descr, DESCR_SYM, &u[0], myOne, &r[0]);
   rNorm = mkl::cblas::nrm2(size, &r[0], 1);
   std::printf("The true residual norm=%.6e.\n", rNorm);
 #endif
 
   /* Cleaning. */
-  mkl::sparse::destroy(U);
-  mkl::sparse::destroy(L);
+  mkl::sparse::destroy(U.descr);
+  mkl::sparse::destroy(L.descr);
 }
 
 template <typename T>
 fctSolver<T>::~fctSolver()
 {
-  if (csrMat != nullptr) {
-    mkl::sparse::destroy(csrMat);
-    csrMat = nullptr;
+  if (csrMat.descr != nullptr) {
+    mkl::sparse::destroy(csrMat.descr);
+    csrMat.descr = nullptr;
   }
-  duPtr = nullptr;
-  dPtr  = nullptr;
   dlPtr = nullptr;
   fftw::destroyPlan(backwardPlan);
   backwardPlan = nullptr;
