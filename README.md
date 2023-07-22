@@ -99,11 +99,19 @@ Now the old sparse MV routines are deprecated, we should use new functions:
 - Change vscode cmake tools settings.
 - Move .pc files to ./externals.
 
-### Use valgrind to detect memory leaks
+### Detect memory leaks
 Install valgrind via conda, and try:
 
 - valgrind --leak-check=yes ./main
 - valgrind --leak-check=full --show-leak-kinds=all ./main > valgrind_report.txt
+
+Use intel inspector.
+
+### Important notes
+- The mkl trsv routine needs the csr matrix with the diagonal entry starting first.
+- cusparse SpSV seems to work incorrectly?
+
+
 
 ### References
 [1] Makhoul, J. (1980). A fast cosine transform in one and two dimensions. 

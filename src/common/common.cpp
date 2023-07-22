@@ -167,21 +167,20 @@ void common<T>::getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> 
     csrRowOffsets[row + 1] += csrRowOffsets[row];
   }
 
-  /* Now, csrValues[csrRowoffsets[i]] = diag_i. */
+/* Now, csrValues[csrRowoffsets[i]] = diag_i. */
 
-  /* Sort column indexes. 
+/* Sort column indexes. */
 #pragma omp parallel for
   for (row = 0; row < size; ++row) {
     int nnzCurrentRow = csrRowOffsets[row + 1] - csrRowOffsets[row];
-    for (int i{0}; i < nnzCurrentRow; ++i)
-      for (int j{0}; j < nnzCurrentRow - 1 - i; ++j) {
+    for (int i{0}; i < nnzCurrentRow - 1; ++i)
+      for (int j{1}; j < nnzCurrentRow - 1 - i; ++j) {
         if (csrColInd[csrRowOffsets[row] + j] > csrColInd[csrRowOffsets[row] + j + 1]) {
           std::swap(csrColInd[csrRowOffsets[row] + j], csrColInd[csrRowOffsets[row] + j + 1]);
           std::swap(csrValues[csrRowOffsets[row] + j], csrValues[csrRowOffsets[row] + j + 1]);
         }
       }
   }
-  */
 }
 
 template <typename T>

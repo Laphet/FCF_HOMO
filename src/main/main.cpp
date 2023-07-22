@@ -229,7 +229,7 @@ int main(int argc, char *argv[])
   std::vector<T> u_gpu(size);
   if (glbOps.withoutPrecond) gpuSolver.solveWithoutPrecond(&u_gpu[0], &rhs[0]);
   else if (glbOps.withSsor) {
-    gpuSolver.solveWithSsor(&u_gpu[0], &rhs[0], &ssorValues[0], 3);
+    gpuSolver.solveWithSsor(&u_gpu[0], &rhs[0], &ssorValues[0]);
     // gpuSolver.solveWithSsorSplit(&u_gpu[0], &rhs[0], &lRowOffsets[0], &lColInd[0], &lValues[0], &uRowOffsets[0], &uColInd[0], &uValues[0], 3);
   } else gpuSolver.solve(&u_gpu[0], &rhs[0]);
 
@@ -240,7 +240,7 @@ int main(int argc, char *argv[])
   std::vector<T> u_cpu(size);
   if (glbOps.withoutPrecond) cpuSolver.solveWithoutPrecond(&u_cpu[0], &rhs[0]);
   else if (glbOps.withSsor) {
-    cpuSolver.solveWithSsor(&u_cpu[0], &rhs[0], &ssorValues[0], 3);
+    cpuSolver.solveWithSsor(&u_cpu[0], &rhs[0], &ssorValues[0]);
   } else cpuSolver.solve(&u_cpu[0], &rhs[0]);
 
   /* Get errors comparing with the reference solution. */
