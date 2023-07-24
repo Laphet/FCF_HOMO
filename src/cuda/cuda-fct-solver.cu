@@ -519,12 +519,31 @@ void cufctSolver<T>::precondSolver(T *rhs)
   fctBackward(rhs);
 }
 
+void gthr(cusparseHandle_t handle, int nnz, const float *y, float *xVal, const int *xInd, cusparseIndexBase_t idxBase)
+{
+  CHECK_CUDA_ERROR(cusparseSgthr(handle, nnz, y, xVal, xInd, idxBase));
+}
+
+void gthr(cusparseHandle_t handle, int nnz, const double *y, double *xVal, const int *xInd, cusparseIndexBase_t idxBase)
+{
+  CHECK_CUDA_ERROR(cusparseDgthr(handle, nnz, y, xVal, xInd, idxBase));
+}
+
+template <typename T>
+void cuFreeMod(T *&ptr)
+{
+  if (ptr != nullptr) {
+    CHECK_CUDA_ERROR(cudaFree(ptr));
+    ptr = nullptr;
+  }
+}
+
 template <typename T>
 void cufctSolver<T>::setSprMatData(int *csrRowOffsets, int *csrColInd, T *csrValues)
 {
   int size{dims[0] * dims[1] * dims[2]};
   // Save nnz in the host memory for the further usuage.
-  this->nnz = csrRowOffsets[size];
+  nnz = csrRowOffsets[size];
 
   if (csrMat.rowOffsetsPtr == nullptr) CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&csrMat.rowOffsetsPtr), (size + 1) * sizeof(int)));
   if (csrMat.colIndPtr == nullptr) CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&csrMat.colIndPtr), nnz * sizeof(int)));
@@ -536,19 +555,6 @@ void cufctSolver<T>::setSprMatData(int *csrRowOffsets, int *csrColInd, T *csrVal
 
   CHECK_CUDA_ERROR(
     cusparseCreateCsr(&csrMat.descr, static_cast<int64_t>(size), static_cast<int64_t>(size), static_cast<int64_t>(nnz), reinterpret_cast<void *>(csrMat.rowOffsetsPtr), reinterpret_cast<void *>(csrMat.colIndPtr), reinterpret_cast<void *>(csrMat.valuesPtr), CUSPARSE_INDEX_32I, CUSPARSE_INDEX_32I, CUSPARSE_INDEX_BASE_ZERO, cuTraits<T>::valueType));
-
-  // std::vector<T> realVec(nnz);
-  // CHECK_CUDA_ERROR(cudaMemcpy(&realVec[0], &csrMat.valuesPtr[0], nnz * sizeof(T), cudaMemcpyDeviceToHost));
-  // viewRealVec(realVec);
-}
-
-template <typename T>
-void cuFreeMod(T *&ptr)
-{
-  if (ptr != nullptr) {
-    CHECK_CUDA_ERROR(cudaFree(ptr));
-    ptr = nullptr;
-  }
 }
 
 void cublasDot(cublasHandle_t handle, int n, const float *x, const float *y, float *result)
@@ -859,9 +865,6 @@ void cufctSolver<T>::solveWithSsor(T *u, const T *b, T *ssorValues, const int ma
 
   size_t size = dims[0] * dims[1] * dims[2];
 
-  // Test region.
-  std::vector<T> aVec(size);
-
   /* Prepare mat L and U. */
   spMat<T> L{nullptr, csrMat.rowOffsetsPtr, csrMat.colIndPtr, nullptr};
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&L.valuesPtr), nnz * sizeof(T)));
@@ -911,53 +914,33 @@ void cufctSolver<T>::solveWithSsor(T *u, const T *b, T *ssorValues, const int ma
   // aux.ptr = realBuffer;
   CHECK_CUDA_ERROR(cusparseCreateDnVec(&aux.descr, static_cast<int64_t>(size), reinterpret_cast<void *>(aux.ptr), cuTraits<T>::valueType));
 
-  // Create spSV for z <- inv(L U) r
-  cusparseSpSVDescr_t spsvDescrL{nullptr}, spsvDescrU{nullptr};
+  // Create spSV for aux <- inv(L) r
+  cusparseSpSVDescr_t spsvDescrL{nullptr};
   CHECK_CUDA_ERROR(cusparseSpSV_createDescr(&spsvDescrL));
-  CHECK_CUDA_ERROR(cusparseSpSV_createDescr(&spsvDescrU));
-  void  *bufferSV{nullptr};
-  size_t bufferSizeL{0}, bufferSizeU{0};
+  void  *bufferSvL{nullptr};
+  size_t bufferSizeL{0};
   alpha = 1;
   CHECK_CUDA_ERROR(cusparseSpSV_bufferSize(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, L.descr, r.descr, aux.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrL, &bufferSizeL));
-  CHECK_CUDA_ERROR(cusparseSpSV_bufferSize(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, U.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrU, &bufferSizeU));
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&bufferSV), std::max(bufferSizeL, bufferSizeU)));
-  CHECK_CUDA_ERROR(cusparseSpSV_analysis(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, L.descr, r.descr, aux.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrL, bufferSV));
-  CHECK_CUDA_ERROR(cusparseSpSV_analysis(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, U.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrU, bufferSV));
-
-  std::cout << "cuda r=\n";
-  cudaMemcpy(&aVec[0], &r.ptr[0], size * sizeof(T), cudaMemcpyDeviceToHost);
-  viewRealVec(aVec);
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&bufferSvL), bufferSizeL));
+  CHECK_CUDA_ERROR(cusparseSpSV_analysis(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, L.descr, r.descr, aux.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrL, bufferSvL));
 
   // aux <- inv(L) r
   CHECK_CUDA_ERROR(cudaMemset(reinterpret_cast<void *>(aux.ptr), 0, size * sizeof(T)));
   CHECK_CUDA_ERROR(cusparseSpSV_solve(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, L.descr, r.descr, aux.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrL));
 
-  std::cout << "cuda aux=\n";
-  cudaMemcpy(&aVec[0], &aux.ptr[0], size * sizeof(T), cudaMemcpyDeviceToHost);
-  viewRealVec(aVec);
-
-  // rhs <= r, rhs <- -L aux + rhs
-  // void    *bufferMVtemp{nullptr};
-  // size_t   buffterMVtempSizeL{0};
-  // T        minusOne = -1, one = 1;
-  // dnVec<T> rhs{nullptr, reinterpret_cast<T *>(compBuffer)};
-  // CHECK_CUDA_ERROR(cusparseCreateDnVec(&rhs.descr, static_cast<int64_t>(size), reinterpret_cast<void *>(rhs.ptr), cuTraits<T>::valueType));
-  // CHECK_CUDA_ERROR(cusparseSpMV_bufferSize(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &minusOne, L.descr, aux.descr, &one, rhs.descr, cuTraits<T>::valueType, CUSPARSE_SPMV_ALG_DEFAULT, &buffterMVtempSizeL));
-  // CHECK_CUDA_ERROR(cudaMalloc((&bufferMVtemp), static_cast<size_t>(buffterMVtempSizeL)));
-  // CHECK_CUDA_ERROR(cudaMemcpy(rhs.ptr, r.ptr, size * sizeof(T), cudaMemcpyDeviceToDevice));
-  // CHECK_CUDA_ERROR(cusparseSpMV(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &minusOne, L.descr, aux.descr, &one, rhs.descr, cuTraits<T>::valueType, CUSPARSE_SPMV_ALG_DEFAULT, bufferMVtemp));
-  // T rhsNorm = 0;
-  // cublasNorm(blasHandle, size, &rhs.ptr[0], &rhsNorm);
-  // std::printf("rhs error=%.6e\n", rhsNorm);
-  // cuFreeMod(bufferMVtemp);
+  // Create SpSV for z <- inv(U) aux.
+  cusparseSpSVDescr_t spsvDescrU{nullptr};
+  CHECK_CUDA_ERROR(cusparseSpSV_createDescr(&spsvDescrU));
+  void  *bufferSvU{nullptr};
+  size_t bufferSizeU{0};
+  alpha = 1;
+  CHECK_CUDA_ERROR(cusparseSpSV_bufferSize(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, U.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrU, &bufferSizeU));
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&bufferSvU), bufferSizeU));
+  CHECK_CUDA_ERROR(cusparseSpSV_analysis(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, U.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrU, bufferSvU));
 
   // z <- inv(U) aux
   CHECK_CUDA_ERROR(cudaMemset(reinterpret_cast<void *>(z.ptr), 0, size * sizeof(T)));
   CHECK_CUDA_ERROR(cusparseSpSV_solve(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, U.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrU));
-
-  std::cout << "cuda z=\n";
-  cudaMemcpy(&aVec[0], &z.ptr[0], size * sizeof(T), cudaMemcpyDeviceToHost);
-  viewRealVec(aVec);
 
   // Create p, use compBuffer instead, p <= z
   dnVec<T> p{nullptr, nullptr};
@@ -1038,8 +1021,9 @@ void cufctSolver<T>::solveWithSsor(T *u, const T *b, T *ssorValues, const int ma
   /* Free all resources. */
   CHECK_CUDA_ERROR(cusparseDestroyDnVec(p.descr));
 
-  cuFreeMod(bufferSV);
+  cuFreeMod(bufferSvU);
   CHECK_CUDA_ERROR(cusparseSpSV_destroyDescr(spsvDescrU));
+  cuFreeMod(bufferSvL);
   CHECK_CUDA_ERROR(cusparseSpSV_destroyDescr(spsvDescrL));
 
   CHECK_CUDA_ERROR(cusparseDestroyDnVec(aux.descr));
@@ -1090,8 +1074,38 @@ cufctSolver<T>::~cufctSolver()
   cuFreeMod(realBuffer);
 }
 
+void csric02_bufferSize(cusparseHandle_t handle, int m, int nnz, const cusparseMatDescr_t descrA, float *csrValA, const int *csrRowPtrA, const int *csrColIndA, csric02Info_t info, int *pBufferSizeInBytes)
+{
+  CHECK_CUDA_ERROR(cusparseScsric02_bufferSize(handle, m, nnz, descrA, csrValA, csrRowPtrA, csrColIndA, info, pBufferSizeInBytes));
+}
+
+void csric02_bufferSize(cusparseHandle_t handle, int m, int nnz, const cusparseMatDescr_t descrA, double *csrValA, const int *csrRowPtrA, const int *csrColIndA, csric02Info_t info, int *pBufferSizeInBytes)
+{
+  CHECK_CUDA_ERROR(cusparseDcsric02_bufferSize(handle, m, nnz, descrA, csrValA, csrRowPtrA, csrColIndA, info, pBufferSizeInBytes));
+}
+
+void csric02_analysis(cusparseHandle_t handle, int m, int nnz, const cusparseMatDescr_t descrA, const float *csrValA, const int *csrRowPtrA, const int *csrColIndA, csric02Info_t info, cusparseSolvePolicy_t policy, void *pBuffer)
+{
+  CHECK_CUDA_ERROR(cusparseScsric02_analysis(handle, m, nnz, descrA, csrValA, csrRowPtrA, csrColIndA, info, policy, pBuffer));
+}
+
+void csric02_analysis(cusparseHandle_t handle, int m, int nnz, const cusparseMatDescr_t descrA, const double *csrValA, const int *csrRowPtrA, const int *csrColIndA, csric02Info_t info, cusparseSolvePolicy_t policy, void *pBuffer)
+{
+  CHECK_CUDA_ERROR(cusparseDcsric02_analysis(handle, m, nnz, descrA, csrValA, csrRowPtrA, csrColIndA, info, policy, pBuffer));
+}
+
+void csric02(cusparseHandle_t handle, int m, int nnz, const cusparseMatDescr_t descrA, float *csrValA_valM, const int *csrRowPtrA, const int *csrColIndA, csric02Info_t info, cusparseSolvePolicy_t policy, void *pBuffer)
+{
+  CHECK_CUDA_ERROR(cusparseScsric02(handle, m, nnz, descrA, csrValA_valM, csrRowPtrA, csrColIndA, info, policy, pBuffer));
+}
+
+void csric02(cusparseHandle_t handle, int m, int nnz, const cusparseMatDescr_t descrA, double *csrValA_valM, const int *csrRowPtrA, const int *csrColIndA, csric02Info_t info, cusparseSolvePolicy_t policy, void *pBuffer)
+{
+  CHECK_CUDA_ERROR(cusparseDcsric02(handle, m, nnz, descrA, csrValA_valM, csrRowPtrA, csrColIndA, info, policy, pBuffer));
+}
+
 template <typename T>
-void cufctSolver<T>::solveWithSsorSplit(T *u, const T *b, int *lRowOffsets, int *lColInd, T *lValues, int *uRowOffsets, int *uColInd, T *uValues, const int maxIter, const T rtol, const T atol)
+void cufctSolver<T>::solveWithICC(T *u, const T *b, const int maxIter, const T rtol, const T atol)
 {
   if (csrMat.descr == nullptr) {
     std::cerr << "The internal data have not been initialized!\n";
@@ -1099,38 +1113,7 @@ void cufctSolver<T>::solveWithSsorSplit(T *u, const T *b, int *lRowOffsets, int 
     return;
   }
 
-  size_t size = dims[0] * dims[1] * dims[2];
-
-  // Test region.
-  std::vector<T> aVec(size);
-
-  /* Prepare mat L and U. */
-  size_t   nnzHalf = (nnz + size) / 2;
-  spMat<T> L{nullptr, nullptr, nullptr, nullptr};
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&L.rowOffsetsPtr), (size + 1) * sizeof(int)));
-  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(L.rowOffsetsPtr), reinterpret_cast<void *>(lRowOffsets), (size + 1) * sizeof(int), cudaMemcpyHostToDevice));
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&L.colIndPtr), nnzHalf * sizeof(int)));
-  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(L.colIndPtr), reinterpret_cast<void *>(lColInd), nnzHalf * sizeof(int), cudaMemcpyHostToDevice));
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&L.valuesPtr), nnzHalf * sizeof(T)));
-  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(L.valuesPtr), reinterpret_cast<void *>(lValues), nnzHalf * sizeof(T), cudaMemcpyHostToDevice));
-  CHECK_CUDA_ERROR(cusparseCreateCsr(&L.descr, static_cast<int64_t>(size), static_cast<int64_t>(size), static_cast<int64_t>(nnzHalf), reinterpret_cast<void *>(L.rowOffsetsPtr), reinterpret_cast<void *>(L.colIndPtr), reinterpret_cast<void *>(L.valuesPtr), CUSPARSE_INDEX_32I, CUSPARSE_INDEX_32I, CUSPARSE_INDEX_BASE_ZERO, cuTraits<T>::valueType));
-  cusparseFillMode_t fill_mode{CUSPARSE_FILL_MODE_LOWER};
-  cusparseDiagType_t diag_type{CUSPARSE_DIAG_TYPE_UNIT};
-  CHECK_CUDA_ERROR(cusparseSpMatSetAttribute(L.descr, CUSPARSE_SPMAT_FILL_MODE, &fill_mode, sizeof(fill_mode)));
-  CHECK_CUDA_ERROR(cusparseSpMatSetAttribute(L.descr, CUSPARSE_SPMAT_DIAG_TYPE, &diag_type, sizeof(diag_type)));
-
-  spMat<T> U{nullptr, nullptr, nullptr, nullptr};
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&U.rowOffsetsPtr), (size + 1) * sizeof(int)));
-  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(U.rowOffsetsPtr), reinterpret_cast<void *>(uRowOffsets), (size + 1) * sizeof(int), cudaMemcpyHostToDevice));
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&U.colIndPtr), nnzHalf * sizeof(int)));
-  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(U.colIndPtr), reinterpret_cast<void *>(uColInd), nnzHalf * sizeof(int), cudaMemcpyHostToDevice));
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&U.valuesPtr), nnzHalf * sizeof(T)));
-  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(U.valuesPtr), reinterpret_cast<void *>(uValues), nnzHalf * sizeof(T), cudaMemcpyHostToDevice));
-  CHECK_CUDA_ERROR(cusparseCreateCsr(&U.descr, static_cast<int64_t>(size), static_cast<int64_t>(size), static_cast<int64_t>(nnzHalf), reinterpret_cast<void *>(U.rowOffsetsPtr), reinterpret_cast<void *>(U.colIndPtr), reinterpret_cast<void *>(U.valuesPtr), CUSPARSE_INDEX_32I, CUSPARSE_INDEX_32I, CUSPARSE_INDEX_BASE_ZERO, cuTraits<T>::valueType));
-  fill_mode = CUSPARSE_FILL_MODE_UPPER;
-  diag_type = CUSPARSE_DIAG_TYPE_NON_UNIT;
-  CHECK_CUDA_ERROR(cusparseSpMatSetAttribute(U.descr, CUSPARSE_SPMAT_FILL_MODE, &fill_mode, sizeof(fill_mode)));
-  CHECK_CUDA_ERROR(cusparseSpMatSetAttribute(U.descr, CUSPARSE_SPMAT_DIAG_TYPE, &diag_type, sizeof(diag_type)));
+  int size = dims[0] * dims[1] * dims[2];
 
   // Malloc and copy u.
   dnVec<T> u_d{nullptr, nullptr};
@@ -1164,38 +1147,63 @@ void cufctSolver<T>::solveWithSsorSplit(T *u, const T *b, int *lRowOffsets, int 
   aux.ptr = realBuffer;
   CHECK_CUDA_ERROR(cusparseCreateDnVec(&aux.descr, static_cast<int64_t>(size), reinterpret_cast<void *>(aux.ptr), cuTraits<T>::valueType));
 
-  // Create spSV for z <- inv(L U) r
-  cusparseSpSVDescr_t spsvDescrL{nullptr}, spsvDescrU{nullptr};
-  CHECK_CUDA_ERROR(cusparseSpSV_createDescr(&spsvDescrL));
-  CHECK_CUDA_ERROR(cusparseSpSV_createDescr(&spsvDescrU));
-  void  *bufferSV{nullptr};
-  size_t bufferSizeL{0}, bufferSizeU{0};
-  alpha = 1;
-  CHECK_CUDA_ERROR(cusparseSpSV_bufferSize(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, L.descr, r.descr, aux.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrL, &bufferSizeL));
-  CHECK_CUDA_ERROR(cusparseSpSV_bufferSize(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, U.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrU, &bufferSizeU));
-  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&bufferSV), std::max(bufferSizeL, bufferSizeU)));
-  CHECK_CUDA_ERROR(cusparseSpSV_analysis(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, L.descr, r.descr, aux.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrL, bufferSV));
-  CHECK_CUDA_ERROR(cusparseSpSV_analysis(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, U.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrU, bufferSV));
+  // Prepare L matrix, M = L L^t.
+  spMat<T> L{nullptr, csrMat.rowOffsetsPtr, csrMat.colIndPtr, nullptr};
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&L.valuesPtr), nnz * sizeof(T)));
+  CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(L.valuesPtr), reinterpret_cast<void *>(csrMat.valuesPtr), nnz * sizeof(T), cudaMemcpyDeviceToDevice));
+  CHECK_CUDA_ERROR(cusparseCreateCsr(&L.descr, static_cast<int64_t>(size), static_cast<int64_t>(size), static_cast<int64_t>(nnz), reinterpret_cast<void *>(L.rowOffsetsPtr), reinterpret_cast<void *>(L.colIndPtr), reinterpret_cast<void *>(L.valuesPtr), CUSPARSE_INDEX_32I, CUSPARSE_INDEX_32I, CUSPARSE_INDEX_BASE_ZERO, cuTraits<T>::valueType));
+  cusparseFillMode_t fill_mode{CUSPARSE_FILL_MODE_LOWER};
+  cusparseDiagType_t diag_type{CUSPARSE_DIAG_TYPE_NON_UNIT};
+  CHECK_CUDA_ERROR(cusparseSpMatSetAttribute(L.descr, CUSPARSE_SPMAT_FILL_MODE, &fill_mode, sizeof(fill_mode)));
+  CHECK_CUDA_ERROR(cusparseSpMatSetAttribute(L.descr, CUSPARSE_SPMAT_DIAG_TYPE, &diag_type, sizeof(diag_type)));
+  // Prepare the incomplete Cholesky decomposition.
+  cusparseMatDescr_t M{nullptr};
+  CHECK_CUDA_ERROR(cusparseCreateMatDescr(&M));
+  CHECK_CUDA_ERROR(cusparseSetMatType(M, CUSPARSE_MATRIX_TYPE_GENERAL));
+  CHECK_CUDA_ERROR(cusparseSetMatIndexBase(M, CUSPARSE_INDEX_BASE_ZERO));
+  CHECK_CUDA_ERROR(cusparseSetMatDiagType(M, CUSPARSE_DIAG_TYPE_NON_UNIT));
+  CHECK_CUDA_ERROR(cusparseSetMatFillMode(M, CUSPARSE_FILL_MODE_LOWER));
+  csric02Info_t infoM{nullptr};
+  CHECK_CUDA_ERROR(cusparseCreateCsric02Info(&infoM));
+  // Malloc the buffer for the icc.
+  int   bufferSizeICC{0};
+  void *bufferICC{nullptr};
+  csric02_bufferSize(sprHandle, size, nnz, M, L.valuesPtr, L.rowOffsetsPtr, L.colIndPtr, infoM, &bufferSizeICC);
+  CHECK_CUDA_ERROR(cudaMalloc(&bufferICC, bufferSizeICC));
+  // Perform analysis for icc.
+  csric02_analysis(sprHandle, size, nnz, M, L.valuesPtr, L.rowOffsetsPtr, L.colIndPtr, infoM, CUSPARSE_SOLVE_POLICY_USE_LEVEL, bufferICC);
+  // Generate the factorization.
+  csric02(sprHandle, size, nnz, M, L.valuesPtr, L.rowOffsetsPtr, L.colIndPtr, infoM, CUSPARSE_SOLVE_POLICY_USE_LEVEL, bufferICC);
+  // Cleaning M information.
+  cuFreeMod(bufferICC);
+  CHECK_CUDA_ERROR(cusparseDestroyCsric02Info(infoM));
+  CHECK_CUDA_ERROR(cusparseDestroyMatDescr(M));
 
-  std::cout << "cuda r=\n";
-  cudaMemcpy(&aVec[0], &r.ptr[0], size * sizeof(T), cudaMemcpyDeviceToHost);
-  viewRealVec(aVec);
+  // Prepare SpSV for L.
+  cusparseSpSVDescr_t spsvDescrL{nullptr};
+  CHECK_CUDA_ERROR(cusparseSpSV_createDescr(&spsvDescrL));
+  size_t bufferSizeL{0};
+  void  *bufferSpsvL{nullptr};
+  alpha = 1;
+  CHECK_CUDA_ERROR(cusparseSpSV_bufferSize(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, reinterpret_cast<void *>(&alpha), L.descr, r.descr, aux.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrL, &bufferSizeL));
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&bufferSpsvL), bufferSizeL));
+  CHECK_CUDA_ERROR(cusparseSpSV_analysis(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, reinterpret_cast<void *>(&alpha), L.descr, r.descr, aux.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrL, bufferSpsvL));
+  // Prepare SpSV for L^t;
+  cusparseSpSVDescr_t spsvDescrLt{nullptr};
+  CHECK_CUDA_ERROR(cusparseSpSV_createDescr(&spsvDescrLt));
+  size_t bufferSizeLt{0};
+  void  *bufferSpsvLt{nullptr};
+  CHECK_CUDA_ERROR(cusparseSpSV_bufferSize(sprHandle, CUSPARSE_OPERATION_TRANSPOSE, reinterpret_cast<void *>(&alpha), L.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrLt, &bufferSizeLt));
+  CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&bufferSpsvLt), bufferSizeLt));
+  CHECK_CUDA_ERROR(cusparseSpSV_analysis(sprHandle, CUSPARSE_OPERATION_TRANSPOSE, reinterpret_cast<void *>(&alpha), L.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrLt, bufferSpsvLt));
 
   // aux <- inv(L) r
+  alpha = 1;
   CHECK_CUDA_ERROR(cudaMemset(reinterpret_cast<void *>(aux.ptr), 0, size * sizeof(T)));
   CHECK_CUDA_ERROR(cusparseSpSV_solve(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, L.descr, r.descr, aux.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrL));
-
-  std::cout << "cuda aux=\n";
-  cudaMemcpy(&aVec[0], &aux.ptr[0], size * sizeof(T), cudaMemcpyDeviceToHost);
-  viewRealVec(aVec);
-
   // z <- inv(U) aux
   CHECK_CUDA_ERROR(cudaMemset(reinterpret_cast<void *>(z.ptr), 0, size * sizeof(T)));
-  CHECK_CUDA_ERROR(cusparseSpSV_solve(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, U.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrU));
-
-  std::cout << "cuda z=\n";
-  cudaMemcpy(&aVec[0], &z.ptr[0], size * sizeof(T), cudaMemcpyDeviceToHost);
-  viewRealVec(aVec);
+  CHECK_CUDA_ERROR(cusparseSpSV_solve(sprHandle, CUSPARSE_OPERATION_TRANSPOSE, &alpha, L.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrLt));
 
   // Create p, use compBuffer instead, p <= z
   dnVec<T> p{nullptr, nullptr};
@@ -1245,7 +1253,7 @@ void cufctSolver<T>::solveWithSsorSplit(T *u, const T *b, int *lRowOffsets, int 
     CHECK_CUDA_ERROR(cusparseSpSV_solve(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, L.descr, r.descr, aux.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrL));
     // z <- inv(U) aux
     CHECK_CUDA_ERROR(cudaMemset(reinterpret_cast<void *>(z.ptr), 0, size * sizeof(T)));
-    CHECK_CUDA_ERROR(cusparseSpSV_solve(sprHandle, CUSPARSE_OPERATION_NON_TRANSPOSE, &alpha, U.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrU));
+    CHECK_CUDA_ERROR(cusparseSpSV_solve(sprHandle, CUSPARSE_OPERATION_TRANSPOSE, &alpha, L.descr, aux.descr, z.descr, cuTraits<T>::valueType, CUSPARSE_SPSV_ALG_DEFAULT, spsvDescrLt));
 
     // rDzNew <- r (dot) z, beta <- rDzNew / rDz
     cublasDot(blasHandle, size, &r.ptr[0], &z.ptr[0], &rDzNew);
@@ -1276,9 +1284,12 @@ void cufctSolver<T>::solveWithSsorSplit(T *u, const T *b, int *lRowOffsets, int 
   /* Free all resources. */
   CHECK_CUDA_ERROR(cusparseDestroyDnVec(p.descr));
 
-  cuFreeMod(bufferSV);
-  CHECK_CUDA_ERROR(cusparseSpSV_destroyDescr(spsvDescrU));
+  cuFreeMod(bufferSpsvLt);
+  CHECK_CUDA_ERROR(cusparseSpSV_destroyDescr(spsvDescrLt));
+  cuFreeMod(bufferSpsvL);
   CHECK_CUDA_ERROR(cusparseSpSV_destroyDescr(spsvDescrL));
+  CHECK_CUDA_ERROR(cusparseDestroySpMat(L.descr));
+  cuFreeMod(L.valuesPtr);
 
   CHECK_CUDA_ERROR(cusparseDestroyDnVec(aux.descr));
 
@@ -1291,15 +1302,6 @@ void cufctSolver<T>::solveWithSsorSplit(T *u, const T *b, int *lRowOffsets, int 
 
   CHECK_CUDA_ERROR(cusparseDestroyDnVec(u_d.descr));
   cuFreeMod(u_d.ptr);
-
-  CHECK_CUDA_ERROR(cusparseDestroySpMat(U.descr));
-  cuFreeMod(U.valuesPtr);
-  cuFreeMod(U.colIndPtr);
-  cuFreeMod(U.rowOffsetsPtr);
-  CHECK_CUDA_ERROR(cusparseDestroySpMat(L.descr));
-  cuFreeMod(L.valuesPtr);
-  cuFreeMod(L.colIndPtr);
-  cuFreeMod(L.rowOffsetsPtr);
 }
 
 template class cufctSolver<float>;

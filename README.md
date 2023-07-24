@@ -109,7 +109,8 @@ Use intel inspector.
 
 ### Important notes
 - The mkl trsv routine needs the csr matrix with the diagonal entry starting first.
-- cusparse SpSV seems to work incorrectly?
+- The cuSparse incomplete Cholesky routine needs to sort the columns of the csr matrix.
+- Use different buffers for L and U matrices in the SpSV routine.
 
 
 

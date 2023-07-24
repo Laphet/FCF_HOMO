@@ -523,8 +523,6 @@ void fctSolver<T>::solveWithSsor(T *u, const T *b, T *ssorValues, const int maxI
   }
 
   MKL_INT size = dims[0] * dims[1] * dims[2];
-  // Test.
-  std::vector<T> aVec(size);
 
   /* Prepare Ly = b operation. */
   mkl::spMat<T> L{nullptr, csrMat.rowOffsetsPtr, csrMat.colIndPtr, ssorValues};
@@ -548,23 +546,11 @@ void fctSolver<T>::solveWithSsor(T *u, const T *b, T *ssorValues, const int maxI
   mkl::cblas::copy(size, &b[0], 1, &r[0], 1);
   mkl::sparse::mv(SPARSE_OPERATION_NON_TRANSPOSE, -myOne, csrMat.descr, DESCR_SYM, &u[0], myOne, &r[0]);
 
-  std::cout << "cpu r=\n";
-  std::memcpy(&aVec[0], &r[0], size * sizeof(T));
-  viewRealVec(aVec);
-
   /* aux <- inv(L) r, resi <- inv(U) aux */
   std::vector<T> aux(size);
   mkl::sparse::trsv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, L.descr, DESCR_L, &r[0], &aux[0]);
 
-  std::cout << "cpu aux=\n";
-  std::memcpy(&aVec[0], &aux[0], size * sizeof(T));
-  viewRealVec(aVec);
-
   mkl::sparse::trsv(SPARSE_OPERATION_NON_TRANSPOSE, myOne, U.descr, DESCR_U, &aux[0], &resiBuffer[0]);
-
-  std::cout << "cpu z=\n";
-  std::memcpy(&aVec[0], &resiBuffer[0], size * sizeof(T));
-  viewRealVec(aVec);
 
   /* p <= resi */
   std::vector<T> p(size);

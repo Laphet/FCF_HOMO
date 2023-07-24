@@ -90,7 +90,7 @@ public:
 
   void solveWithSsor(T *u, const T *b, T *ssorValues, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
 
-  void solveWithSsorSplit(T *u, const T *b, int *lRowOffsets, int *lColInd, T *lValues, int *uRowOffsets, int *uColInd, T *uValues, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
+  void solveWithICC(T *u, const T *b, const int maxIter = 1024, const T rtol = 1.0e-5, const T atol = 1.0e-8);
 
   ~cufctSolver();
 };

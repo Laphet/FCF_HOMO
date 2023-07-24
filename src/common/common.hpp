@@ -25,15 +25,21 @@ struct common {
 
   void getSprMatData(std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues, const std::vector<double> &k_x, const std::vector<double> &k_y, const std::vector<double> &k_z);
 
+  /*
+    This routine should only be used with the cusparse icc preconditioner.
+  */
+  void sortSprMatData(const std::vector<int> &csrRowOffsets, std::vector<int> &csrColInd, std::vector<T> &csrValues);
+
   void getStdRhsVec(std::vector<T> &rhs, const std::vector<double> &k_z, const double delta_p);
 
   void getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std::vector<double> &k_z, const double delta_p, const double lenZ);
 
   void getTridSolverData(std::vector<T> &dl, std::vector<T> &d, std::vector<T> &du, const std::vector<T> &homoParas);
 
+  /*
+    To use this routine, do check that for every row, the column index of the diagonal entry starts first.
+  */
   void getSsorData(const std::vector<int> &csrRowOffsets, const std::vector<int> &csrColInd, const std::vector<T> &csrValues, const T omega, std::vector<T> &ssorValues);
-
-  void getSsorDataSplit(const std::vector<int> &csrRowOffsets, const std::vector<int> &csrColInd, const std::vector<T> &csrValues, std::vector<int> &lRowOffsets, std::vector<int> &lColInd, std::vector<T> &lValues, std::vector<int> &uRowOffsets, std::vector<int> &uColInd, std::vector<T> &uValues);
 
   void setTestVecs(std::vector<T> &v, std::vector<T> &v_hat);
 
