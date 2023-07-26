@@ -259,8 +259,9 @@ fctSolver<T>::fctSolver(const int _M, const int _N, const int _P) :
   fftw::traits<T>::initThreads();
   resiBuffer = reinterpret_cast<T *>(fftw::traits<T>::malloc(_M * _N * _P * sizeof(T)));
   fftw::traits<T>::planWithNthreads(omp_get_max_threads());
-  forwardPlan  = fftw::planManyR2R(2, &dims[0], dims[2], &resiBuffer[0], nullptr, dims[2], 1, &resiBuffer[0], nullptr, dims[2], 1, &r2rKinds[0], FFTW_PATIENT);
-  backwardPlan = fftw::planManyR2R(2, &dims[0], dims[2], &resiBuffer[0], nullptr, dims[2], 1, &resiBuffer[0], nullptr, dims[2], 1, &r2rKinds[2], FFTW_PATIENT);
+  // Several options: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE, FFTW_WISDOM_ONLY
+  forwardPlan  = fftw::planManyR2R(2, &dims[0], dims[2], &resiBuffer[0], nullptr, dims[2], 1, &resiBuffer[0], nullptr, dims[2], 1, &r2rKinds[0], FFTW_ESTIMATE);
+  backwardPlan = fftw::planManyR2R(2, &dims[0], dims[2], &resiBuffer[0], nullptr, dims[2], 1, &resiBuffer[0], nullptr, dims[2], 1, &r2rKinds[2], FFTW_ESTIMATE);
 }
 
 template <typename T>

@@ -1,6 +1,6 @@
 #BSUB -J precondSolver
 #BSUB -n 36
-#BSUB -o ../reports/test-precond-solver-single-cpu-Xeon-6140-%J.log
+#BSUB -o ../reports/test-precond-solver-single-cpu-Xeon-6140-FFTW_ESTIMATE-%J.log
 #BSUB -e ../tmp/%J.lsf.err
 #BSUB -W 10
 #BSUB -q batch
