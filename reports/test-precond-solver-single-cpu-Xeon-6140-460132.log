@@ -1,0 +1,101 @@
+Sender: LSF System <lsfadmin@a3u08n03>
+Subject: Job 460132: <precondSolver> in cluster <cluster1> Done
+
+Job <precondSolver> was submitted from host <ln02> by user <cjz> in cluster <cluster1> at Wed Jul 26 18:28:48 2023
+Job was executed on host(s) <36*a3u08n03>, in queue <batch>, as user <cjz> in cluster <cluster1> at Wed Jul 26 18:28:48 2023
+</share/home/cjz> was used as the home directory.
+</share/home/cjz/cqye/fct-homo/script> was used as the working directory.
+Started at Wed Jul 26 18:28:48 2023
+Terminated at Wed Jul 26 18:32:22 2023
+Results reported at Wed Jul 26 18:32:22 2023
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#BSUB -J precondSolver
+#BSUB -n 36
+#BSUB -o ../reports/test-precond-solver-single-cpu-Xeon-6140-%J.log
+#BSUB -e ../tmp/%J.lsf.err
+#BSUB -W 10
+#BSUB -q batch
+#BSUB -R "span[ptile=36]"
+
+cd ${LS_SUBCWD}/..
+source ../set-oneapi.sh
+# set OMP_NUM_THREADS _and_ export! 
+OMP_NUM_THREADS=$LSB_DJOB_NUMPROC 
+export OMP_NUM_THREADS
+
+./bin/main -single
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   4224.49 sec.
+    Max Memory :                                 4143 MB
+    Average Memory :                             3529.67 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   3 MB
+    Max Processes :                              4
+    Max Threads :                                40
+    Run time :                                   213 sec.
+    Turnaround time :                            214 sec.
+
+The output (if any) follows:
+
+ 
+:: WARNING: setvars.sh has already been run. Skipping re-execution.
+   To force a re-execution of setvars.sh, use the '--force' option.
+   Using '--force' can result in excessive use of your environment variables.
+  
+usage: source setvars.sh [--force] [--config=file] [--help] [...]
+  --force        Force setvars.sh to re-run, doing so may overload environment.
+  --config=file  Customize env vars using a setvars.sh configuration file.
+  --help         Display this help message and exit.
+  ...            Additional args are passed to individual env/vars.sh scripts
+                 and should follow this script's arguments.
+  
+  Some POSIX shells do not accept command-line options. In that case, you can pass
+  command-line options via the SETVARS_ARGS environment variable. For example:
+  
+  $ SETVARS_ARGS="ia32 --config=config.txt" ; export SETVARS_ARGS
+  $ . path/to/setvars.sh
+  
+  The SETVARS_ARGS environment variable is cleared on exiting setvars.sh.
+  
+========================================================
+withoutParallelFor=0, withSingle=1.
+Test case (M, N, P)=(64, 64, 64), length of float=4
+CPU solver
+  common=14ms
+  Warm-up=1550ms
+  precondSolver=84ms
+  check=3ms, error=6.72194e-05
+Test case (M, N, P)=(128, 128, 128), length of float=4
+CPU solver
+  common=106ms
+  Warm-up=4315ms
+  precondSolver=26ms
+  check=3ms, error=2.34298e-05
+Test case (M, N, P)=(256, 256, 256), length of float=4
+CPU solver
+  common=830ms
+  Warm-up=25838ms
+  precondSolver=185ms
+  check=13ms, error=0.000272306
+Test case (M, N, P)=(512, 512, 512), length of float=4
+CPU solver
+  common=6580ms
+  Warm-up=171963ms
+  precondSolver=1350ms
+  check=30ms, error=0.00191228
+
+
+PS:
+
+Read file <../tmp/460132.lsf.err> for stderr output of this job.
+
