@@ -60,7 +60,9 @@ you should provide "iembed" and "oembed" (**not** the dimension "n"!) in the C2R
 
 ### FFTW and oneapi implementation
 Use the following commands to configure fftw:
-CC=icx ./configure --prefix=${HOME}/fftw3 --enable-avx2 --enable-avx512 --enable-openmp --enable-threads
+- CC=icx ./configure --prefix=${HOME}/fftw3 --enable-avx2 --enable-avx512 --enable-openmp --enable-threads
+- CC=icx CFLAGS="-xHost -O3" ./configure --prefix=a-path-to/fftw3 --enable-avx2 --enable-avx512 --enable-openmp --enable-threads
+
 
 To enable using fftw3 in the float precision, we need to reconfigure
 CC=icx ./configure --prefix=${HOME}/fftw3 --enable-single --enable-avx2 --enable-avx512 --enable-openmp --enable-threads
@@ -99,13 +101,16 @@ Now the old sparse MV routines are deprecated, we should use new functions:
 - Change vscode cmake tools settings.
 - Move .pc files to ./externals.
 
-### Detect memory leaks
+### Memory sanitizer.
 Install valgrind via conda, and try:
 
 - valgrind --leak-check=yes ./main
 - valgrind --leak-check=full --show-leak-kinds=all ./main > valgrind_report.txt
 
 Use intel inspector.
+
+Use Nvidia's Compute Sanitizer.
+- compute-sanitizer --leak-check=full ./bin/main
 
 ### Important notes
 - The mkl trsv routine needs the csr matrix with the diagonal entry starting first.

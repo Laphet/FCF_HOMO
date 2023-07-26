@@ -314,6 +314,7 @@ void common<T>::setTestForPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, 
   int M{dims[0]}, N{dims[1]}, P{dims[2]};
   T   h_x{static_cast<T>(1) / M}, h_y{static_cast<T>(1) / N}, h_z{static_cast<T>(1) / P};
   T   myHalf{static_cast<T>(0.5)}, myPi{static_cast<T>(M_PI)};
+#pragma omp parallel for
   for (int idx{0}; idx < M * N * P; ++idx) {
     int i{0}, j{0}, k{0};
     get3dIdxFromIdx(i, j, k, idx, N, P);
@@ -324,12 +325,12 @@ void common<T>::setTestForPrecondSolver(std::vector<T> &u, std::vector<T> &rhs, 
     rhs[idx] += k_y * myPi * myPi * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
     rhs[idx] -= k_z * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
     if (0 == k) {
-      z = static_cast<T>(0);
-      rhs[idx] += 2 * k_z / (h_z * h_z) * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
+      z = 0;
+      rhs[idx] += 2 * k_z * P * P * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
     }
     if (P - 1 == k) {
-      z = static_cast<T>(1);
-      rhs[idx] += 2 * k_z / (h_z * h_z) * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
+      z = 1;
+      rhs[idx] += 2 * k_z * P * P * std::cos(x * myPi) * std::cos(y * myPi) * std::exp(z);
     }
   }
 }
@@ -369,3 +370,22 @@ void common<T>::setTestForSolver(std::vector<double> &k_x, std::vector<double> &
 template struct common<float>;
 
 template struct common<double>;
+
+inputParser::inputParser(int &argc, char **argv)
+{
+  for (int i = 1; i < argc; ++i) this->tokens.push_back(std::string(argv[i]));
+}
+
+const std::string &inputParser::getCmdOption(const std::string &option) const
+{
+  std::vector<std::string>::const_iterator itr;
+  itr = std::find(this->tokens.begin(), this->tokens.end(), option);
+  if (itr != this->tokens.end() && ++itr != this->tokens.end()) { return *itr; }
+  static const std::string empty_string("");
+  return empty_string;
+}
+
+bool inputParser::cmdOptionExists(const std::string &option) const
+{
+  return std::find(this->tokens.begin(), this->tokens.end(), option) != this->tokens.end();
+}

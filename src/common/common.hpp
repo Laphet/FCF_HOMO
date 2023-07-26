@@ -47,3 +47,15 @@ struct common {
 
   void setTestForSolver(std::vector<double> &k_x, std::vector<double> &k_y, std::vector<double> &k_z, std::vector<T> &u, std::vector<T> &rhs);
 };
+
+/* @author iain */
+class inputParser {
+  std::vector<std::string> tokens;
+
+public:
+  inputParser(int &argc, char **argv);
+
+  const std::string &getCmdOption(const std::string &option) const;
+
+  bool cmdOptionExists(const std::string &option) const;
+};

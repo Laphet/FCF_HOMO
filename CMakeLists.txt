@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20.5 FATAL_ERROR)
 project(fct-homo LANGUAGES CXX)
 
-set(CMAKE_BUILD_TYPE Debug)
+# set(CMAKE_BUILD_TYPE Release)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(CMAKE_CXX_FLAGS_DEBUG "")
@@ -11,11 +11,11 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 # Recommended by vtune, inspector
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-  add_compile_options(-g)
-endif()
+# if(CMAKE_BUILD_TYPE STREQUAL "Release")
+#   add_compile_options(-g)
+# endif()
 
-add_link_options(-shared-intel)
+# add_link_options(-shared-intel)
 # Use the macro definition DEBUG
 
 
@@ -39,6 +39,7 @@ if(USE_CUDA)
   enable_language(CUDA)
   set(CMAKE_CUDA_ARCHITECTURES 75)
   find_package(CUDAToolkit REQUIRED)
+  add_compile_definitions(ENABLE_CUDA)
   add_subdirectory(src/cuda)
 endif()
 
@@ -86,7 +87,7 @@ add_subdirectory(src/main)
 
 
 # message(CMAKE_RUNTIME_OUTPUT_DIRECTORY="${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-message(CMAKE_CXX_FLAGS_DEBUG="${CMAKE_CXX_FLAGS_DEBUG}")
+# message(CMAKE_CXX_FLAGS_DEBUG="${CMAKE_CXX_FLAGS_DEBUG}")
 
 
 

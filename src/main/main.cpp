@@ -4,28 +4,6 @@
 #include <algorithm>
 #include <iostream>
 
-class InputParser {
-public:
-  InputParser(int &argc, char **argv)
-  {
-    for (int i = 1; i < argc; ++i) this->tokens.push_back(std::string(argv[i]));
-  }
-  /// @author iain
-  const std::string &getCmdOption(const std::string &option) const
-  {
-    std::vector<std::string>::const_iterator itr;
-    itr = std::find(this->tokens.begin(), this->tokens.end(), option);
-    if (itr != this->tokens.end() && ++itr != this->tokens.end()) { return *itr; }
-    static const std::string empty_string("");
-    return empty_string;
-  }
-  /// @author iain
-  bool cmdOptionExists(const std::string &option) const { return std::find(this->tokens.begin(), this->tokens.end(), option) != this->tokens.end(); }
-
-private:
-  std::vector<std::string> tokens;
-};
-
 struct op {
   bool withoutPrecond;
   bool withSsor;
@@ -37,7 +15,7 @@ op glbOps{false, false, false};
 int main(int argc, char *argv[])
 {
   /* Analysis cmd options. */
-  InputParser cmdInputs(argc, argv);
+  inputParser cmdInputs(argc, argv);
   int         M{4}, N{4}, P{4};
 
   std::string input;
@@ -123,6 +101,7 @@ int main(int argc, char *argv[])
     gpuSolver.solveWithSsor(&u_gpu[0], &rhs[0], &ssorValues[0]);
   } else {
     std::cout << "GPU solver with FCT preconditioner.\n";
+    gpuSolver.setSprMatData(&csrRowOffsets[0], &csrColInd[0], &csrValues[0]);
     gpuSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
     gpuSolver.solve(&u_gpu[0], &rhs[0]);
   }

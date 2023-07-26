@@ -519,16 +519,6 @@ void cufctSolver<T>::precondSolver(T *rhs)
   fctBackward(rhs);
 }
 
-void gthr(cusparseHandle_t handle, int nnz, const float *y, float *xVal, const int *xInd, cusparseIndexBase_t idxBase)
-{
-  CHECK_CUDA_ERROR(cusparseSgthr(handle, nnz, y, xVal, xInd, idxBase));
-}
-
-void gthr(cusparseHandle_t handle, int nnz, const double *y, double *xVal, const int *xInd, cusparseIndexBase_t idxBase)
-{
-  CHECK_CUDA_ERROR(cusparseDgthr(handle, nnz, y, xVal, xInd, idxBase));
-}
-
 template <typename T>
 void cuFreeMod(T *&ptr)
 {
