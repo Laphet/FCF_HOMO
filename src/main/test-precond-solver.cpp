@@ -123,12 +123,12 @@ int main(int argc, char *argv[])
   std::vector<int> casesList{64, 128, 256, 512};
   for (auto n : casesList) {
     if (glbOp.withSingle) {
-      // cpuTestCase<float>(n, n, n);
+      cpuTestCase<float>(n, n, n);
 #ifdef ENABLE_CUDA
       gpuTestCase<float>(n, n, n);
 #endif
     } else {
-      // cpuTestCase<double>(n, n, n);
+      cpuTestCase<double>(n, n, n);
 #ifdef ENABLE_CUDA
       gpuTestCase<double>(n, n, n);
 #endif

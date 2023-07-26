@@ -1,2 +1,6 @@
 add_executable(main test-precond-solver.cpp)
-target_link_libraries(main common cuda-fct-solver cpu-fct-solver)
+if(USE_CUDA)
+  target_link_libraries(main common cuda-fct-solver cpu-fct-solver)
+else()
+  target_link_libraries(main common cpu-fct-solver)
+endif()

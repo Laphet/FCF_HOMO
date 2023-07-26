@@ -1,0 +1,52 @@
+========================================================
+withoutParallelFor=0, withSingle=1.
+Test case (M, N, P)=(64, 64, 64), length of float=4
+CPU solver
+  common=4ms
+  Warm-up=1460ms
+  precondSolver=6ms
+  check=0ms, error=6.72194e-05
+Test case (M, N, P)=(128, 128, 128), length of float=4
+CPU solver
+  common=41ms
+  Warm-up=4911ms
+  precondSolver=12ms
+  check=0ms, error=2.34298e-05
+Test case (M, N, P)=(256, 256, 256), length of float=4
+CPU solver
+  common=271ms
+  Warm-up=22003ms
+  precondSolver=173ms
+  check=7ms, error=0.00027229
+Test case (M, N, P)=(512, 512, 512), length of float=4
+CPU solver
+  common=1825ms
+  Warm-up=120407ms
+  precondSolver=1046ms
+  check=54ms, error=0.00191229
+========================================================
+withoutParallelFor=0, withSingle=1.
+Test case (M, N, P)=(64, 64, 64), length of float=4
+CPU solver
+  common=4ms
+  Warm-up=1572ms
+  precondSolver=3ms
+  check=0ms, error=6.72194e-05
+Test case (M, N, P)=(128, 128, 128), length of float=4
+CPU solver
+  common=34ms
+  Warm-up=5846ms
+  precondSolver=12ms
+  check=0ms, error=2.34298e-05
+Test case (M, N, P)=(256, 256, 256), length of float=4
+CPU solver
+  common=263ms
+  Warm-up=22050ms
+  precondSolver=157ms
+  check=6ms, error=0.000272301
+Test case (M, N, P)=(512, 512, 512), length of float=4
+CPU solver
+  common=1780ms
+  Warm-up=100575ms
+  precondSolver=1019ms
+  check=56ms, error=0.00191226
