@@ -51,26 +51,36 @@ void common<T>::analysisCoeff(const std::vector<double> &k_x, const std::vector<
       kmin[4] = std::min(kmin[4], k_z[idx]);
     }
   }
+
+#ifdef DEBUG
   std::cout << "kmax=[";
   for (int i{0}; i < VALS_LENGTH; ++i) std::printf("%.6e, ", kmax[i]);
   std::cout << "]\n";
   std::cout << "kmin=[";
   for (int i{0}; i < VALS_LENGTH; ++i) std::printf("%.6e, ", kmin[i]);
   std::cout << "]\n";
+#endif
 
   std::string   finename("bin/k-maxmin-vals.bin");
   std::ofstream binFileWriter(finename, std::ios::out | std::ios::binary);
   binFileWriter.write(reinterpret_cast<char *>(&kmax[0]), VALS_LENGTH * sizeof(double));
   binFileWriter.write(reinterpret_cast<char *>(&kmin[0]), VALS_LENGTH * sizeof(double));
   binFileWriter.close();
-  std::cout << "Write kmax/min values into [" << finename << "].\n";
 
+#ifdef DEBUG
+  std::cout << "Write kmax/min values into [" << finename << "].\n";
   std::cout << "Please cd to the project root directory.\n";
+#endif
+
   const std::string cmd = "python script/optimal_ref_parameters.py";
   std::system(cmd.c_str());
 
   finename = "bin/k-ref-vals.bin";
+
+#ifdef DEBUG
   std::cout << "Read kref values from [" << finename << "].\n";
+#endif
+
   std::ifstream binFileReader(finename, std::ios::in | std::ios::binary);
   char          buffer[1024];
   binFileReader.read(buffer, VALS_LENGTH * sizeof(double));
@@ -80,9 +90,11 @@ void common<T>::analysisCoeff(const std::vector<double> &k_x, const std::vector<
   std::memcpy(reinterpret_cast<void *>(&k_vals[5]), reinterpret_cast<void *>(&kmin[0]), VALS_LENGTH * sizeof(double));
   std::memcpy(reinterpret_cast<void *>(&k_vals[10]), reinterpret_cast<void *>(&buffer[0]), VALS_LENGTH * sizeof(double));
 
+#ifdef DEBUG
   std::cout << "kref=[";
   for (int i{0}; i < VALS_LENGTH; ++i) std::printf("%.6e, ", k_vals[i + 10]);
   std::cout << "]\n";
+#endif
 }
 
 template <typename T>
@@ -228,7 +240,7 @@ void common<T>::getHomoCoeffZ(T &homoCoeffZ, const std::vector<T> &p, const std:
     for (j = 0; j < N; ++j) {
       row = getIdxFrom3dIdx(i, j, 0, N, P);
       // row  = i * N * P + j * P;
-      temp = 2.0 * lenZ * lenZ / (M * N * P) * k_z[row] * (static_cast<double>(p[row]) - delta_p) / delta_p;
+      temp = 2.0 * lenZ * lenZ / (M * N * P) * k_z[row] * (delta_p - static_cast<double>(p[row])) / delta_p;
       homoCoeffZ += static_cast<T>(temp);
     }
 }

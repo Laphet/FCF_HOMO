@@ -1,4 +1,4 @@
-add_executable(main test-precond-solver.cpp)
+add_executable(main test-scheme-convergence.cpp)
 if(USE_CUDA)
   target_link_libraries(main common cuda-fct-solver cpu-fct-solver)
 else()

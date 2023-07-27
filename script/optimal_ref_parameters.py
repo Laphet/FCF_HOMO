@@ -23,17 +23,17 @@ def get_optimal_kref(k_maxmin_vals):
         A[2 * i + 1, -2] = 1.0
         A[2 * i + 1, i] = 1.0
     res = linprog(c=c, A_ub=A, b_ub=b, bounds=(None, None))
-    print(res.message)
-    print("The optimal value={0:.6e}".format(np.exp(res.fun)))
+    # print(res.message)
+    # print("The optimal value={0:.6e}".format(np.exp(res.fun)))
     return np.exp(res.x)
 
 
 if __name__ == "__main__":
     filename = "k-maxmin-vals.bin"
-    print("Python script reads [{0:s}]".format(filename))
+    # print("Python script reads [{0:s}]".format(filename))
     kvals = np.fromfile("bin/" + filename, dtype=np.float64)
     optimal_kref = get_optimal_kref(kvals)
-    print(optimal_kref)
+    # print(optimal_kref)
     filename = "k-ref-vals.bin"
-    print("Python script writes [{0:s}]".format(filename))
+    # print("Python script writes [{0:s}]".format(filename))
     optimal_kref.tofile("bin/" + filename)

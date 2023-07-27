@@ -32,7 +32,7 @@ pkg_check_modules(OPENMP REQUIRED IMPORTED_TARGET openmp)
 # find_package(OpenMP REQUIRED)
 add_subdirectory(src/common)
 
-option(USE_CUDA "Use cuda libraries." OFF)
+option(USE_CUDA "Use cuda libraries." ON)
 option(USE_FFTW3_MKL "Use the fftw3 and oneapi libraries." ON)
 
 if(USE_CUDA)

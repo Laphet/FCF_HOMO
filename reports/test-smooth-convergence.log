@@ -1,0 +1,55 @@
+========================================================
+Reach rtol=1.000000e-05, the solver exits with residual=2.756656e+00 and iterations=14.
+n=32, L2 error=0.000384836
+Reach rtol=1.000000e-05, the solver exits with residual=2.453315e+01 and iterations=14.
+n=64, L2 error=9.53894e-05
+Reach rtol=1.000000e-05, the solver exits with residual=2.118247e+02 and iterations=14.
+n=128, L2 error=2.40975e-05
+Reach rtol=1.000000e-05, the solver exits with residual=1.801669e+03 and iterations=14.
+n=256, L2 error=1.26984e-05
+Reach rtol=1.000000e-05, the solver exits with residual=1.480562e+04 and iterations=14.
+n=512, L2 error=1.37533e-05
+========================================================
+Reach rtol=1.000000e-06, the solver exits with residual=2.443996e-01 and iterations=17.
+n=32, L2 error=0.000384821
+Reach rtol=1.000000e-06, the solver exits with residual=2.222024e+00 and iterations=17.
+n=64, L2 error=9.6294e-05
+Reach rtol=1.000000e-06, the solver exits with residual=1.832705e+01 and iterations=17.
+n=128, L2 error=2.44009e-05
+Reach rtol=1.000000e-06, the solver exits with residual=1.556311e+02 and iterations=17.
+n=256, L2 error=6.69252e-06
+Reach rtol=1.000000e-06, the solver exits with residual=1.286004e+03 and iterations=17.
+n=512, L2 error=2.64997e-06
+========================================================
+Reach rtol=1.000000e-07, the solver exits with residual=2.164124e-02 and iterations=20.
+n=32, L2 error=0.000384779
+Reach rtol=1.000000e-07, the solver exits with residual=2.044810e-01 and iterations=20.
+n=64, L2 error=9.61005e-05
+Reach rtol=1.000000e-07, the solver exits with residual=1.750126e+00 and iterations=20.
+n=128, L2 error=2.39791e-05
+Reach rtol=1.000000e-07, the solver exits with residual=1.469579e+01 and iterations=20.
+n=256, L2 error=5.93849e-06
+Reach rtol=1.000000e-07, the solver exits with residual=1.226175e+02 and iterations=20.
+n=512, L2 error=1.41946e-06
+========================================================
+Reach rtol=1.000000e-08, the solver exits with residual=4.135029e-03 and iterations=22.
+n=32, L2 error=0.000384792
+Reach rtol=1.000000e-08, the solver exits with residual=1.812969e-02 and iterations=23.
+n=64, L2 error=9.6133e-05
+Reach rtol=1.000000e-08, the solver exits with residual=1.574423e-01 and iterations=23.
+n=128, L2 error=2.40325e-05
+Reach rtol=1.000000e-08, the solver exits with residual=1.287469e+00 and iterations=23.
+n=256, L2 error=6.01207e-06
+Reach rtol=1.000000e-08, the solver exits with residual=1.077041e+01 and iterations=23.
+n=512, L2 error=1.50785e-06
+========================================================
+Reach rtol=1.000000e-09, the solver exits with residual=3.555134e-04 and iterations=25.
+n=32, L2 error=0.000384792
+Reach rtol=1.000000e-09, the solver exits with residual=1.677172e-03 and iterations=26.
+n=64, L2 error=9.61304e-05
+Reach rtol=1.000000e-09, the solver exits with residual=1.468497e-02 and iterations=26.
+n=128, L2 error=2.40284e-05
+Reach rtol=1.000000e-09, the solver exits with residual=1.209506e-01 and iterations=26.
+n=256, L2 error=6.00678e-06
+Reach rtol=1.000000e-09, the solver exits with residual=1.011099e+00 and iterations=26.
+n=512, L2 error=1.50164e-06
