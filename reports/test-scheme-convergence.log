@@ -199,3 +199,37 @@ Reach rtol=1.000000e-09, the solver exits with residual=2.957498e-02 and iterati
   n=256, homoCoeffZ=0.903898
 Reach rtol=1.000000e-09, the solver exits with residual=2.163659e-01 and iterations=40.
   n=512, homoCoeffZ=0.904467
+========================================================
+Contrast=1
+Reach rtol=1.000000e-09, the solver exits with residual=1.021127e-10 and iterations=1.
+  n=32, homoCoeffZ=1
+Contrast=10
+Reach rtol=1.000000e-09, the solver exits with residual=6.335937e-05 and iterations=24.
+  n=32, homoCoeffZ=1.15734
+Contrast=0.1
+Reach rtol=1.000000e-09, the solver exits with residual=4.413573e-05 and iterations=20.
+  n=32, homoCoeffZ=0.911941
+Contrast=100
+Reach rtol=1.000000e-09, the solver exits with residual=5.066210e-05 and iterations=52.
+  n=32, homoCoeffZ=1.21053
+Contrast=0.01
+Reach rtol=1.000000e-09, the solver exits with residual=6.023718e-05 and iterations=34.
+  n=32, homoCoeffZ=0.897563
+Contrast=1000
+Reach rtol=1.000000e-09, the solver exits with residual=4.607610e-05 and iterations=80.
+  n=32, homoCoeffZ=1.21725
+Contrast=0.001
+Reach rtol=1.000000e-09, the solver exits with residual=5.574675e-05 and iterations=48.
+  n=32, homoCoeffZ=0.896016
+Contrast=10000
+Reach rtol=1.000000e-09, the solver exits with residual=4.574767e-05 and iterations=106.
+  n=32, homoCoeffZ=1.21794
+Contrast=0.0001
+Reach rtol=1.000000e-09, the solver exits with residual=5.016458e-05 and iterations=59.
+  n=32, homoCoeffZ=0.89586
+Contrast=100000
+Reach rtol=1.000000e-09, the solver exits with residual=5.954183e-05 and iterations=134.
+  n=32, homoCoeffZ=1.21801
+Contrast=1e-05
+Reach rtol=1.000000e-09, the solver exits with residual=6.549509e-05 and iterations=68.
+  n=32, homoCoeffZ=0.895844

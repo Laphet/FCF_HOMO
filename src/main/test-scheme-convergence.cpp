@@ -69,7 +69,7 @@ T gpuTestCase(int n, double contrast)
 int main(int argc, char *argv[])
 {
   std::vector<double> contrastList{1.0, 10.0, 0.1, 100.0, 0.01, 1000.0, 0.001, 10000.0, 0.0001, 100000.0, 0.00001};
-  std::vector<int>    nList{64, 128, 256, 512};
+  std::vector<int>    nList{32};
   using T = double;
 
   std::cout << "========================================================\n";
