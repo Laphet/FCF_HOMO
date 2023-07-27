@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib import rc
 
-rc("text", usetex=True)
+# rc("text", usetex=True)
 rc("legend", fontsize=10)
 A4_WIDTH = 8.27
 
