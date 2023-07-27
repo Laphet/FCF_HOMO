@@ -3,3 +3,4 @@ build/*
 bin/*
 externals/*
 tmp/*
+script/__pycache__/*
