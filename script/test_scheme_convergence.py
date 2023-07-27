@@ -2,7 +2,7 @@ import plot_settings
 import numpy as np
 
 fig = plot_settings.plt.figure(
-    figsize=(0.5 * plot_settings.A4_WIDTH, 0.5 * plot_settings.A4_WIDTH)
+    figsize=(0.5 * plot_settings.A4_WIDTH, 0.8 * plot_settings.A4_WIDTH)
 )
 ax = fig.add_subplot()
 
@@ -27,9 +27,11 @@ LEN = 5
 for i in range(LEN):
     ax.plot(
         x_axis,
-        data_rtol9[2 * i, :],
+        data_rtol9[2 * i, :] - data_rtol9[2 * i, -1],
         label="$10^{:d}$".format(i + 1),
         color=plot_settings.color_list[i],
     )
+ax.legend()
 
-plot_settings.plt.savefig("test-scheme-convergence-1.pdf", bbox_inches="tight")
+# plot_settings.plt.savefig("test-scheme-convergence-1.pdf", bbox_inches="tight")
+plot_settings.plt.show()
