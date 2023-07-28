@@ -1,10 +1,6 @@
 import plot_settings
 import numpy as np
 
-fig = plot_settings.plt.figure(figsize=(0.5 * plot_settings.A4_WIDTH,
-                                        0.75 * plot_settings.A4_WIDTH))
-ax = fig.add_subplot()
-
 data_rtol9 = np.array(
     [[1.1188, 1.11737, 1.11688, 1.11651, 1.11661, 1.11652],
      [0.958059, 0.959911, 0.960645, 0.961019, 0.961107, 0.961194],
@@ -27,19 +23,22 @@ n_list = [16, 32, 64, 128, 256, 512]
 x_axis_label = list("${:d}^3$".format(n) for n in n_list)
 x_axis = [4, 5, 6, 7, 8, 9]
 cr_list = [
-    5.0, 0.5, 10.0, 0.1, 50.0, 0.05, 100.0, 0.001, 500.0, 0.005, 1000.0, 0.001,
+    5.0, 0.5, 10.0, 0.1, 50.0, 0.05, 100.0, 0.01, 500.0, 0.005, 1000.0, 0.001,
     10000.0, 0.0001, 100000.0, 0.00001
 ]
 LEN = 6
 
+fig = plot_settings.plt.figure(figsize=(0.46 * plot_settings.A4_WIDTH,
+                                        0.75 * plot_settings.A4_WIDTH))
+ax = fig.add_subplot()
 for i in range(LEN):
     ax.plot(x_axis,
             data_rtol9[2 * i, :],
-            label="$\kappa^\mathrm{inc}=" + "{:.1f}".format(cr_list[2 * i]) +
+            label="$\kappa^\mathrm{inc}=" + "{:.0f}".format(cr_list[2 * i]) +
             "$",
             marker='.')
-ax.legend(loc="upper center",
-          bbox_to_anchor=(0.5, 1.08),
+ax.legend(loc="upper left",
+          bbox_to_anchor=(-0.12, 1.06),
           ncol=3,
           fancybox=True,
           shadow=True)
@@ -51,14 +50,16 @@ ax.set_ylabel("$\kappa^\mathrm{eff}_z$")
 plot_settings.plt.savefig("figs/test-scheme-convergence-1.pdf",
                           bbox_inches="tight")
 
-ax.clear()
+fig = plot_settings.plt.figure(figsize=(0.46 * plot_settings.A4_WIDTH,
+                                        0.75 * plot_settings.A4_WIDTH))
+ax = fig.add_subplot()
 for i in range(LEN):
     ax.plot(x_axis,
             data_rtol9[2 * i + 1, :],
             label="$\kappa^\mathrm{inc}=" + str(cr_list[2 * i + 1]) + "$",
             marker='.')
-ax.legend(loc="upper center",
-          bbox_to_anchor=(0.5, 1.08),
+ax.legend(loc="upper left",
+          bbox_to_anchor=(-0.12, 1.06),
           ncol=3,
           fancybox=True,
           shadow=True)
