@@ -667,9 +667,9 @@ void cufctSolver<T>::solve(T *u, const T *b, const int maxIter, const T rtol, co
       std::printf("Reach maxIter=%d, the solver exits with residual=%.6e and iterations=%d.\n", maxIter, rNorm, itrIdx + 1);
       break;
     }
-#ifdef DEBUG
-    std::printf("itrIdx=%d,\tresidual=%.6e,\t rhs=%.6e, relative=%.6e.\n", itrIdx + 1, rNorm, bNorm, rNorm / bNorm);
-#endif
+    // #ifdef DEBUG
+    std::printf("  itrIdx=%d,\tresidual=%.6e,\t rhs=%.6e, relative=%.6e.\n", itrIdx + 1, rNorm, bNorm, rNorm / bNorm);
+    // #endif
 
     /* z <= r, z <- inv(M) z */
     CHECK_CUDA_ERROR(cudaMemcpy(&z.ptr[0], &r.ptr[0], size * sizeof(T), cudaMemcpyDeviceToDevice));
@@ -798,9 +798,9 @@ void cufctSolver<T>::solveWithoutPrecond(T *u, const T *b, const int maxIter, co
       std::printf("Reach maxIter=%d, the solver exits with residual=%.6e and iterations=%d.\n", maxIter, rNorm, itrIdx + 1);
       break;
     }
-#ifdef DEBUG
-    std::printf("itrIdx=%d,\tresidual=%.6e,\t rhs=%.6e, relative=%.6e.\n", itrIdx + 1, rNorm, bNorm, rNorm / bNorm);
-#endif
+    // #ifdef DEBUG
+    std::printf("  itrIdx=%d,\tresidual=%.6e,\t rhs=%.6e, relative=%.6e.\n", itrIdx + 1, rNorm, bNorm, rNorm / bNorm);
+    // #endif
 
     /* beta <- rDrNew / rDr */
     beta = rDrNew / rDr;
@@ -970,9 +970,9 @@ void cufctSolver<T>::solveWithSsor(T *u, const T *b, T *ssorValues, const int ma
       std::printf("Reach maxIter=%d, the solver exits with residual=%.6e and iterations=%d.\n", maxIter, rNorm, itrIdx + 1);
       break;
     }
-#ifdef DEBUG
-    std::printf("itrIdx=%d,\tresidual=%.6e,\t rhs=%.6e, relative=%.6e.\n", itrIdx + 1, rNorm, bNorm, rNorm / bNorm);
-#endif
+    // #ifdef DEBUG
+    std::printf("  itrIdx=%d,\tresidual=%.6e,\t rhs=%.6e, relative=%.6e.\n", itrIdx + 1, rNorm, bNorm, rNorm / bNorm);
+    // #endif
 
     alpha = 1;
     // aux <- inv(U) r
@@ -1062,6 +1062,7 @@ cufctSolver<T>::~cufctSolver()
 
   cuFreeMod(compBuffer);
   cuFreeMod(realBuffer);
+  cudaDeviceReset();
 }
 
 void csric02_bufferSize(cusparseHandle_t handle, int m, int nnz, const cusparseMatDescr_t descrA, float *csrValA, const int *csrRowPtrA, const int *csrColIndA, csric02Info_t info, int *pBufferSizeInBytes)
@@ -1233,9 +1234,9 @@ void cufctSolver<T>::solveWithICC(T *u, const T *b, const int maxIter, const T r
       std::printf("Reach maxIter=%d, the solver exits with residual=%.6e and iterations=%d.\n", maxIter, rNorm, itrIdx + 1);
       break;
     }
-#ifdef DEBUG
-    std::printf("itrIdx=%d,\tresidual=%.6e,\t rhs=%.6e, relative=%.6e.\n", itrIdx + 1, rNorm, bNorm, rNorm / bNorm);
-#endif
+    // #ifdef DEBUG
+    std::printf("  itrIdx=%d,\tresidual=%.6e,\t rhs=%.6e, relative=%.6e.\n", itrIdx + 1, rNorm, bNorm, rNorm / bNorm);
+    // #endif
 
     alpha = 1;
     // aux <- inv(U) r

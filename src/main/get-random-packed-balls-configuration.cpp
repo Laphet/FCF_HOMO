@@ -49,21 +49,21 @@ int main(int argc, char *argv[])
   ballNum = 55;
   get_bin_k(k_bin, std::string("bin/ball-list-55-r3.bin"), ballNum);
   binFileWriter.open("bin/k-55-r3.bin", std::ios::out | std::ios::binary);
-  binFileWriter.write(reinterpret_cast<char *>(&k_bin[0]), size * sizeof(double));
+  binFileWriter.write(reinterpret_cast<char *>(&k_bin[0]), size * sizeof(int));
   binFileWriter.close();
 
   std::fill(k_bin.begin(), k_bin.end(), 0);
   ballNum = 258;
   get_bin_k(k_bin, std::string("bin/ball-list-258-r2.bin"), ballNum);
   binFileWriter.open("bin/k-258-r2.bin", std::ios::out | std::ios::binary);
-  binFileWriter.write(reinterpret_cast<char *>(&k_bin[0]), size * sizeof(double));
+  binFileWriter.write(reinterpret_cast<char *>(&k_bin[0]), size * sizeof(int));
   binFileWriter.close();
 
   std::fill(k_bin.begin(), k_bin.end(), 0);
   ballNum = 1716;
   get_bin_k(k_bin, std::string("bin/ball-list-1716-r1.bin"), ballNum);
   binFileWriter.open("bin/k-1716-r1.bin", std::ios::out | std::ios::binary);
-  binFileWriter.write(reinterpret_cast<char *>(&k_bin[0]), size * sizeof(double));
+  binFileWriter.write(reinterpret_cast<char *>(&k_bin[0]), size * sizeof(int));
   binFileWriter.close();
 
   return EXIT_SUCCESS;
