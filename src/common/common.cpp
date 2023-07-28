@@ -61,27 +61,27 @@ void common<T>::analysisCoeff(const std::vector<double> &k_x, const std::vector<
   std::cout << "]\n";
 #endif
 
-  std::string   finename("bin/k-maxmin-vals.bin");
-  std::ofstream binFileWriter(finename, std::ios::out | std::ios::binary);
+  std::string   filename("bin/k-maxmin-vals.bin");
+  std::ofstream binFileWriter(filename, std::ios::out | std::ios::binary);
   binFileWriter.write(reinterpret_cast<char *>(&kmax[0]), VALS_LENGTH * sizeof(double));
   binFileWriter.write(reinterpret_cast<char *>(&kmin[0]), VALS_LENGTH * sizeof(double));
   binFileWriter.close();
 
 #ifdef DEBUG
-  std::cout << "Write kmax/min values into [" << finename << "].\n";
+  std::cout << "Write kmax/min values into [" << filename << "].\n";
   std::cout << "Please cd to the project root directory.\n";
 #endif
 
   const std::string cmd = "python script/optimal_ref_parameters.py";
   std::system(cmd.c_str());
 
-  finename = "bin/k-ref-vals.bin";
+  filename = "bin/k-ref-vals.bin";
 
 #ifdef DEBUG
-  std::cout << "Read kref values from [" << finename << "].\n";
+  std::cout << "Read kref values from [" << filename << "].\n";
 #endif
 
-  std::ifstream binFileReader(finename, std::ios::in | std::ios::binary);
+  std::ifstream binFileReader(filename, std::ios::in | std::ios::binary);
   char          buffer[1024];
   binFileReader.read(buffer, VALS_LENGTH * sizeof(double));
   binFileReader.close();

@@ -1,4 +1,8 @@
-add_executable(main test-scheme-convergence.cpp)
+add_executable(main get-random-packed-balls-configuration.cpp)
+target_link_libraries(common
+  # PRIVATE OpenMP::OpenMP_CXX
+  PRIVATE PkgConfig::OPENMP
+)
 if(USE_CUDA)
   target_link_libraries(main common cuda-fct-solver cpu-fct-solver)
 else()

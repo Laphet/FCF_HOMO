@@ -19,13 +19,13 @@ void getCentBallConfig(std::vector<double> &k_vec, const int n, const double con
     int i{0}, j{0}, k{0};
     get3dIdxFromIdx(i, j, k, idx, N, P);
     double x{(i + 0.5) / M}, y{(j + 0.5) / N}, z{(k + 0.5) / P};
-    if (std::sqrt((x - 0.5) * (x - 0.5) + (y - 0.5) * (y - 0.5) + (z - 0.5) * (z - 0.5)) < RADIUS) k_vec[idx] = contrast * n * n;
+    if (std::sqrt((x - 0.5) * (x - 0.5) + (y - 0.5) * (y - 0.5) + (z - 0.5) * (z - 0.5)) <= RADIUS) k_vec[idx] = contrast * n * n;
     else k_vec[idx] = 1.0 * n * n;
   }
 }
 
 template <typename T>
-T gpuTestCase(int n, double contrast)
+T gpuTestCase(int n, double contrast, T rtol = static_cast<T>(1.0e-9))
 {
   // Prepare data.
   int    M{n}, N{n}, P{n};
@@ -58,7 +58,7 @@ T gpuTestCase(int n, double contrast)
   gpuSolver.setSprMatData(&csrRowOffsets[0], &csrColInd[0], &csrValues[0]);
   gpuSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
   std::vector<T> u_gpu(size);
-  gpuSolver.solve(&u_gpu[0], &rhs[0], 2048, static_cast<T>(1.0e-9));
+  gpuSolver.solve(&u_gpu[0], &rhs[0], 2048, rtol);
 
   T      homoCoeffZ = 0;
   double lenZ{1.0};
@@ -68,17 +68,24 @@ T gpuTestCase(int n, double contrast)
 
 int main(int argc, char *argv[])
 {
-  std::vector<double> contrastList{1.0, 10.0, 0.1, 100.0, 0.01, 1000.0, 0.001, 10000.0, 0.0001, 100000.0, 0.00001};
-  std::vector<int>    nList{32};
+  std::vector<double> contrastList{500.0, 0.005, 1000.0, 0.001};
+  std::vector<int>    nList{16, 32, 64, 128, 256, 512};
+  std::vector<double> rtolList{1.0e-5, 1.0e-6, 1.0e-7, 1.0e-8, 1.0e-9};
   using T = double;
 
   std::cout << "========================================================\n";
   for (auto contrast : contrastList) {
     std::cout << "Contrast=" << contrast << std::endl;
-    for (auto n : nList) {
+    // for (auto n : nList) {
+    //   std::vector<double> k_vec(n * n * n);
+    //   T                   homoCoeffZ{0.0};
+    //   homoCoeffZ = gpuTestCase<T>(n, contrast);
+    //   std::cout << "  n=" << n << ", homoCoeffZ=" << homoCoeffZ << std::endl;
+    // }
+    for (auto rtol : rtolList) {
+      int                 n = 512;
       std::vector<double> k_vec(n * n * n);
-      T                   homoCoeffZ{0.0};
-      homoCoeffZ = gpuTestCase<T>(n, contrast);
+      auto                homoCoeffZ = gpuTestCase<T>(n, contrast, rtol);
       std::cout << "  n=" << n << ", homoCoeffZ=" << homoCoeffZ << std::endl;
     }
   }
