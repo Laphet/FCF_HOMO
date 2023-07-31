@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
   glbOps.withSsor       = cmdInputs.cmdOptionExists("-ssor");
   glbOps.withICC        = cmdInputs.cmdOptionExists("-icc");
 
-  std::vector<int>    nList{32, 64, 128, 256, 512};
+  std::vector<int>    nList{400, 200, 100, 50};
   std::vector<double> contrastList{0.01, 0.1, 10.0, 100.0};
 
   for (auto n : nList)

@@ -1,0 +1,284 @@
+========================================================
+Contrast=0.01
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=1.869652e+05,	 rhs=1.280000e+08, relative=1.460665e-03.
+  itrIdx=2,	residual=1.446332e+05,	 rhs=1.280000e+08, relative=1.129947e-03.
+  itrIdx=3,	residual=1.393953e+05,	 rhs=1.280000e+08, relative=1.089026e-03.
+  itrIdx=4,	residual=1.269372e+05,	 rhs=1.280000e+08, relative=9.916970e-04.
+  itrIdx=5,	residual=4.597544e+04,	 rhs=1.280000e+08, relative=3.591831e-04.
+  itrIdx=6,	residual=8.101748e+03,	 rhs=1.280000e+08, relative=6.329490e-05.
+  itrIdx=7,	residual=2.490873e+03,	 rhs=1.280000e+08, relative=1.945995e-05.
+  itrIdx=8,	residual=2.491675e+03,	 rhs=1.280000e+08, relative=1.946621e-05.
+  itrIdx=9,	residual=4.342700e+03,	 rhs=1.280000e+08, relative=3.392735e-05.
+  itrIdx=10,	residual=1.382293e+03,	 rhs=1.280000e+08, relative=1.079916e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=2.734972e+02 and iterations=11.
+  n=400, homoCoeffZ=0.905724
+========================================================
+Contrast=0.1
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=1.664114e+05,	 rhs=1.280000e+08, relative=1.300089e-03.
+  itrIdx=2,	residual=1.146477e+05,	 rhs=1.280000e+08, relative=8.956853e-04.
+  itrIdx=3,	residual=8.026902e+04,	 rhs=1.280000e+08, relative=6.271018e-04.
+  itrIdx=4,	residual=1.867056e+04,	 rhs=1.280000e+08, relative=1.458638e-04.
+  itrIdx=5,	residual=6.535869e+03,	 rhs=1.280000e+08, relative=5.106147e-05.
+  itrIdx=6,	residual=4.202976e+03,	 rhs=1.280000e+08, relative=3.283575e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=7.390288e+02 and iterations=7.
+  n=400, homoCoeffZ=0.917747
+========================================================
+Contrast=10
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=8.293099e+05,	 rhs=1.280000e+08, relative=6.478984e-03.
+  itrIdx=2,	residual=6.409145e+05,	 rhs=1.280000e+08, relative=5.007144e-03.
+  itrIdx=3,	residual=1.912534e+05,	 rhs=1.280000e+08, relative=1.494167e-03.
+  itrIdx=4,	residual=1.503586e+05,	 rhs=1.280000e+08, relative=1.174676e-03.
+  itrIdx=5,	residual=4.157357e+04,	 rhs=1.280000e+08, relative=3.247935e-04.
+  itrIdx=6,	residual=1.245934e+04,	 rhs=1.280000e+08, relative=9.733859e-05.
+  itrIdx=7,	residual=6.362728e+03,	 rhs=1.280000e+08, relative=4.970881e-05.
+  itrIdx=8,	residual=4.152041e+03,	 rhs=1.280000e+08, relative=3.243782e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=9.300368e+02 and iterations=9.
+  n=400, homoCoeffZ=1.15495
+========================================================
+Contrast=100
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=9.805271e+06,	 rhs=1.280000e+08, relative=7.660368e-02.
+  itrIdx=2,	residual=9.301685e+06,	 rhs=1.280000e+08, relative=7.266942e-02.
+  itrIdx=3,	residual=2.355559e+06,	 rhs=1.280000e+08, relative=1.840281e-02.
+  itrIdx=4,	residual=5.495370e+05,	 rhs=1.280000e+08, relative=4.293258e-03.
+  itrIdx=5,	residual=4.600715e+05,	 rhs=1.280000e+08, relative=3.594309e-03.
+  itrIdx=6,	residual=9.211331e+05,	 rhs=1.280000e+08, relative=7.196352e-03.
+  itrIdx=7,	residual=4.763472e+05,	 rhs=1.280000e+08, relative=3.721462e-03.
+  itrIdx=8,	residual=1.168792e+05,	 rhs=1.280000e+08, relative=9.131187e-04.
+  itrIdx=9,	residual=3.884249e+04,	 rhs=1.280000e+08, relative=3.034569e-04.
+  itrIdx=10,	residual=2.571662e+04,	 rhs=1.280000e+08, relative=2.009111e-04.
+  itrIdx=11,	residual=3.607845e+04,	 rhs=1.280000e+08, relative=2.818629e-04.
+  itrIdx=12,	residual=4.479215e+04,	 rhs=1.280000e+08, relative=3.499387e-04.
+  itrIdx=13,	residual=1.641059e+04,	 rhs=1.280000e+08, relative=1.282077e-04.
+  itrIdx=14,	residual=6.625305e+03,	 rhs=1.280000e+08, relative=5.176019e-05.
+  itrIdx=15,	residual=2.551995e+03,	 rhs=1.280000e+08, relative=1.993746e-05.
+  itrIdx=16,	residual=2.065340e+03,	 rhs=1.280000e+08, relative=1.613547e-05.
+  itrIdx=17,	residual=2.796804e+03,	 rhs=1.280000e+08, relative=2.185003e-05.
+  itrIdx=18,	residual=3.213368e+03,	 rhs=1.280000e+08, relative=2.510444e-05.
+  itrIdx=19,	residual=1.476808e+03,	 rhs=1.280000e+08, relative=1.153756e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=6.116525e+02 and iterations=20.
+  n=400, homoCoeffZ=1.20393
+========================================================
+Contrast=0.01
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=4.680726e+04,	 rhs=1.600000e+07, relative=2.925454e-03.
+  itrIdx=2,	residual=3.615403e+04,	 rhs=1.600000e+07, relative=2.259627e-03.
+  itrIdx=3,	residual=3.486368e+04,	 rhs=1.600000e+07, relative=2.178980e-03.
+  itrIdx=4,	residual=3.147606e+04,	 rhs=1.600000e+07, relative=1.967254e-03.
+  itrIdx=5,	residual=1.090412e+04,	 rhs=1.600000e+07, relative=6.815076e-04.
+  itrIdx=6,	residual=1.900036e+03,	 rhs=1.600000e+07, relative=1.187522e-04.
+  itrIdx=7,	residual=6.044544e+02,	 rhs=1.600000e+07, relative=3.777840e-05.
+  itrIdx=8,	residual=6.079679e+02,	 rhs=1.600000e+07, relative=3.799799e-05.
+  itrIdx=9,	residual=1.080150e+03,	 rhs=1.600000e+07, relative=6.750937e-05.
+  itrIdx=10,	residual=3.481944e+02,	 rhs=1.600000e+07, relative=2.176215e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=6.791880e+01 and iterations=11.
+  n=200, homoCoeffZ=0.905085
+========================================================
+Contrast=0.1
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=4.165642e+04,	 rhs=1.600000e+07, relative=2.603526e-03.
+  itrIdx=2,	residual=2.863430e+04,	 rhs=1.600000e+07, relative=1.789644e-03.
+  itrIdx=3,	residual=2.002944e+04,	 rhs=1.600000e+07, relative=1.251840e-03.
+  itrIdx=4,	residual=4.488000e+03,	 rhs=1.600000e+07, relative=2.805000e-04.
+  itrIdx=5,	residual=1.612515e+03,	 rhs=1.600000e+07, relative=1.007822e-04.
+  itrIdx=6,	residual=1.007655e+03,	 rhs=1.600000e+07, relative=6.297842e-05.
+  itrIdx=7,	residual=1.733721e+02,	 rhs=1.600000e+07, relative=1.083576e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=5.186638e+01 and iterations=8.
+  n=200, homoCoeffZ=0.9173
+========================================================
+Contrast=10
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=2.072050e+05,	 rhs=1.600000e+07, relative=1.295031e-02.
+  itrIdx=2,	residual=1.565150e+05,	 rhs=1.600000e+07, relative=9.782190e-03.
+  itrIdx=3,	residual=4.788376e+04,	 rhs=1.600000e+07, relative=2.992735e-03.
+  itrIdx=4,	residual=3.422467e+04,	 rhs=1.600000e+07, relative=2.139042e-03.
+  itrIdx=5,	residual=7.520497e+03,	 rhs=1.600000e+07, relative=4.700311e-04.
+  itrIdx=6,	residual=2.441362e+03,	 rhs=1.600000e+07, relative=1.525851e-04.
+  itrIdx=7,	residual=1.498080e+03,	 rhs=1.600000e+07, relative=9.362998e-05.
+  itrIdx=8,	residual=8.365863e+02,	 rhs=1.600000e+07, relative=5.228664e-05.
+  itrIdx=9,	residual=1.887040e+02,	 rhs=1.600000e+07, relative=1.179400e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=8.166298e+01 and iterations=10.
+  n=200, homoCoeffZ=1.15511
+========================================================
+Contrast=100
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=2.432423e+06,	 rhs=1.600000e+07, relative=1.520264e-01.
+  itrIdx=2,	residual=2.270806e+06,	 rhs=1.600000e+07, relative=1.419254e-01.
+  itrIdx=3,	residual=6.748131e+05,	 rhs=1.600000e+07, relative=4.217582e-02.
+  itrIdx=4,	residual=2.100107e+05,	 rhs=1.600000e+07, relative=1.312567e-02.
+  itrIdx=5,	residual=1.115244e+05,	 rhs=1.600000e+07, relative=6.970277e-03.
+  itrIdx=6,	residual=1.664696e+05,	 rhs=1.600000e+07, relative=1.040435e-02.
+  itrIdx=7,	residual=1.699337e+05,	 rhs=1.600000e+07, relative=1.062085e-02.
+  itrIdx=8,	residual=8.684582e+04,	 rhs=1.600000e+07, relative=5.427864e-03.
+  itrIdx=9,	residual=2.850152e+04,	 rhs=1.600000e+07, relative=1.781345e-03.
+  itrIdx=10,	residual=1.255618e+04,	 rhs=1.600000e+07, relative=7.847611e-04.
+  itrIdx=11,	residual=6.863334e+03,	 rhs=1.600000e+07, relative=4.289584e-04.
+  itrIdx=12,	residual=6.161230e+03,	 rhs=1.600000e+07, relative=3.850769e-04.
+  itrIdx=13,	residual=8.485743e+03,	 rhs=1.600000e+07, relative=5.303589e-04.
+  itrIdx=14,	residual=9.176398e+03,	 rhs=1.600000e+07, relative=5.735249e-04.
+  itrIdx=15,	residual=3.644507e+03,	 rhs=1.600000e+07, relative=2.277817e-04.
+  itrIdx=16,	residual=1.733265e+03,	 rhs=1.600000e+07, relative=1.083291e-04.
+  itrIdx=17,	residual=1.099130e+03,	 rhs=1.600000e+07, relative=6.869560e-05.
+  itrIdx=18,	residual=4.837393e+02,	 rhs=1.600000e+07, relative=3.023371e-05.
+  itrIdx=19,	residual=5.008965e+02,	 rhs=1.600000e+07, relative=3.130603e-05.
+  itrIdx=20,	residual=5.512424e+02,	 rhs=1.600000e+07, relative=3.445265e-05.
+  itrIdx=21,	residual=6.073578e+02,	 rhs=1.600000e+07, relative=3.795986e-05.
+  itrIdx=22,	residual=4.538000e+02,	 rhs=1.600000e+07, relative=2.836250e-05.
+  itrIdx=23,	residual=1.630669e+02,	 rhs=1.600000e+07, relative=1.019168e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=7.801278e+01 and iterations=24.
+  n=200, homoCoeffZ=1.20445
+========================================================
+Contrast=0.01
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=1.174298e+04,	 rhs=2.000000e+06, relative=5.871492e-03.
+  itrIdx=2,	residual=9.041091e+03,	 rhs=2.000000e+06, relative=4.520545e-03.
+  itrIdx=3,	residual=8.720428e+03,	 rhs=2.000000e+06, relative=4.360214e-03.
+  itrIdx=4,	residual=7.836402e+03,	 rhs=2.000000e+06, relative=3.918201e-03.
+  itrIdx=5,	residual=2.730837e+03,	 rhs=2.000000e+06, relative=1.365419e-03.
+  itrIdx=6,	residual=4.824926e+02,	 rhs=2.000000e+06, relative=2.412463e-04.
+  itrIdx=7,	residual=1.521488e+02,	 rhs=2.000000e+06, relative=7.607438e-05.
+  itrIdx=8,	residual=1.436363e+02,	 rhs=2.000000e+06, relative=7.181814e-05.
+  itrIdx=9,	residual=2.637286e+02,	 rhs=2.000000e+06, relative=1.318643e-04.
+  itrIdx=10,	residual=8.412797e+01,	 rhs=2.000000e+06, relative=4.206398e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=1.838452e+01 and iterations=11.
+  n=100, homoCoeffZ=0.903571
+========================================================
+Contrast=0.1
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=1.044737e+04,	 rhs=2.000000e+06, relative=5.223684e-03.
+  itrIdx=2,	residual=7.147357e+03,	 rhs=2.000000e+06, relative=3.573678e-03.
+  itrIdx=3,	residual=4.983218e+03,	 rhs=2.000000e+06, relative=2.491609e-03.
+  itrIdx=4,	residual=1.102618e+03,	 rhs=2.000000e+06, relative=5.513088e-04.
+  itrIdx=5,	residual=3.901905e+02,	 rhs=2.000000e+06, relative=1.950953e-04.
+  itrIdx=6,	residual=2.517607e+02,	 rhs=2.000000e+06, relative=1.258803e-04.
+  itrIdx=7,	residual=4.342022e+01,	 rhs=2.000000e+06, relative=2.171011e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=1.340398e+01 and iterations=8.
+  n=100, homoCoeffZ=0.916202
+========================================================
+Contrast=10
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=5.186555e+04,	 rhs=2.000000e+06, relative=2.593277e-02.
+  itrIdx=2,	residual=3.794725e+04,	 rhs=2.000000e+06, relative=1.897362e-02.
+  itrIdx=3,	residual=1.246750e+04,	 rhs=2.000000e+06, relative=6.233748e-03.
+  itrIdx=4,	residual=8.468150e+03,	 rhs=2.000000e+06, relative=4.234075e-03.
+  itrIdx=5,	residual=2.331897e+03,	 rhs=2.000000e+06, relative=1.165948e-03.
+  itrIdx=6,	residual=6.200230e+02,	 rhs=2.000000e+06, relative=3.100115e-04.
+  itrIdx=7,	residual=3.786149e+02,	 rhs=2.000000e+06, relative=1.893074e-04.
+  itrIdx=8,	residual=2.257658e+02,	 rhs=2.000000e+06, relative=1.128829e-04.
+  itrIdx=9,	residual=5.600542e+01,	 rhs=2.000000e+06, relative=2.800271e-05.
+  itrIdx=10,	residual=2.046604e+01,	 rhs=2.000000e+06, relative=1.023302e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=1.661553e+01 and iterations=11.
+  n=100, homoCoeffZ=1.15583
+========================================================
+Contrast=100
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=6.004321e+05,	 rhs=2.000000e+06, relative=3.002160e-01.
+  itrIdx=2,	residual=5.537970e+05,	 rhs=2.000000e+06, relative=2.768985e-01.
+  itrIdx=3,	residual=1.224440e+05,	 rhs=2.000000e+06, relative=6.122200e-02.
+  itrIdx=4,	residual=7.466926e+04,	 rhs=2.000000e+06, relative=3.733463e-02.
+  itrIdx=5,	residual=3.227350e+04,	 rhs=2.000000e+06, relative=1.613675e-02.
+  itrIdx=6,	residual=2.875389e+04,	 rhs=2.000000e+06, relative=1.437694e-02.
+  itrIdx=7,	residual=4.458406e+04,	 rhs=2.000000e+06, relative=2.229203e-02.
+  itrIdx=8,	residual=2.975729e+04,	 rhs=2.000000e+06, relative=1.487865e-02.
+  itrIdx=9,	residual=1.523779e+04,	 rhs=2.000000e+06, relative=7.618894e-03.
+  itrIdx=10,	residual=1.025045e+04,	 rhs=2.000000e+06, relative=5.125227e-03.
+  itrIdx=11,	residual=3.896625e+03,	 rhs=2.000000e+06, relative=1.948313e-03.
+  itrIdx=12,	residual=1.614125e+03,	 rhs=2.000000e+06, relative=8.070627e-04.
+  itrIdx=13,	residual=2.058276e+03,	 rhs=2.000000e+06, relative=1.029138e-03.
+  itrIdx=14,	residual=1.452869e+03,	 rhs=2.000000e+06, relative=7.264344e-04.
+  itrIdx=15,	residual=1.668668e+03,	 rhs=2.000000e+06, relative=8.343339e-04.
+  itrIdx=16,	residual=2.342803e+03,	 rhs=2.000000e+06, relative=1.171401e-03.
+  itrIdx=17,	residual=8.867642e+02,	 rhs=2.000000e+06, relative=4.433821e-04.
+  itrIdx=18,	residual=2.247810e+02,	 rhs=2.000000e+06, relative=1.123905e-04.
+  itrIdx=19,	residual=2.490651e+02,	 rhs=2.000000e+06, relative=1.245326e-04.
+  itrIdx=20,	residual=1.614122e+02,	 rhs=2.000000e+06, relative=8.070608e-05.
+  itrIdx=21,	residual=9.044953e+01,	 rhs=2.000000e+06, relative=4.522476e-05.
+  itrIdx=22,	residual=1.449149e+02,	 rhs=2.000000e+06, relative=7.245745e-05.
+  itrIdx=23,	residual=1.249458e+02,	 rhs=2.000000e+06, relative=6.247291e-05.
+  itrIdx=24,	residual=7.006971e+01,	 rhs=2.000000e+06, relative=3.503485e-05.
+  itrIdx=25,	residual=8.133214e+01,	 rhs=2.000000e+06, relative=4.066607e-05.
+  itrIdx=26,	residual=4.229922e+01,	 rhs=2.000000e+06, relative=2.114961e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=1.319284e+01 and iterations=27.
+  n=100, homoCoeffZ=1.20599
+========================================================
+Contrast=0.01
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=2.943472e+03,	 rhs=2.500000e+05, relative=1.177389e-02.
+  itrIdx=2,	residual=2.257819e+03,	 rhs=2.500000e+05, relative=9.031275e-03.
+  itrIdx=3,	residual=2.186081e+03,	 rhs=2.500000e+05, relative=8.744325e-03.
+  itrIdx=4,	residual=1.862661e+03,	 rhs=2.500000e+05, relative=7.450643e-03.
+  itrIdx=5,	residual=6.125226e+02,	 rhs=2.500000e+05, relative=2.450090e-03.
+  itrIdx=6,	residual=1.166380e+02,	 rhs=2.500000e+05, relative=4.665522e-04.
+  itrIdx=7,	residual=3.526611e+01,	 rhs=2.500000e+05, relative=1.410644e-04.
+  itrIdx=8,	residual=3.361638e+01,	 rhs=2.500000e+05, relative=1.344655e-04.
+  itrIdx=9,	residual=5.991160e+01,	 rhs=2.500000e+05, relative=2.396464e-04.
+  itrIdx=10,	residual=1.780035e+01,	 rhs=2.500000e+05, relative=7.120139e-05.
+  itrIdx=11,	residual=5.311201e+00,	 rhs=2.500000e+05, relative=2.124481e-05.
+  itrIdx=12,	residual=4.323483e+00,	 rhs=2.500000e+05, relative=1.729393e-05.
+  itrIdx=13,	residual=4.363204e+00,	 rhs=2.500000e+05, relative=1.745282e-05.
+  itrIdx=14,	residual=3.616714e+00,	 rhs=2.500000e+05, relative=1.446686e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=1.096632e+00 and iterations=15.
+  n=50, homoCoeffZ=0.902337
+========================================================
+Contrast=0.1
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=2.618293e+03,	 rhs=2.500000e+05, relative=1.047317e-02.
+  itrIdx=2,	residual=1.780012e+03,	 rhs=2.500000e+05, relative=7.120048e-03.
+  itrIdx=3,	residual=1.195844e+03,	 rhs=2.500000e+05, relative=4.783376e-03.
+  itrIdx=4,	residual=2.324148e+02,	 rhs=2.500000e+05, relative=9.296592e-04.
+  itrIdx=5,	residual=9.042900e+01,	 rhs=2.500000e+05, relative=3.617160e-04.
+  itrIdx=6,	residual=5.824874e+01,	 rhs=2.500000e+05, relative=2.329950e-04.
+  itrIdx=7,	residual=1.121275e+01,	 rhs=2.500000e+05, relative=4.485102e-05.
+  itrIdx=8,	residual=3.362403e+00,	 rhs=2.500000e+05, relative=1.344961e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=2.412059e+00 and iterations=9.
+  n=50, homoCoeffZ=0.915525
+========================================================
+Contrast=10
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=1.279663e+04,	 rhs=2.500000e+05, relative=5.118654e-02.
+  itrIdx=2,	residual=8.486598e+03,	 rhs=2.500000e+05, relative=3.394639e-02.
+  itrIdx=3,	residual=3.177273e+03,	 rhs=2.500000e+05, relative=1.270909e-02.
+  itrIdx=4,	residual=1.931875e+03,	 rhs=2.500000e+05, relative=7.727501e-03.
+  itrIdx=5,	residual=5.116456e+02,	 rhs=2.500000e+05, relative=2.046583e-03.
+  itrIdx=6,	residual=1.463612e+02,	 rhs=2.500000e+05, relative=5.854449e-04.
+  itrIdx=7,	residual=8.864341e+01,	 rhs=2.500000e+05, relative=3.545736e-04.
+  itrIdx=8,	residual=5.288460e+01,	 rhs=2.500000e+05, relative=2.115384e-04.
+  itrIdx=9,	residual=1.268590e+01,	 rhs=2.500000e+05, relative=5.074360e-05.
+  itrIdx=10,	residual=5.352088e+00,	 rhs=2.500000e+05, relative=2.140835e-05.
+  itrIdx=11,	residual=4.187101e+00,	 rhs=2.500000e+05, relative=1.674840e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=1.120659e+00 and iterations=12.
+  n=50, homoCoeffZ=1.1542
+========================================================
+Contrast=100
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=1.444003e+05,	 rhs=2.500000e+05, relative=5.776011e-01.
+  itrIdx=2,	residual=1.239245e+05,	 rhs=2.500000e+05, relative=4.956979e-01.
+  itrIdx=3,	residual=2.180401e+04,	 rhs=2.500000e+05, relative=8.721605e-02.
+  itrIdx=4,	residual=1.230228e+04,	 rhs=2.500000e+05, relative=4.920912e-02.
+  itrIdx=5,	residual=1.061928e+04,	 rhs=2.500000e+05, relative=4.247713e-02.
+  itrIdx=6,	residual=6.379302e+03,	 rhs=2.500000e+05, relative=2.551721e-02.
+  itrIdx=7,	residual=7.497106e+03,	 rhs=2.500000e+05, relative=2.998842e-02.
+  itrIdx=8,	residual=9.601053e+03,	 rhs=2.500000e+05, relative=3.840421e-02.
+  itrIdx=9,	residual=4.312891e+03,	 rhs=2.500000e+05, relative=1.725156e-02.
+  itrIdx=10,	residual=1.426084e+03,	 rhs=2.500000e+05, relative=5.704336e-03.
+  itrIdx=11,	residual=2.049224e+03,	 rhs=2.500000e+05, relative=8.196895e-03.
+  itrIdx=12,	residual=6.775161e+02,	 rhs=2.500000e+05, relative=2.710064e-03.
+  itrIdx=13,	residual=3.041395e+02,	 rhs=2.500000e+05, relative=1.216558e-03.
+  itrIdx=14,	residual=3.604310e+02,	 rhs=2.500000e+05, relative=1.441724e-03.
+  itrIdx=15,	residual=5.037369e+02,	 rhs=2.500000e+05, relative=2.014947e-03.
+  itrIdx=16,	residual=2.460315e+02,	 rhs=2.500000e+05, relative=9.841261e-04.
+  itrIdx=17,	residual=2.103554e+02,	 rhs=2.500000e+05, relative=8.414218e-04.
+  itrIdx=18,	residual=2.753589e+02,	 rhs=2.500000e+05, relative=1.101436e-03.
+  itrIdx=19,	residual=7.096798e+01,	 rhs=2.500000e+05, relative=2.838719e-04.
+  itrIdx=20,	residual=2.699875e+01,	 rhs=2.500000e+05, relative=1.079950e-04.
+  itrIdx=21,	residual=2.735859e+01,	 rhs=2.500000e+05, relative=1.094344e-04.
+  itrIdx=22,	residual=4.199994e+01,	 rhs=2.500000e+05, relative=1.679997e-04.
+  itrIdx=23,	residual=1.628967e+01,	 rhs=2.500000e+05, relative=6.515866e-05.
+  itrIdx=24,	residual=2.170202e+01,	 rhs=2.500000e+05, relative=8.680808e-05.
+  itrIdx=25,	residual=2.320265e+01,	 rhs=2.500000e+05, relative=9.281062e-05.
+  itrIdx=26,	residual=8.231179e+00,	 rhs=2.500000e+05, relative=3.292472e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=2.363526e+00 and iterations=27.
+  n=50, homoCoeffZ=1.20471
