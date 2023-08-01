@@ -1,0 +1,308 @@
+========================================================
+Contrast=0.01, config=bin/ball-list-1716-r1.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=2.525859e+06,	 rhs=1.264249e+08, relative=1.997913e-02.
+  itrIdx=2,	residual=4.193825e+05,	 rhs=1.264249e+08, relative=3.317247e-03.
+  itrIdx=3,	residual=2.713461e+05,	 rhs=1.264249e+08, relative=2.146303e-03.
+  itrIdx=4,	residual=6.500791e+05,	 rhs=1.264249e+08, relative=5.142020e-03.
+  itrIdx=5,	residual=6.192667e+05,	 rhs=1.264249e+08, relative=4.898298e-03.
+  itrIdx=6,	residual=1.859873e+05,	 rhs=1.264249e+08, relative=1.471129e-03.
+  itrIdx=7,	residual=8.005176e+04,	 rhs=1.264249e+08, relative=6.331963e-04.
+  itrIdx=8,	residual=5.566076e+04,	 rhs=1.264249e+08, relative=4.402675e-04.
+  itrIdx=9,	residual=6.073054e+04,	 rhs=1.264249e+08, relative=4.803687e-04.
+  itrIdx=10,	residual=7.998912e+04,	 rhs=1.264249e+08, relative=6.327009e-04.
+  itrIdx=11,	residual=6.927296e+04,	 rhs=1.264249e+08, relative=5.479378e-04.
+  itrIdx=12,	residual=4.380073e+04,	 rhs=1.264249e+08, relative=3.464566e-04.
+  itrIdx=13,	residual=2.366164e+04,	 rhs=1.264249e+08, relative=1.871597e-04.
+  itrIdx=14,	residual=1.442960e+04,	 rhs=1.264249e+08, relative=1.141357e-04.
+  itrIdx=15,	residual=9.758997e+03,	 rhs=1.264249e+08, relative=7.719207e-05.
+  itrIdx=16,	residual=8.765103e+03,	 rhs=1.264249e+08, relative=6.933053e-05.
+  itrIdx=17,	residual=9.261695e+03,	 rhs=1.264249e+08, relative=7.325849e-05.
+  itrIdx=18,	residual=9.533705e+03,	 rhs=1.264249e+08, relative=7.541005e-05.
+  itrIdx=19,	residual=8.576078e+03,	 rhs=1.264249e+08, relative=6.783538e-05.
+  itrIdx=20,	residual=6.274391e+03,	 rhs=1.264249e+08, relative=4.962941e-05.
+  itrIdx=21,	residual=3.413329e+03,	 rhs=1.264249e+08, relative=2.699887e-05.
+  itrIdx=22,	residual=2.133330e+03,	 rhs=1.264249e+08, relative=1.687429e-05.
+  itrIdx=23,	residual=1.441640e+03,	 rhs=1.264249e+08, relative=1.140314e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=1.105268e+03 and iterations=24.
+  homoCoeffZ=0.909794
+========================================================
+Contrast=0.01, config=bin/ball-list-258-r2.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=3.289116e+06,	 rhs=1.230441e+08, relative=2.673119e-02.
+  itrIdx=2,	residual=6.223522e+05,	 rhs=1.230441e+08, relative=5.057958e-03.
+  itrIdx=3,	residual=4.961439e+05,	 rhs=1.230441e+08, relative=4.032243e-03.
+  itrIdx=4,	residual=1.201409e+06,	 rhs=1.230441e+08, relative=9.764045e-03.
+  itrIdx=5,	residual=9.228503e+05,	 rhs=1.230441e+08, relative=7.500156e-03.
+  itrIdx=6,	residual=2.895944e+05,	 rhs=1.230441e+08, relative=2.353582e-03.
+  itrIdx=7,	residual=1.220279e+05,	 rhs=1.230441e+08, relative=9.917406e-04.
+  itrIdx=8,	residual=8.025880e+04,	 rhs=1.230441e+08, relative=6.522764e-04.
+  itrIdx=9,	residual=9.198288e+04,	 rhs=1.230441e+08, relative=7.475600e-04.
+  itrIdx=10,	residual=1.139508e+05,	 rhs=1.230441e+08, relative=9.260971e-04.
+  itrIdx=11,	residual=8.355053e+04,	 rhs=1.230441e+08, relative=6.790289e-04.
+  itrIdx=12,	residual=4.117393e+04,	 rhs=1.230441e+08, relative=3.346273e-04.
+  itrIdx=13,	residual=2.124688e+04,	 rhs=1.230441e+08, relative=1.726769e-04.
+  itrIdx=14,	residual=1.258069e+04,	 rhs=1.230441e+08, relative=1.022454e-04.
+  itrIdx=15,	residual=1.158749e+04,	 rhs=1.230441e+08, relative=9.417344e-05.
+  itrIdx=16,	residual=1.537772e+04,	 rhs=1.230441e+08, relative=1.249772e-04.
+  itrIdx=17,	residual=1.518805e+04,	 rhs=1.230441e+08, relative=1.234358e-04.
+  itrIdx=18,	residual=8.693196e+03,	 rhs=1.230441e+08, relative=7.065103e-05.
+  itrIdx=19,	residual=3.599259e+03,	 rhs=1.230441e+08, relative=2.925177e-05.
+  itrIdx=20,	residual=1.670637e+03,	 rhs=1.230441e+08, relative=1.357754e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=1.158074e+03 and iterations=21.
+  homoCoeffZ=0.863563
+========================================================
+Contrast=0.01, config=bin/ball-list-55-r3.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=2.715717e+06,	 rhs=1.195880e+08, relative=2.270894e-02.
+  itrIdx=2,	residual=7.025755e+05,	 rhs=1.195880e+08, relative=5.874966e-03.
+  itrIdx=3,	residual=7.492291e+05,	 rhs=1.195880e+08, relative=6.265086e-03.
+  itrIdx=4,	residual=1.707917e+06,	 rhs=1.195880e+08, relative=1.428168e-02.
+  itrIdx=5,	residual=1.093372e+06,	 rhs=1.195880e+08, relative=9.142827e-03.
+  itrIdx=6,	residual=6.000369e+05,	 rhs=1.195880e+08, relative=5.017535e-03.
+  itrIdx=7,	residual=2.456322e+05,	 rhs=1.195880e+08, relative=2.053987e-03.
+  itrIdx=8,	residual=1.082698e+05,	 rhs=1.195880e+08, relative=9.053567e-04.
+  itrIdx=9,	residual=7.040550e+04,	 rhs=1.195880e+08, relative=5.887338e-04.
+  itrIdx=10,	residual=7.830370e+04,	 rhs=1.195880e+08, relative=6.547789e-04.
+  itrIdx=11,	residual=7.984273e+04,	 rhs=1.195880e+08, relative=6.676483e-04.
+  itrIdx=12,	residual=7.586452e+04,	 rhs=1.195880e+08, relative=6.343824e-04.
+  itrIdx=13,	residual=7.734526e+04,	 rhs=1.195880e+08, relative=6.467644e-04.
+  itrIdx=14,	residual=4.652599e+04,	 rhs=1.195880e+08, relative=3.890523e-04.
+  itrIdx=15,	residual=2.723940e+04,	 rhs=1.195880e+08, relative=2.277770e-04.
+  itrIdx=16,	residual=1.581947e+04,	 rhs=1.195880e+08, relative=1.322831e-04.
+  itrIdx=17,	residual=1.102608e+04,	 rhs=1.195880e+08, relative=9.220057e-05.
+  itrIdx=18,	residual=1.015007e+04,	 rhs=1.195880e+08, relative=8.487528e-05.
+  itrIdx=19,	residual=1.039585e+04,	 rhs=1.195880e+08, relative=8.693052e-05.
+  itrIdx=20,	residual=1.015534e+04,	 rhs=1.195880e+08, relative=8.491937e-05.
+  itrIdx=21,	residual=7.740298e+03,	 rhs=1.195880e+08, relative=6.472471e-05.
+  itrIdx=22,	residual=6.064145e+03,	 rhs=1.195880e+08, relative=5.070864e-05.
+  itrIdx=23,	residual=3.961201e+03,	 rhs=1.195880e+08, relative=3.312373e-05.
+  itrIdx=24,	residual=2.866093e+03,	 rhs=1.195880e+08, relative=2.396639e-05.
+  itrIdx=25,	residual=2.285004e+03,	 rhs=1.195880e+08, relative=1.910730e-05.
+  itrIdx=26,	residual=1.538959e+03,	 rhs=1.195880e+08, relative=1.286884e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=1.037228e+03 and iterations=27.
+  homoCoeffZ=0.799407
+========================================================
+Contrast=0.1, config=bin/ball-list-1716-r1.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=2.676750e+06,	 rhs=1.264406e+08, relative=2.117003e-02.
+  itrIdx=2,	residual=2.016458e+06,	 rhs=1.264406e+08, relative=1.594787e-02.
+  itrIdx=3,	residual=1.419057e+06,	 rhs=1.264406e+08, relative=1.122311e-02.
+  itrIdx=4,	residual=3.313421e+05,	 rhs=1.264406e+08, relative=2.620537e-03.
+  itrIdx=5,	residual=2.151154e+05,	 rhs=1.264406e+08, relative=1.701316e-03.
+  itrIdx=6,	residual=1.197178e+05,	 rhs=1.264406e+08, relative=9.468307e-04.
+  itrIdx=7,	residual=3.551471e+04,	 rhs=1.264406e+08, relative=2.808807e-04.
+  itrIdx=8,	residual=2.171140e+04,	 rhs=1.264406e+08, relative=1.717123e-04.
+  itrIdx=9,	residual=1.176663e+04,	 rhs=1.264406e+08, relative=9.306054e-05.
+  itrIdx=10,	residual=4.908392e+03,	 rhs=1.264406e+08, relative=3.881976e-05.
+  itrIdx=11,	residual=1.741082e+03,	 rhs=1.264406e+08, relative=1.376997e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=1.052077e+03 and iterations=12.
+  homoCoeffZ=0.922077
+========================================================
+Contrast=0.1, config=bin/ball-list-258-r2.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=4.087896e+06,	 rhs=1.230942e+08, relative=3.320950e-02.
+  itrIdx=2,	residual=3.530041e+06,	 rhs=1.230942e+08, relative=2.867756e-02.
+  itrIdx=3,	residual=2.059214e+06,	 rhs=1.230942e+08, relative=1.672877e-02.
+  itrIdx=4,	residual=4.943554e+05,	 rhs=1.230942e+08, relative=4.016074e-03.
+  itrIdx=5,	residual=2.861909e+05,	 rhs=1.230942e+08, relative=2.324975e-03.
+  itrIdx=6,	residual=1.524466e+05,	 rhs=1.230942e+08, relative=1.238455e-03.
+  itrIdx=7,	residual=5.113047e+04,	 rhs=1.230942e+08, relative=4.153768e-04.
+  itrIdx=8,	residual=2.905400e+04,	 rhs=1.230942e+08, relative=2.360306e-04.
+  itrIdx=9,	residual=1.683755e+04,	 rhs=1.230942e+08, relative=1.367859e-04.
+  itrIdx=10,	residual=5.757213e+03,	 rhs=1.230942e+08, relative=4.677079e-05.
+  itrIdx=11,	residual=2.178311e+03,	 rhs=1.230942e+08, relative=1.769629e-05.
+  itrIdx=12,	residual=1.255990e+03,	 rhs=1.230942e+08, relative=1.020349e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=6.384721e+02 and iterations=13.
+  homoCoeffZ=0.881676
+========================================================
+Contrast=0.1, config=bin/ball-list-55-r3.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=4.621781e+06,	 rhs=1.196742e+08, relative=3.861970e-02.
+  itrIdx=2,	residual=4.512771e+06,	 rhs=1.196742e+08, relative=3.770881e-02.
+  itrIdx=3,	residual=2.207556e+06,	 rhs=1.196742e+08, relative=1.844638e-02.
+  itrIdx=4,	residual=5.083284e+05,	 rhs=1.196742e+08, relative=4.247603e-03.
+  itrIdx=5,	residual=2.748353e+05,	 rhs=1.196742e+08, relative=2.296530e-03.
+  itrIdx=6,	residual=1.381397e+05,	 rhs=1.196742e+08, relative=1.154298e-03.
+  itrIdx=7,	residual=6.336818e+04,	 rhs=1.196742e+08, relative=5.295058e-04.
+  itrIdx=8,	residual=2.833281e+04,	 rhs=1.196742e+08, relative=2.367495e-04.
+  itrIdx=9,	residual=1.474897e+04,	 rhs=1.196742e+08, relative=1.232427e-04.
+  itrIdx=10,	residual=8.362204e+03,	 rhs=1.196742e+08, relative=6.987475e-05.
+  itrIdx=11,	residual=4.374083e+03,	 rhs=1.196742e+08, relative=3.654993e-05.
+  itrIdx=12,	residual=1.626383e+03,	 rhs=1.196742e+08, relative=1.359009e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=8.565892e+02 and iterations=13.
+  homoCoeffZ=0.82457
+========================================================
+Contrast=10, config=bin/ball-list-1716-r1.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=1.376586e+08,	 rhs=2.367754e+08, relative=5.813889e-01.
+  itrIdx=2,	residual=1.166440e+08,	 rhs=2.367754e+08, relative=4.926357e-01.
+  itrIdx=3,	residual=3.301407e+07,	 rhs=2.367754e+08, relative=1.394320e-01.
+  itrIdx=4,	residual=1.265259e+07,	 rhs=2.367754e+08, relative=5.343709e-02.
+  itrIdx=5,	residual=5.743750e+06,	 rhs=2.367754e+08, relative=2.425823e-02.
+  itrIdx=6,	residual=2.368813e+06,	 rhs=2.367754e+08, relative=1.000448e-02.
+  itrIdx=7,	residual=1.295166e+06,	 rhs=2.367754e+08, relative=5.470020e-03.
+  itrIdx=8,	residual=5.869632e+05,	 rhs=2.367754e+08, relative=2.478988e-03.
+  itrIdx=9,	residual=2.886500e+05,	 rhs=2.367754e+08, relative=1.219088e-03.
+  itrIdx=10,	residual=1.225831e+05,	 rhs=2.367754e+08, relative=5.177191e-04.
+  itrIdx=11,	residual=6.708018e+04,	 rhs=2.367754e+08, relative=2.833073e-04.
+  itrIdx=12,	residual=3.533106e+04,	 rhs=2.367754e+08, relative=1.492176e-04.
+  itrIdx=13,	residual=1.674818e+04,	 rhs=2.367754e+08, relative=7.073448e-05.
+  itrIdx=14,	residual=7.799553e+03,	 rhs=2.367754e+08, relative=3.294073e-05.
+  itrIdx=15,	residual=3.777490e+03,	 rhs=2.367754e+08, relative=1.595390e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=2.144728e+03 and iterations=16.
+  homoCoeffZ=1.14527
+========================================================
+Contrast=10, config=bin/ball-list-258-r2.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=1.214019e+08,	 rhs=3.735853e+08, relative=3.249644e-01.
+  itrIdx=2,	residual=1.269960e+08,	 rhs=3.735853e+08, relative=3.399385e-01.
+  itrIdx=3,	residual=4.616614e+07,	 rhs=3.735853e+08, relative=1.235759e-01.
+  itrIdx=4,	residual=1.549101e+07,	 rhs=3.735853e+08, relative=4.146580e-02.
+  itrIdx=5,	residual=7.168342e+06,	 rhs=3.735853e+08, relative=1.918797e-02.
+  itrIdx=6,	residual=2.849904e+06,	 rhs=3.735853e+08, relative=7.628522e-03.
+  itrIdx=7,	residual=1.602066e+06,	 rhs=3.735853e+08, relative=4.288354e-03.
+  itrIdx=8,	residual=6.563781e+05,	 rhs=3.735853e+08, relative=1.756970e-03.
+  itrIdx=9,	residual=3.113686e+05,	 rhs=3.735853e+08, relative=8.334605e-04.
+  itrIdx=10,	residual=1.520393e+05,	 rhs=3.735853e+08, relative=4.069736e-04.
+  itrIdx=11,	residual=6.989327e+04,	 rhs=3.735853e+08, relative=1.870879e-04.
+  itrIdx=12,	residual=3.686827e+04,	 rhs=3.735853e+08, relative=9.868768e-05.
+  itrIdx=13,	residual=1.817016e+04,	 rhs=3.735853e+08, relative=4.863724e-05.
+  itrIdx=14,	residual=8.400748e+03,	 rhs=3.735853e+08, relative=2.248683e-05.
+  itrIdx=15,	residual=4.236300e+03,	 rhs=3.735853e+08, relative=1.133958e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=2.223669e+03 and iterations=16.
+  homoCoeffZ=1.23578
+========================================================
+Contrast=10, config=bin/ball-list-55-r3.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=1.136197e+08,	 rhs=4.717975e+08, relative=2.408230e-01.
+  itrIdx=2,	residual=1.083125e+08,	 rhs=4.717975e+08, relative=2.295740e-01.
+  itrIdx=3,	residual=4.252038e+07,	 rhs=4.717975e+08, relative=9.012420e-02.
+  itrIdx=4,	residual=1.186644e+07,	 rhs=4.717975e+08, relative=2.515155e-02.
+  itrIdx=5,	residual=5.353631e+06,	 rhs=4.717975e+08, relative=1.134731e-02.
+  itrIdx=6,	residual=2.181182e+06,	 rhs=4.717975e+08, relative=4.623130e-03.
+  itrIdx=7,	residual=1.286787e+06,	 rhs=4.717975e+08, relative=2.727414e-03.
+  itrIdx=8,	residual=5.067927e+05,	 rhs=4.717975e+08, relative=1.074174e-03.
+  itrIdx=9,	residual=2.465013e+05,	 rhs=4.717975e+08, relative=5.224727e-04.
+  itrIdx=10,	residual=1.191166e+05,	 rhs=4.717975e+08, relative=2.524739e-04.
+  itrIdx=11,	residual=6.061425e+04,	 rhs=4.717975e+08, relative=1.284751e-04.
+  itrIdx=12,	residual=2.714890e+04,	 rhs=4.717975e+08, relative=5.754354e-05.
+  itrIdx=13,	residual=1.432318e+04,	 rhs=4.717975e+08, relative=3.035874e-05.
+  itrIdx=14,	residual=7.104070e+03,	 rhs=4.717975e+08, relative=1.505745e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=3.164910e+03 and iterations=15.
+  homoCoeffZ=1.41089
+========================================================
+Contrast=100, config=bin/ball-list-1716-r1.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=2.820263e+08,	 rhs=2.005971e+09, relative=1.405934e-01.
+  itrIdx=2,	residual=2.642140e+08,	 rhs=2.005971e+09, relative=1.317138e-01.
+  itrIdx=3,	residual=2.224133e+08,	 rhs=2.005971e+09, relative=1.108756e-01.
+  itrIdx=4,	residual=4.310154e+08,	 rhs=2.005971e+09, relative=2.148662e-01.
+  itrIdx=5,	residual=3.732937e+08,	 rhs=2.005971e+09, relative=1.860913e-01.
+  itrIdx=6,	residual=2.971342e+08,	 rhs=2.005971e+09, relative=1.481249e-01.
+  itrIdx=7,	residual=1.615645e+08,	 rhs=2.005971e+09, relative=8.054181e-02.
+  itrIdx=8,	residual=9.181891e+07,	 rhs=2.005971e+09, relative=4.577280e-02.
+  itrIdx=9,	residual=4.715396e+07,	 rhs=2.005971e+09, relative=2.350680e-02.
+  itrIdx=10,	residual=3.624622e+07,	 rhs=2.005971e+09, relative=1.806916e-02.
+  itrIdx=11,	residual=3.865096e+07,	 rhs=2.005971e+09, relative=1.926796e-02.
+  itrIdx=12,	residual=3.173345e+07,	 rhs=2.005971e+09, relative=1.581950e-02.
+  itrIdx=13,	residual=1.921859e+07,	 rhs=2.005971e+09, relative=9.580690e-03.
+  itrIdx=14,	residual=9.525297e+06,	 rhs=2.005971e+09, relative=4.748472e-03.
+  itrIdx=15,	residual=6.817621e+06,	 rhs=2.005971e+09, relative=3.398664e-03.
+  itrIdx=16,	residual=6.282472e+06,	 rhs=2.005971e+09, relative=3.131886e-03.
+  itrIdx=17,	residual=7.295214e+06,	 rhs=2.005971e+09, relative=3.636750e-03.
+  itrIdx=18,	residual=6.460120e+06,	 rhs=2.005971e+09, relative=3.220446e-03.
+  itrIdx=19,	residual=3.471601e+06,	 rhs=2.005971e+09, relative=1.730634e-03.
+  itrIdx=20,	residual=1.697418e+06,	 rhs=2.005971e+09, relative=8.461830e-04.
+  itrIdx=21,	residual=1.713796e+06,	 rhs=2.005971e+09, relative=8.543476e-04.
+  itrIdx=22,	residual=2.111298e+06,	 rhs=2.005971e+09, relative=1.052507e-03.
+  itrIdx=23,	residual=1.721512e+06,	 rhs=2.005971e+09, relative=8.581941e-04.
+  itrIdx=24,	residual=9.131114e+05,	 rhs=2.005971e+09, relative=4.551968e-04.
+  itrIdx=25,	residual=5.106309e+05,	 rhs=2.005971e+09, relative=2.545555e-04.
+  itrIdx=26,	residual=3.424857e+05,	 rhs=2.005971e+09, relative=1.707331e-04.
+  itrIdx=27,	residual=3.418238e+05,	 rhs=2.005971e+09, relative=1.704032e-04.
+  itrIdx=28,	residual=3.761370e+05,	 rhs=2.005971e+09, relative=1.875087e-04.
+  itrIdx=29,	residual=2.896455e+05,	 rhs=2.005971e+09, relative=1.443917e-04.
+  itrIdx=30,	residual=2.241073e+05,	 rhs=2.005971e+09, relative=1.117201e-04.
+  itrIdx=31,	residual=1.886265e+05,	 rhs=2.005971e+09, relative=9.403251e-05.
+  itrIdx=32,	residual=1.275333e+05,	 rhs=2.005971e+09, relative=6.357685e-05.
+  itrIdx=33,	residual=7.868372e+04,	 rhs=2.005971e+09, relative=3.922476e-05.
+  itrIdx=34,	residual=7.363095e+04,	 rhs=2.005971e+09, relative=3.670589e-05.
+  itrIdx=35,	residual=6.595398e+04,	 rhs=2.005971e+09, relative=3.287883e-05.
+  itrIdx=36,	residual=4.952400e+04,	 rhs=2.005971e+09, relative=2.468829e-05.
+  itrIdx=37,	residual=3.733405e+04,	 rhs=2.005971e+09, relative=1.861146e-05.
+  itrIdx=38,	residual=2.946275e+04,	 rhs=2.005971e+09, relative=1.468752e-05.
+  itrIdx=39,	residual=2.055351e+04,	 rhs=2.005971e+09, relative=1.024617e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=1.535735e+04 and iterations=40.
+  homoCoeffZ=1.19886
+========================================================
+Contrast=100, config=bin/ball-list-258-r2.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=3.413915e+08,	 rhs=3.529556e+09, relative=9.672364e-02.
+  itrIdx=2,	residual=2.811014e+08,	 rhs=3.529556e+09, relative=7.964215e-02.
+  itrIdx=3,	residual=1.962064e+08,	 rhs=3.529556e+09, relative=5.558955e-02.
+  itrIdx=4,	residual=3.464807e+08,	 rhs=3.529556e+09, relative=9.816552e-02.
+  itrIdx=5,	residual=3.844248e+08,	 rhs=3.529556e+09, relative=1.089159e-01.
+  itrIdx=6,	residual=2.918971e+08,	 rhs=3.529556e+09, relative=8.270081e-02.
+  itrIdx=7,	residual=1.783314e+08,	 rhs=3.529556e+09, relative=5.052516e-02.
+  itrIdx=8,	residual=1.202712e+08,	 rhs=3.529556e+09, relative=3.407544e-02.
+  itrIdx=9,	residual=5.490986e+07,	 rhs=3.529556e+09, relative=1.555716e-02.
+  itrIdx=10,	residual=2.332549e+07,	 rhs=3.529556e+09, relative=6.608618e-03.
+  itrIdx=11,	residual=1.660910e+07,	 rhs=3.529556e+09, relative=4.705719e-03.
+  itrIdx=12,	residual=1.110920e+07,	 rhs=3.529556e+09, relative=3.147478e-03.
+  itrIdx=13,	residual=1.099141e+07,	 rhs=3.529556e+09, relative=3.114105e-03.
+  itrIdx=14,	residual=1.412710e+07,	 rhs=3.529556e+09, relative=4.002515e-03.
+  itrIdx=15,	residual=1.166277e+07,	 rhs=3.529556e+09, relative=3.304317e-03.
+  itrIdx=16,	residual=5.001543e+06,	 rhs=3.529556e+09, relative=1.417046e-03.
+  itrIdx=17,	residual=2.502522e+06,	 rhs=3.529556e+09, relative=7.090189e-04.
+  itrIdx=18,	residual=1.548237e+06,	 rhs=3.529556e+09, relative=4.386492e-04.
+  itrIdx=19,	residual=1.323617e+06,	 rhs=3.529556e+09, relative=3.750096e-04.
+  itrIdx=20,	residual=1.267482e+06,	 rhs=3.529556e+09, relative=3.591053e-04.
+  itrIdx=21,	residual=1.015379e+06,	 rhs=3.529556e+09, relative=2.876791e-04.
+  itrIdx=22,	residual=9.513364e+05,	 rhs=3.529556e+09, relative=2.695343e-04.
+  itrIdx=23,	residual=1.030905e+06,	 rhs=3.529556e+09, relative=2.920777e-04.
+  itrIdx=24,	residual=7.304829e+05,	 rhs=3.529556e+09, relative=2.069617e-04.
+  itrIdx=25,	residual=3.591124e+05,	 rhs=3.529556e+09, relative=1.017444e-04.
+  itrIdx=26,	residual=1.845062e+05,	 rhs=3.529556e+09, relative=5.227462e-05.
+  itrIdx=27,	residual=1.208594e+05,	 rhs=3.529556e+09, relative=3.424211e-05.
+  itrIdx=28,	residual=9.881327e+04,	 rhs=3.529556e+09, relative=2.799595e-05.
+  itrIdx=29,	residual=1.093378e+05,	 rhs=3.529556e+09, relative=3.097779e-05.
+  itrIdx=30,	residual=1.224628e+05,	 rhs=3.529556e+09, relative=3.469638e-05.
+  itrIdx=31,	residual=9.193031e+04,	 rhs=3.529556e+09, relative=2.604586e-05.
+  itrIdx=32,	residual=4.816483e+04,	 rhs=3.529556e+09, relative=1.364614e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=2.948359e+04 and iterations=33.
+  homoCoeffZ=1.33024
+========================================================
+Contrast=100, config=bin/ball-list-55-r3.bin
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=2.869646e+08,	 rhs=4.565467e+09, relative=6.285547e-02.
+  itrIdx=2,	residual=2.273274e+08,	 rhs=4.565467e+09, relative=4.979282e-02.
+  itrIdx=3,	residual=2.007179e+08,	 rhs=4.565467e+09, relative=4.396439e-02.
+  itrIdx=4,	residual=3.883929e+08,	 rhs=4.565467e+09, relative=8.507189e-02.
+  itrIdx=5,	residual=3.654608e+08,	 rhs=4.565467e+09, relative=8.004895e-02.
+  itrIdx=6,	residual=2.668531e+08,	 rhs=4.565467e+09, relative=5.845034e-02.
+  itrIdx=7,	residual=1.206845e+08,	 rhs=4.565467e+09, relative=2.643421e-02.
+  itrIdx=8,	residual=1.036676e+08,	 rhs=4.565467e+09, relative=2.270691e-02.
+  itrIdx=9,	residual=5.618384e+07,	 rhs=4.565467e+09, relative=1.230627e-02.
+  itrIdx=10,	residual=2.566383e+07,	 rhs=4.565467e+09, relative=5.621295e-03.
+  itrIdx=11,	residual=1.268805e+07,	 rhs=4.565467e+09, relative=2.779135e-03.
+  itrIdx=12,	residual=8.321763e+06,	 rhs=4.565467e+09, relative=1.822763e-03.
+  itrIdx=13,	residual=8.299683e+06,	 rhs=4.565467e+09, relative=1.817926e-03.
+  itrIdx=14,	residual=1.074674e+07,	 rhs=4.565467e+09, relative=2.353918e-03.
+  itrIdx=15,	residual=9.147515e+06,	 rhs=4.565467e+09, relative=2.003632e-03.
+  itrIdx=16,	residual=4.519567e+06,	 rhs=4.565467e+09, relative=9.899463e-04.
+  itrIdx=17,	residual=2.165761e+06,	 rhs=4.565467e+09, relative=4.743790e-04.
+  itrIdx=18,	residual=1.172220e+06,	 rhs=4.565467e+09, relative=2.567579e-04.
+  itrIdx=19,	residual=8.565726e+05,	 rhs=4.565467e+09, relative=1.876199e-04.
+  itrIdx=20,	residual=1.020305e+06,	 rhs=4.565467e+09, relative=2.234833e-04.
+  itrIdx=21,	residual=1.129970e+06,	 rhs=4.565467e+09, relative=2.475037e-04.
+  itrIdx=22,	residual=1.005452e+06,	 rhs=4.565467e+09, relative=2.202298e-04.
+  itrIdx=23,	residual=5.895486e+05,	 rhs=4.565467e+09, relative=1.291322e-04.
+  itrIdx=24,	residual=2.377807e+05,	 rhs=4.565467e+09, relative=5.208245e-05.
+  itrIdx=25,	residual=1.232251e+05,	 rhs=4.565467e+09, relative=2.699069e-05.
+  itrIdx=26,	residual=9.915125e+04,	 rhs=4.565467e+09, relative=2.171766e-05.
+  itrIdx=27,	residual=1.281887e+05,	 rhs=4.565467e+09, relative=2.807789e-05.
+  itrIdx=28,	residual=1.436041e+05,	 rhs=4.565467e+09, relative=3.145442e-05.
+  itrIdx=29,	residual=8.464354e+04,	 rhs=4.565467e+09, relative=1.853995e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=3.903267e+04 and iterations=30.
+  homoCoeffZ=1.59239

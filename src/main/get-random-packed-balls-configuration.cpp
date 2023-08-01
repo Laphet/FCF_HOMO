@@ -31,7 +31,7 @@ void get_bin_k(std::vector<int> &k_bin, const std::string &filename, const int n
           distance += (y - ball_y) * (y - ball_y);
           distance += (z - ball_z) * (z - ball_z);
           distance                     = std::sqrt(distance);
-          k_bin[i * N * N + j * N + k] = distance <= ball_r ? 1 : 0;
+          k_bin[i * N * N + j * N + k] = distance <= ball_r ? 1 : 1.0;
         }
       }
     }
