@@ -1,0 +1,57 @@
+========================================================
+Contrast_x,y,z=4  25  100
+Get kvals from python.
+1.04858e+06  6.5536e+06  2.62144e+07  2.62144e+07  2.62144e+07  262144  262144  262144  262144  262144  10485.8  65536  262144  262144  262144  
+  Use the average of min and max for all.
+Use the following reference parameters:
+2.63455e+07  2.63455e+07  2.63455e+07  2.63455e+07  2.63455e+07  
+GPU solver with FCT preconditioner.
+  itrIdx=1,	residual=1.358401e+09,	 rhs=6.715918e+09, relative=2.022658e-01.
+  itrIdx=2,	residual=8.151149e+08,	 rhs=6.715918e+09, relative=1.213706e-01.
+  itrIdx=3,	residual=6.297768e+08,	 rhs=6.715918e+09, relative=9.377375e-02.
+  itrIdx=4,	residual=6.328984e+08,	 rhs=6.715918e+09, relative=9.423856e-02.
+  itrIdx=5,	residual=4.740867e+08,	 rhs=6.715918e+09, relative=7.059150e-02.
+  itrIdx=6,	residual=4.530042e+08,	 rhs=6.715918e+09, relative=6.745232e-02.
+  itrIdx=7,	residual=4.497840e+08,	 rhs=6.715918e+09, relative=6.697283e-02.
+  itrIdx=8,	residual=3.893541e+08,	 rhs=6.715918e+09, relative=5.797482e-02.
+  itrIdx=9,	residual=3.203169e+08,	 rhs=6.715918e+09, relative=4.769518e-02.
+  itrIdx=10,	residual=2.406990e+08,	 rhs=6.715918e+09, relative=3.584007e-02.
+  itrIdx=11,	residual=1.393874e+08,	 rhs=6.715918e+09, relative=2.075478e-02.
+  itrIdx=12,	residual=9.404646e+07,	 rhs=6.715918e+09, relative=1.400352e-02.
+  itrIdx=13,	residual=6.941486e+07,	 rhs=6.715918e+09, relative=1.033587e-02.
+  itrIdx=14,	residual=5.555645e+07,	 rhs=6.715918e+09, relative=8.272354e-03.
+  itrIdx=15,	residual=4.136736e+07,	 rhs=6.715918e+09, relative=6.159599e-03.
+  itrIdx=16,	residual=4.593229e+07,	 rhs=6.715918e+09, relative=6.839317e-03.
+  itrIdx=17,	residual=3.856969e+07,	 rhs=6.715918e+09, relative=5.743026e-03.
+  itrIdx=18,	residual=3.108475e+07,	 rhs=6.715918e+09, relative=4.628518e-03.
+  itrIdx=19,	residual=2.505007e+07,	 rhs=6.715918e+09, relative=3.729955e-03.
+  itrIdx=20,	residual=1.728326e+07,	 rhs=6.715918e+09, relative=2.573478e-03.
+  itrIdx=21,	residual=9.780067e+06,	 rhs=6.715918e+09, relative=1.456252e-03.
+  itrIdx=22,	residual=6.783245e+06,	 rhs=6.715918e+09, relative=1.010025e-03.
+  itrIdx=23,	residual=5.417546e+06,	 rhs=6.715918e+09, relative=8.066724e-04.
+  itrIdx=24,	residual=4.191093e+06,	 rhs=6.715918e+09, relative=6.240536e-04.
+  itrIdx=25,	residual=4.325443e+06,	 rhs=6.715918e+09, relative=6.440583e-04.
+  itrIdx=26,	residual=3.673347e+06,	 rhs=6.715918e+09, relative=5.469612e-04.
+  itrIdx=27,	residual=2.904292e+06,	 rhs=6.715918e+09, relative=4.324491e-04.
+  itrIdx=28,	residual=2.053330e+06,	 rhs=6.715918e+09, relative=3.057407e-04.
+  itrIdx=29,	residual=1.831009e+06,	 rhs=6.715918e+09, relative=2.726372e-04.
+  itrIdx=30,	residual=1.115302e+06,	 rhs=6.715918e+09, relative=1.660684e-04.
+  itrIdx=31,	residual=8.965461e+05,	 rhs=6.715918e+09, relative=1.334957e-04.
+  itrIdx=32,	residual=6.976164e+05,	 rhs=6.715918e+09, relative=1.038751e-04.
+  itrIdx=33,	residual=5.703930e+05,	 rhs=6.715918e+09, relative=8.493151e-05.
+  itrIdx=34,	residual=4.792527e+05,	 rhs=6.715918e+09, relative=7.136071e-05.
+  itrIdx=35,	residual=4.502157e+05,	 rhs=6.715918e+09, relative=6.703711e-05.
+  itrIdx=36,	residual=2.771945e+05,	 rhs=6.715918e+09, relative=4.127425e-05.
+  itrIdx=37,	residual=2.092796e+05,	 rhs=6.715918e+09, relative=3.116173e-05.
+  itrIdx=38,	residual=1.435284e+05,	 rhs=6.715918e+09, relative=2.137137e-05.
+  itrIdx=39,	residual=1.010132e+05,	 rhs=6.715918e+09, relative=1.504086e-05.
+  itrIdx=40,	residual=7.664553e+04,	 rhs=6.715918e+09, relative=1.141252e-05.
+Reach rtol=1.000000e-05, the solver exits with residual=5.974857e+04 and iterations=41.
+  homoCoeffZ=7.4621
+========================================================
+Contrast_x,y,z=8  125  1000
+Get kvals from python.
+2.09715e+06  3.2768e+07  2.62144e+08  2.62144e+08  2.62144e+08  262144  262144  262144  262144  262144  2097.15  32768  262144  262144  262144  
+  Use the average of min and max for all.
+Use the following reference parameters:
+2.62275e+08  2.62275e+08  2.62275e+08  2.62275e+08  2.62275e+08  

@@ -1,4 +1,4 @@
-add_executable(main test-stability-parked-balls.cpp)
+add_executable(main test-channels-domain.cpp)
 # target_link_libraries(common
 #   # PRIVATE OpenMP::OpenMP_CXX
 #   PRIVATE PkgConfig::OPENMP
