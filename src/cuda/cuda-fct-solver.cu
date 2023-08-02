@@ -600,7 +600,10 @@ void cufctSolver<T>::solve(T *u, const T *b, const int maxIter, const T rtol, co
   /* Malloc and copy u. */
   dnVec<T> u_d{nullptr, nullptr};
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&u_d.ptr), size * sizeof(T)));
+  CHECK_CUDA_ERROR(cudaMemset(reinterpret_cast<void *>(u_d.ptr), 0, size * sizeof(T)));
+#ifdef DEBUG
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(u_d.ptr), reinterpret_cast<void *>(&u[0]), size * sizeof(T), cudaMemcpyHostToDevice));
+#endif
   CHECK_CUDA_ERROR(cusparseCreateDnVec(&u_d.descr, static_cast<int64_t>(size), reinterpret_cast<void *>(u_d.ptr), cuTraits<T>::valueType));
 
   /* Malloc r, r <= b, r <- r - Au_d */
@@ -656,7 +659,9 @@ void cufctSolver<T>::solve(T *u, const T *b, const int maxIter, const T rtol, co
     /* Check convergence reasons. */
     cublasNorm(blasHandle, size, &r.ptr[0], &rNorm);
     if (rNorm <= bNorm * rtol) {
+#ifdef DEBUG
       std::printf("Reach rtol=%.6e, the solver exits with residual=%.6e and iterations=%d.\n", rtol, rNorm, itrIdx + 1);
+#endif
       break;
     }
     if (rNorm <= atol) {
@@ -667,9 +672,9 @@ void cufctSolver<T>::solve(T *u, const T *b, const int maxIter, const T rtol, co
       std::printf("Reach maxIter=%d, the solver exits with residual=%.6e and iterations=%d.\n", maxIter, rNorm, itrIdx + 1);
       break;
     }
-    // #ifdef DEBUG
+#ifdef DEBUG
     std::printf("  itrIdx=%d,\tresidual=%.6e,\t rhs=%.6e, relative=%.6e.\n", itrIdx + 1, rNorm, bNorm, rNorm / bNorm);
-    // #endif
+#endif
 
     /* z <= r, z <- inv(M) z */
     CHECK_CUDA_ERROR(cudaMemcpy(&z.ptr[0], &r.ptr[0], size * sizeof(T), cudaMemcpyDeviceToDevice));
