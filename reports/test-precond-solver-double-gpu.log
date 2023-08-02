@@ -460,3 +460,451 @@ GPU solver
   Warm-up=2295ms
   precondSolver=168us
   check=893ms, error=1.47645e-06
+
+
+New test cases. 2023/8/2
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=7782ms
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6124ms
+  Warm-up=2728ms
+  precondSolver=173us
+  check=1046ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=81ms
+  Warm-up=914ms
+  precondSolver=119us
+  check=9ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=750ms
+  Warm-up=668ms
+  precondSolver=82us
+  check=86ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=14ms
+  Warm-up=701ms
+  precondSolver=106us
+  check=64ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=79ms
+  Warm-up=796ms
+  precondSolver=121us
+  check=10ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=753ms
+  Warm-up=671ms
+  precondSolver=104us
+  check=89ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6647ms
+  Warm-up=2426ms
+  precondSolver=162us
+  check=759ms, error=1.47645e-06
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6120ms
+  Warm-up=3676ms
+  precondSolver=188us
+  check=994ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=75ms
+  Warm-up=591ms
+  precondSolver=97us
+  check=9ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=943ms
+  Warm-up=816ms
+  precondSolver=97us
+  check=121ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=14ms
+  Warm-up=965ms
+  precondSolver=111us
+  check=1ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=84ms
+  Warm-up=890ms
+  precondSolver=87us
+  check=10ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=787ms
+  Warm-up=740ms
+  precondSolver=109us
+  check=169ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6435ms
+  Warm-up=1874ms
+  precondSolver=111us
+  check=832ms, error=1.47645e-06
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6243ms
+  Warm-up=2982ms
+  precondSolver=179us
+  check=1041ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=71ms
+  Warm-up=655ms
+  precondSolver=128us
+  check=15ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=765ms
+  Warm-up=880ms
+  precondSolver=99us
+  check=86ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=8ms
+  Warm-up=565ms
+  precondSolver=92us
+  check=2ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=83ms
+  Warm-up=663ms
+  precondSolver=114us
+  check=78ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=800ms
+  Warm-up=757ms
+  precondSolver=105us
+  check=95ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6654ms
+  Warm-up=1829ms
+  precondSolver=117us
+  check=732ms, error=1.47645e-06
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6871ms
+  Warm-up=3045ms
+  precondSolver=164us
+  check=1069ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=76ms
+  Warm-up=934ms
+  precondSolver=153us
+  check=23ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=762ms
+  Warm-up=683ms
+  precondSolver=98us
+  check=89ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=8ms
+  Warm-up=817ms
+  precondSolver=90us
+  check=8ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=74ms
+  Warm-up=941ms
+  precondSolver=103us
+  check=8ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=751ms
+  Warm-up=675ms
+  precondSolver=85us
+  check=87ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6842ms
+  Warm-up=1768ms
+  precondSolver=106us
+  check=850ms, error=1.47645e-06
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6538ms
+  Warm-up=3190ms
+  precondSolver=179us
+  check=997ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=103ms
+  Warm-up=981ms
+  precondSolver=114us
+  check=16ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=759ms
+  Warm-up=1183ms
+  precondSolver=127us
+  check=110ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=8ms
+  Warm-up=560ms
+  precondSolver=98us
+  check=1ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=71ms
+  Warm-up=586ms
+  precondSolver=116us
+  check=11ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=804ms
+  Warm-up=1040ms
+  precondSolver=95us
+  check=107ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6378ms
+  Warm-up=1890ms
+  precondSolver=159us
+  check=643ms, error=1.47645e-06
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6224ms
+  Warm-up=2570ms
+  precondSolver=275us
+  check=1122ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=76ms
+  Warm-up=832ms
+  precondSolver=132us
+  check=15ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=869ms
+  Warm-up=1018ms
+  precondSolver=96us
+  check=90ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=14ms
+  Warm-up=651ms
+  precondSolver=85us
+  check=1ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=73ms
+  Warm-up=622ms
+  precondSolver=99us
+  check=9ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=765ms
+  Warm-up=1086ms
+  precondSolver=147us
+  check=103ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6808ms
+  Warm-up=2001ms
+  precondSolver=122us
+  check=834ms, error=1.47645e-06
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6634ms
+  Warm-up=3522ms
+  precondSolver=160us
+  check=1073ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=83ms
+  Warm-up=853ms
+  precondSolver=94us
+  check=11ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=765ms
+  Warm-up=766ms
+  precondSolver=112us
+  check=89ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=9ms
+  Warm-up=934ms
+  precondSolver=95us
+  check=2ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=80ms
+  Warm-up=848ms
+  precondSolver=87us
+  check=9ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=799ms
+  Warm-up=947ms
+  precondSolver=164us
+  check=110ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6669ms
+  Warm-up=1831ms
+  precondSolver=183us
+  check=920ms, error=1.47645e-06
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6557ms
+  Warm-up=2631ms
+  precondSolver=313us
+  check=1114ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=76ms
+  Warm-up=907ms
+  precondSolver=140us
+  check=12ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=751ms
+  Warm-up=679ms
+  precondSolver=106us
+  check=93ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=8ms
+  Warm-up=887ms
+  precondSolver=105us
+  check=3ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=93ms
+  Warm-up=907ms
+  precondSolver=94us
+  check=17ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=848ms
+  Warm-up=704ms
+  precondSolver=89us
+  check=140ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6366ms
+  Warm-up=2568ms
+  precondSolver=134us
+  check=876ms, error=1.47645e-06
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6269ms
+  Warm-up=2838ms
+  precondSolver=141us
+  check=1054ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=76ms
+  Warm-up=834ms
+  precondSolver=89us
+  check=16ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=890ms
+  Warm-up=829ms
+  precondSolver=99us
+  check=109ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=8ms
+  Warm-up=815ms
+  precondSolver=117us
+  check=2ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=99ms
+  Warm-up=1018ms
+  precondSolver=108us
+  check=13ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=969ms
+  Warm-up=1054ms
+  precondSolver=94us
+  check=93ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6950ms
+  Warm-up=2256ms
+  precondSolver=111us
+  check=808ms, error=1.47645e-06
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6441ms
+  Warm-up=3077ms
+  precondSolver=177us
+  check=1058ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=89ms
+  Warm-up=1024ms
+  precondSolver=118us
+  check=14ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=758ms
+  Warm-up=1057ms
+  precondSolver=133us
+  check=111ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=9ms
+  Warm-up=643ms
+  precondSolver=95us
+  check=2ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=138ms
+  Warm-up=695ms
+  precondSolver=116us
+  check=10ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=761ms
+  Warm-up=1093ms
+  precondSolver=141us
+  check=112ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6208ms
+  Warm-up=2289ms
+  precondSolver=109us
+  check=796ms, error=1.47645e-06
