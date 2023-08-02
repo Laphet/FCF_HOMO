@@ -44,7 +44,7 @@ cpu_solver_p2_data = (
 # print(cpu_solver_p2_data)
 
 dof_list = ["$64^3$", "$128^3$", "$256^3$", "$512^3$"]
-labels_list = ["Plan-PATIENT", "Plan-ESTIMATE"]
+labels_list = ["Plan(P)", "Plan(E)"]
 
 import plot_settings
 
