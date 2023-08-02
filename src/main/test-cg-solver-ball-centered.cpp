@@ -24,6 +24,7 @@ void getCentBallConfig(std::vector<double> &k_vec, const int n, const double con
   }
 }
 
+#ifdef ENABLE_CUDA
 template <typename T>
 T gpuTestCase(int n, double contrast, T rtol = static_cast<T>(1.0e-5))
 {
@@ -84,6 +85,7 @@ T gpuTestCase(int n, double contrast, T rtol = static_cast<T>(1.0e-5))
 
   return homoCoeffZ;
 }
+#endif
 
 template <typename T>
 T cpuTestCase(int n, double contrast, T rtol = static_cast<T>(1.0e-5))
@@ -156,7 +158,8 @@ int main(int argc, char *argv[])
     for (auto n : nList) {
       std::cout << "========================================================\n";
       std::cout << "Contrast=" << contrast << std::endl;
-      T homoCoeffZ = gpuTestCase<T>(n, contrast);
+      // T homoCoeffZ = gpuTestCase<T>(n, contrast);
+      T homoCoeffZ = cpuTestCase<T>(n, contrast);
       std::cout << "  n=" << n << ", homoCoeffZ=" << homoCoeffZ << std::endl;
     }
 

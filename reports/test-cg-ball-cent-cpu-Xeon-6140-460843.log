@@ -1,0 +1,206 @@
+Sender: LSF System <lsfadmin@c3u01n04>
+Subject: Job 460843: <precondSolver> in cluster <cluster1> Done
+
+Job <precondSolver> was submitted from host <ln02> by user <cjz> in cluster <cluster1> at Wed Aug  2 20:35:07 2023
+Job was executed on host(s) <36*c3u01n04>, in queue <batch>, as user <cjz> in cluster <cluster1> at Wed Aug  2 20:35:08 2023
+</share/home/cjz> was used as the home directory.
+</share/home/cjz/cqye/fct-homo/script> was used as the working directory.
+Started at Wed Aug  2 20:35:08 2023
+Terminated at Wed Aug  2 20:41:37 2023
+Results reported at Wed Aug  2 20:41:37 2023
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#BSUB -J precondSolver
+#BSUB -n 36
+#BSUB -o ../reports/test-cg-ball-cent-cpu-Xeon-6140-%J.log
+#BSUB -e ../tmp/%J.lsf.err
+#BSUB -W 10
+#BSUB -q batch
+#BSUB -R "span[ptile=36]"
+
+cd ${LS_SUBCWD}/..
+source ../set-oneapi.sh
+# set OMP_NUM_THREADS _and_ export! 
+OMP_NUM_THREADS=$LSB_DJOB_NUMPROC 
+export OMP_NUM_THREADS
+
+./bin/main
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   6208.06 sec.
+    Max Memory :                                 46398 MB
+    Average Memory :                             30992.62 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   2 MB
+    Max Processes :                              5
+    Max Threads :                                40
+    Run time :                                   389 sec.
+    Turnaround time :                            390 sec.
+
+The output (if any) follows:
+
+ 
+:: initializing oneAPI environment ...
+   1690979707.460843.shell: BASH_VERSION = 4.2.46(2)-release
+   args: Using "$@" for setvars.sh arguments: --config=~/.intel/oneapi.config
+:: compiler -- latest
+:: oneAPI environment initialized ::
+ 
+========================================================
+Contrast=0.001
+  common=1334ms
+CPU solver with FCT preconditioner.
+  Warm-up=67ms
+Reach rtol=1.000000e-05, the solver exits with residual=1.997312e+00 and iterations=19.
+  Solver=251ms
+  Post=0ms
+  n=64, homoCoeffZ=0.900793
+========================================================
+Contrast=0.001
+  common=657ms
+CPU solver with FCT preconditioner.
+  Warm-up=64ms
+Reach rtol=1.000000e-05, the solver exits with residual=3.669441e+01 and iterations=10.
+  Solver=551ms
+  Post=14ms
+  n=128, homoCoeffZ=0.903111
+========================================================
+Contrast=0.001
+  common=2772ms
+CPU solver with FCT preconditioner.
+  Warm-up=316ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.653879e+02 and iterations=9.
+  Solver=4480ms
+  Post=1ms
+  n=256, homoCoeffZ=0.90404
+========================================================
+Contrast=0.001
+  common=20158ms
+CPU solver with FCT preconditioner.
+  Warm-up=2176ms
+Reach rtol=1.000000e-05, the solver exits with residual=1.092679e+03 and iterations=9.
+  Solver=34143ms
+  Post=5ms
+  n=512, homoCoeffZ=0.904606
+========================================================
+Contrast=0.01
+  common=392ms
+CPU solver with FCT preconditioner.
+  Warm-up=31ms
+Reach rtol=1.000000e-05, the solver exits with residual=1.711814e+00 and iterations=15.
+  Solver=122ms
+  Post=0ms
+  n=64, homoCoeffZ=0.902179
+========================================================
+Contrast=0.01
+  common=662ms
+CPU solver with FCT preconditioner.
+  Warm-up=67ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.993899e+01 and iterations=11.
+  Solver=566ms
+  Post=0ms
+  n=128, homoCoeffZ=0.904419
+========================================================
+Contrast=0.01
+  common=2777ms
+CPU solver with FCT preconditioner.
+  Warm-up=295ms
+Reach rtol=1.000000e-05, the solver exits with residual=1.085036e+02 and iterations=11.
+  Solver=4794ms
+  Post=1ms
+  n=256, homoCoeffZ=0.905312
+========================================================
+Contrast=0.01
+  common=20024ms
+CPU solver with FCT preconditioner.
+  Warm-up=2149ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.285225e+03 and iterations=10.
+  Solver=38451ms
+  Post=4ms
+  n=512, homoCoeffZ=0.905861
+========================================================
+Contrast=100
+  common=381ms
+CPU solver with FCT preconditioner.
+  Warm-up=30ms
+Reach rtol=1.000000e-05, the solver exits with residual=3.830366e+00 and iterations=29.
+  Solver=186ms
+  Post=0ms
+  n=64, homoCoeffZ=1.2069
+========================================================
+Contrast=100
+  common=637ms
+CPU solver with FCT preconditioner.
+  Warm-up=66ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.549505e+01 and iterations=26.
+  Solver=991ms
+  Post=4ms
+  n=128, homoCoeffZ=1.20488
+========================================================
+Contrast=100
+  common=2798ms
+CPU solver with FCT preconditioner.
+  Warm-up=310ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.301807e+02 and iterations=22.
+  Solver=7790ms
+  Post=1ms
+  n=256, homoCoeffZ=1.20434
+========================================================
+Contrast=100
+  common=20036ms
+CPU solver with FCT preconditioner.
+  Warm-up=2145ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.579855e+03 and iterations=18.
+  Solver=64806ms
+  Post=5ms
+  n=512, homoCoeffZ=1.20382
+========================================================
+Contrast=1000
+  common=387ms
+CPU solver with FCT preconditioner.
+  Warm-up=31ms
+Reach rtol=1.000000e-05, the solver exits with residual=4.539382e+00 and iterations=50.
+  Solver=293ms
+  Post=0ms
+  n=64, homoCoeffZ=1.21317
+========================================================
+Contrast=1000
+  common=656ms
+CPU solver with FCT preconditioner.
+  Warm-up=68ms
+Reach rtol=1.000000e-05, the solver exits with residual=3.404188e+01 and iterations=48.
+  Solver=1638ms
+  Post=69ms
+  n=128, homoCoeffZ=1.21105
+========================================================
+Contrast=1000
+  common=2806ms
+CPU solver with FCT preconditioner.
+  Warm-up=304ms
+Reach rtol=1.000000e-05, the solver exits with residual=3.188840e+02 and iterations=43.
+  Solver=15179ms
+  Post=1ms
+  n=256, homoCoeffZ=1.21036
+========================================================
+Contrast=1000
+  common=20049ms
+CPU solver with FCT preconditioner.
+  Warm-up=2143ms
+Reach rtol=1.000000e-05, the solver exits with residual=9.956490e+02 and iterations=43.
+  Solver=106132ms
+  Post=5ms
+  n=512, homoCoeffZ=1.20979
+
+
+PS:
+
+Read file <../tmp/460843.lsf.err> for stderr output of this job.
+
