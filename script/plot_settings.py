@@ -10,5 +10,6 @@ A4_WIDTH = 8.27
 color_list = ["#B5C7CC", "#8BA1AD", "#587B89", "#244C66", "#407D6C", "#7DB290"]
 
 NVIDIA_COLOR = "#76B900"
+INTEL_COLOR = "#0071c5"
 
 plt.style.use("seaborn-v0_8-paper")
