@@ -54,7 +54,7 @@ rects = ax2.bar(x + width,
                 gpu_solver_time_data,
                 width,
                 label="Preconditioner",
-                color=plot_settings.NVIDIA_COLOR)
+                color="#ff7f0e")
 ax2.bar_label(rects, fmt="")
 
 ax2.set_ylabel("Time (us)")
