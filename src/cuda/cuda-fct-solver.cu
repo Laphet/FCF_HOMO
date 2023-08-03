@@ -659,9 +659,9 @@ void cufctSolver<T>::solve(T *u, const T *b, const int maxIter, const T rtol, co
     /* Check convergence reasons. */
     cublasNorm(blasHandle, size, &r.ptr[0], &rNorm);
     if (rNorm <= bNorm * rtol) {
-#ifdef DEBUG
+      // #ifdef DEBUG
       std::printf("Reach rtol=%.6e, the solver exits with residual=%.6e and iterations=%d.\n", rtol, rNorm, itrIdx + 1);
-#endif
+      // #endif
       break;
     }
     if (rNorm <= atol) {
