@@ -1,4 +1,4 @@
-add_executable(main test-cg-solver-ball-centered.cpp)
+add_executable(main test-cg-solver-balls-packed.cpp)
 # target_link_libraries(common
 #   # PRIVATE OpenMP::OpenMP_CXX
 #   PRIVATE PkgConfig::OPENMP
