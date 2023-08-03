@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib import rc
 
 rc("text", usetex=True)
-rc("legend", fontsize=8)
+# rc("legend", fontsize=8)
 A4_WIDTH = 8.27
 
 # From https://www.schemecolor.com/monsoon-season.php

@@ -58,7 +58,11 @@ width = 0.25  # the width of the bars
 rects = ax.bar(x, cpu_warmup_p1_data, width, label=labels_list[0])
 ax.bar_label(rects, fmt="")
 rects = ax.bar(x + width, cpu_warmup_p2_data, width, label=labels_list[1])
-ax.bar_label(rects, fmt="")
+ax.bar_label(rects,
+             labels=[
+                 "x{:.1f}\%".format(ratio * 100)
+                 for ratio in cpu_warmup_p2_data / cpu_warmup_p1_data
+             ])
 
 ax.set_ylabel("Time (ms)")
 ax.set_xlabel("$\mathtt{dof}$")
@@ -79,7 +83,11 @@ width = 0.25  # the width of the bars
 rects = ax.bar(x, cpu_solver_p1_data, width, label=labels_list[0])
 ax.bar_label(rects, fmt="")
 rects = ax.bar(x + width, cpu_solver_p2_data, width, label=labels_list[1])
-ax.bar_label(rects, fmt="")
+ax.bar_label(rects,
+             labels=[
+                 "x{:.1f}".format(ratio)
+                 for ratio in cpu_solver_p2_data / cpu_solver_p1_data
+             ])
 
 ax.set_ylabel("Time (ms)")
 ax.set_xlabel("$\mathtt{dof}$")
