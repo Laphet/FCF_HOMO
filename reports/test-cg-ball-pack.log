@@ -1,0 +1,367 @@
+========================================================
+Contrast=0.01
+  common=22612ms
+GPU solver with FCT preconditioner.
+  Warm-up=7771ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.234715e+03 and iterations=21.
+  Solver=11175ms
+  Post=346ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=22781ms
+GPU solver with FCT preconditioner.
+  Warm-up=6160ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.424639e+03 and iterations=12.
+  Solver=6637ms
+  Post=176ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=25933ms
+GPU solver with FCT preconditioner.
+  Warm-up=6297ms
+Reach rtol=1.000000e-05, the solver exits with residual=4.105070e+03 and iterations=16.
+  Solver=8942ms
+  Post=284ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=24363ms
+GPU solver with FCT preconditioner.
+  Warm-up=5980ms
+Reach rtol=1.000000e-05, the solver exits with residual=5.670621e+04 and iterations=33.
+  Solver=17219ms
+  Post=276ms
+  homoCoeffZ=1.32984
+
+#1
+========================================================
+Contrast=0.01
+  common=24480ms
+GPU solver with FCT preconditioner.
+  Warm-up=7224ms
+  Solver=11193ms
+  Post=195ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=21532ms
+GPU solver with FCT preconditioner.
+  Warm-up=6474ms
+  Solver=6822ms
+  Post=180ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=21391ms
+GPU solver with FCT preconditioner.
+  Warm-up=5756ms
+  Solver=8557ms
+  Post=7ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=22540ms
+GPU solver with FCT preconditioner.
+  Warm-up=5680ms
+  Solver=16998ms
+  Post=191ms
+  homoCoeffZ=1.32984
+# 2
+========================================================
+Contrast=0.01
+  common=22154ms
+GPU solver with FCT preconditioner.
+  Warm-up=8406ms
+  Solver=11152ms
+  Post=224ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=24109ms
+GPU solver with FCT preconditioner.
+  Warm-up=6152ms
+  Solver=7039ms
+  Post=285ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=23742ms
+GPU solver with FCT preconditioner.
+  Warm-up=5684ms
+  Solver=8607ms
+  Post=138ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=22464ms
+GPU solver with FCT preconditioner.
+  Warm-up=6408ms
+  Solver=17116ms
+  Post=199ms
+  homoCoeffZ=1.32984
+# 3
+========================================================
+Contrast=0.01
+  common=22985ms
+GPU solver with FCT preconditioner.
+  Warm-up=7257ms
+  Solver=11145ms
+  Post=190ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=22004ms
+GPU solver with FCT preconditioner.
+  Warm-up=7200ms
+  Solver=6843ms
+  Post=181ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=23359ms
+GPU solver with FCT preconditioner.
+  Warm-up=6885ms
+  Solver=8785ms
+  Post=192ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=21705ms
+GPU solver with FCT preconditioner.
+  Warm-up=5132ms
+  Solver=16766ms
+  Post=8ms
+  homoCoeffZ=1.32984
+# 4
+========================================================
+Contrast=0.01
+  common=21621ms
+GPU solver with FCT preconditioner.
+  Warm-up=8002ms
+  Solver=11109ms
+  Post=177ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=21365ms
+GPU solver with FCT preconditioner.
+  Warm-up=6653ms
+  Solver=7032ms
+  Post=186ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=21380ms
+GPU solver with FCT preconditioner.
+  Warm-up=6420ms
+  Solver=8741ms
+  Post=180ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=21528ms
+GPU solver with FCT preconditioner.
+  Warm-up=4920ms
+  Solver=17095ms
+  Post=11ms
+  homoCoeffZ=1.32984
+# 5
+========================================================
+Contrast=0.01
+  common=21360ms
+GPU solver with FCT preconditioner.
+  Warm-up=7632ms
+  Solver=11370ms
+  Post=194ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=22701ms
+GPU solver with FCT preconditioner.
+  Warm-up=5470ms
+  Solver=6646ms
+  Post=184ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=23142ms
+GPU solver with FCT preconditioner.
+  Warm-up=7305ms
+  Solver=8763ms
+  Post=203ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=21697ms
+GPU solver with FCT preconditioner.
+  Warm-up=7050ms
+  Solver=16999ms
+  Post=199ms
+  homoCoeffZ=1.32984
+# 6
+========================================================
+Contrast=0.01
+  common=21696ms
+GPU solver with FCT preconditioner.
+  Warm-up=6205ms
+  Solver=10789ms
+  Post=7ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=20939ms
+GPU solver with FCT preconditioner.
+  Warm-up=4719ms
+  Solver=6467ms
+  Post=9ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=21004ms
+GPU solver with FCT preconditioner.
+  Warm-up=6783ms
+  Solver=9022ms
+  Post=198ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=22362ms
+GPU solver with FCT preconditioner.
+  Warm-up=5150ms
+  Solver=16835ms
+  Post=7ms
+  homoCoeffZ=1.32984
+# 7
+========================================================
+Contrast=0.01
+  common=22514ms
+GPU solver with FCT preconditioner.
+  Warm-up=6624ms
+  Solver=11175ms
+  Post=184ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=21495ms
+GPU solver with FCT preconditioner.
+  Warm-up=6448ms
+  Solver=6992ms
+  Post=211ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=22731ms
+GPU solver with FCT preconditioner.
+  Warm-up=6024ms
+  Solver=8565ms
+  Post=186ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=23044ms
+GPU solver with FCT preconditioner.
+  Warm-up=6720ms
+  Solver=17045ms
+  Post=207ms
+  homoCoeffZ=1.32984
+# 8
+========================================================
+Contrast=0.01
+  common=22091ms
+GPU solver with FCT preconditioner.
+  Warm-up=6975ms
+  Solver=11431ms
+  Post=187ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=22199ms
+GPU solver with FCT preconditioner.
+  Warm-up=4892ms
+  Solver=6700ms
+  Post=7ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=22197ms
+GPU solver with FCT preconditioner.
+  Warm-up=6027ms
+  Solver=8818ms
+  Post=211ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=21549ms
+GPU solver with FCT preconditioner.
+  Warm-up=5759ms
+  Solver=16830ms
+  Post=101ms
+  homoCoeffZ=1.32984
+# 9
+========================================================
+Contrast=0.01
+  common=22694ms
+GPU solver with FCT preconditioner.
+  Warm-up=7383ms
+  Solver=11163ms
+  Post=185ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=23030ms
+GPU solver with FCT preconditioner.
+  Warm-up=6399ms
+  Solver=6849ms
+  Post=197ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=22713ms
+GPU solver with FCT preconditioner.
+  Warm-up=6447ms
+  Solver=8825ms
+  Post=206ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=21715ms
+GPU solver with FCT preconditioner.
+  Warm-up=5104ms
+  Solver=16899ms
+  Post=7ms
+  homoCoeffZ=1.32984
+# 10
+========================================================
+Contrast=0.01
+  common=21275ms
+GPU solver with FCT preconditioner.
+  Warm-up=7584ms
+  Solver=11370ms
+  Post=194ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=22898ms
+GPU solver with FCT preconditioner.
+  Warm-up=5386ms
+  Solver=6973ms
+  Post=186ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=22297ms
+GPU solver with FCT preconditioner.
+  Warm-up=6428ms
+  Solver=8739ms
+  Post=184ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=21045ms
+GPU solver with FCT preconditioner.
+  Warm-up=5083ms
+  Solver=16692ms
+  Post=10ms
+  homoCoeffZ=1.32984

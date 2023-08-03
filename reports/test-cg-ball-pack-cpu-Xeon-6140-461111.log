@@ -1,0 +1,98 @@
+Sender: LSF System <lsfadmin@a6u08n01>
+Subject: Job 461111: <precondSolver> in cluster <cluster1> Done
+
+Job <precondSolver> was submitted from host <ln02> by user <cjz> in cluster <cluster1> at Thu Aug  3 14:37:08 2023
+Job was executed on host(s) <36*a6u08n01>, in queue <batch>, as user <cjz> in cluster <cluster1> at Thu Aug  3 14:37:08 2023
+</share/home/cjz> was used as the home directory.
+</share/home/cjz/cqye/fct-homo/script> was used as the working directory.
+Started at Thu Aug  3 14:37:08 2023
+Terminated at Thu Aug  3 14:42:50 2023
+Results reported at Thu Aug  3 14:42:50 2023
+
+Your job looked like:
+
+------------------------------------------------------------
+# LSBATCH: User input
+#BSUB -J precondSolver
+#BSUB -n 36
+#BSUB -o ../reports/test-cg-ball-pack-cpu-Xeon-6140-%J.log
+#BSUB -e ../tmp/%J.lsf.err
+#BSUB -W 10
+#BSUB -q batch
+#BSUB -R "span[ptile=36]"
+
+cd ${LS_SUBCWD}/..
+source ../set-oneapi.sh
+# set OMP_NUM_THREADS _and_ export! 
+OMP_NUM_THREADS=$LSB_DJOB_NUMPROC 
+export OMP_NUM_THREADS
+
+./bin/main
+------------------------------------------------------------
+
+Successfully completed.
+
+Resource usage summary:
+
+    CPU time :                                   4864.74 sec.
+    Max Memory :                                 46076 MB
+    Average Memory :                             35370.05 MB
+    Total Requested Memory :                     -
+    Delta Memory :                               -
+    Max Swap :                                   1 MB
+    Max Processes :                              5
+    Max Threads :                                40
+    Run time :                                   340 sec.
+    Turnaround time :                            342 sec.
+
+The output (if any) follows:
+
+ 
+:: initializing oneAPI environment ...
+   1691044628.461111.shell: BASH_VERSION = 4.2.46(2)-release
+   args: Using "$@" for setvars.sh arguments: --config=~/.intel/oneapi.config
+:: compiler -- latest
+:: oneAPI environment initialized ::
+ 
+========================================================
+Contrast=0.01
+  common=28169ms
+CPU solver with FCT preconditioner.
+  Warm-up=2270ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.234715e+03 and iterations=21.
+  Solver=69083ms
+  Post=39ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=18205ms
+CPU solver with FCT preconditioner.
+  Warm-up=2158ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.424639e+03 and iterations=12.
+  Solver=43203ms
+  Post=5ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=18272ms
+CPU solver with FCT preconditioner.
+  Warm-up=2222ms
+Reach rtol=1.000000e-05, the solver exits with residual=4.105070e+03 and iterations=16.
+  Solver=51858ms
+  Post=6ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=18402ms
+CPU solver with FCT preconditioner.
+  Warm-up=2146ms
+Reach rtol=1.000000e-05, the solver exits with residual=5.670621e+04 and iterations=33.
+  Solver=82923ms
+  Post=6ms
+  homoCoeffZ=1.32984
+
+
+PS:
+
+Read file <../tmp/461111.lsf.err> for stderr output of this job.
+
