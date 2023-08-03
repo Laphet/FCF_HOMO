@@ -200,3 +200,168 @@ GPU solver with FCT preconditioner.
   Solver=16999ms
   Post=199ms
   homoCoeffZ=1.32984
+# 6
+========================================================
+Contrast=0.01
+  common=21696ms
+GPU solver with FCT preconditioner.
+  Warm-up=6205ms
+  Solver=10789ms
+  Post=7ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=20939ms
+GPU solver with FCT preconditioner.
+  Warm-up=4719ms
+  Solver=6467ms
+  Post=9ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=21004ms
+GPU solver with FCT preconditioner.
+  Warm-up=6783ms
+  Solver=9022ms
+  Post=198ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=22362ms
+GPU solver with FCT preconditioner.
+  Warm-up=5150ms
+  Solver=16835ms
+  Post=7ms
+  homoCoeffZ=1.32984
+# 7
+========================================================
+Contrast=0.01
+  common=22514ms
+GPU solver with FCT preconditioner.
+  Warm-up=6624ms
+  Solver=11175ms
+  Post=184ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=21495ms
+GPU solver with FCT preconditioner.
+  Warm-up=6448ms
+  Solver=6992ms
+  Post=211ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=22731ms
+GPU solver with FCT preconditioner.
+  Warm-up=6024ms
+  Solver=8565ms
+  Post=186ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=23044ms
+GPU solver with FCT preconditioner.
+  Warm-up=6720ms
+  Solver=17045ms
+  Post=207ms
+  homoCoeffZ=1.32984
+# 8
+========================================================
+Contrast=0.01
+  common=22091ms
+GPU solver with FCT preconditioner.
+  Warm-up=6975ms
+  Solver=11431ms
+  Post=187ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=22199ms
+GPU solver with FCT preconditioner.
+  Warm-up=4892ms
+  Solver=6700ms
+  Post=7ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=22197ms
+GPU solver with FCT preconditioner.
+  Warm-up=6027ms
+  Solver=8818ms
+  Post=211ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=21549ms
+GPU solver with FCT preconditioner.
+  Warm-up=5759ms
+  Solver=16830ms
+  Post=101ms
+  homoCoeffZ=1.32984
+# 9
+========================================================
+Contrast=0.01
+  common=22694ms
+GPU solver with FCT preconditioner.
+  Warm-up=7383ms
+  Solver=11163ms
+  Post=185ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=23030ms
+GPU solver with FCT preconditioner.
+  Warm-up=6399ms
+  Solver=6849ms
+  Post=197ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=22713ms
+GPU solver with FCT preconditioner.
+  Warm-up=6447ms
+  Solver=8825ms
+  Post=206ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=21715ms
+GPU solver with FCT preconditioner.
+  Warm-up=5104ms
+  Solver=16899ms
+  Post=7ms
+  homoCoeffZ=1.32984
+# 10
+========================================================
+Contrast=0.01
+  common=21275ms
+GPU solver with FCT preconditioner.
+  Warm-up=7584ms
+  Solver=11370ms
+  Post=194ms
+  homoCoeffZ=0.864126
+========================================================
+Contrast=0.1
+  common=22898ms
+GPU solver with FCT preconditioner.
+  Warm-up=5386ms
+  Solver=6973ms
+  Post=186ms
+  homoCoeffZ=0.882053
+========================================================
+Contrast=10
+  common=22297ms
+GPU solver with FCT preconditioner.
+  Warm-up=6428ms
+  Solver=8739ms
+  Post=184ms
+  homoCoeffZ=1.23578
+========================================================
+Contrast=100
+  common=21045ms
+GPU solver with FCT preconditioner.
+  Warm-up=5083ms
+  Solver=16692ms
+  Post=10ms
+  homoCoeffZ=1.32984
