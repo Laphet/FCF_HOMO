@@ -177,7 +177,7 @@ int main(int argc, char *argv[])
     std::cout << "========================================================\n";
     std::cout << "Contrast=" << contrast << std::endl;
     // T homoCoeffZ = gpuTestCase<T>(n, contrast);
-    T homoCoeffZ = gpuTestCase<T>(contrast);
+    T homoCoeffZ = cpuTestCase<T>(contrast);
     std::cout << "  homoCoeffZ=" << homoCoeffZ << std::endl;
   }
 
