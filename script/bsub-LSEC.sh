@@ -1,6 +1,6 @@
 #BSUB -J precondSolver
 #BSUB -n 36
-#BSUB -o ../reports/test-cg-ball-cent-cpu-Xeon-6140-%J.log
+#BSUB -o ../reports/test-cg-ball-pack-cpu-Xeon-6140-%J.log
 #BSUB -e ../tmp/%J.lsf.err
 #BSUB -W 10
 #BSUB -q batch
