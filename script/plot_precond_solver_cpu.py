@@ -63,7 +63,7 @@ ax.bar_label(rects,
                  "x{:.1f}\%".format(ratio * 100)
                  for ratio in cpu_warmup_p2_data / cpu_warmup_p1_data
              ],
-             fontsize=8)
+             fontsize=7)
 
 ax.set_ylabel("Time (ms)")
 ax.set_xlabel("$\mathtt{dof}$")
@@ -89,7 +89,7 @@ ax.bar_label(rects,
                  "x{:.1f}".format(ratio)
                  for ratio in cpu_solver_p2_data / cpu_solver_p1_data
              ],
-             fontsize=8)
+             fontsize=7)
 
 ax.set_ylabel("Time (ms)")
 ax.set_xlabel("$\mathtt{dof}$")

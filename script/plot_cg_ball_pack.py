@@ -50,7 +50,7 @@ rects = ax.bar(x + width,
 ax.bar_label(
     rects,
     labels=["x{:.1f}".format(ratio) for ratio in cpu_data_avg / gpu_data_avg],
-    fontsize=8)
+    fontsize=7)
 ax.set_ylabel("Time (ms)")
 ax.set_xlabel("$\kappa^\mathrm{inc}$")
 ax.set_xticks(x + width / 2, cr_list)

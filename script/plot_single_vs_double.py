@@ -101,7 +101,7 @@ ax.bar_label(rects,
                  "x{:.1f}".format(ratio)
                  for ratio in current_single_time / double_time_avg
              ],
-             fontsize=8)
+             fontsize=7)
 current_single_time = single_time_avg[1::5]
 rects = ax.bar(x + 2 * width,
                current_single_time,
@@ -112,7 +112,7 @@ ax.bar_label(rects,
                  "x{:.1f}".format(ratio)
                  for ratio in current_single_time / double_time_avg
              ],
-             fontsize=8)
+             fontsize=7)
 current_single_time = single_time_avg[2::5]
 rects = ax.bar(x + 3 * width,
                current_single_time,
@@ -123,7 +123,7 @@ ax.bar_label(rects,
                  "x{:.1f}".format(ratio)
                  for ratio in current_single_time / double_time_avg
              ],
-             fontsize=8)
+             fontsize=7)
 current_single_time = single_time_avg[3::5]
 rects = ax.bar(x + 4 * width,
                current_single_time,
@@ -134,7 +134,7 @@ ax.bar_label(rects,
                  "x{:.1f}".format(ratio)
                  for ratio in current_single_time / double_time_avg
              ],
-             fontsize=8)
+             fontsize=7)
 current_single_time = single_time_avg[4::5]
 rects = ax.bar(x + 5 * width,
                current_single_time,
@@ -145,12 +145,12 @@ ax.bar_label(rects,
                  "x{:.1f}".format(ratio)
                  for ratio in current_single_time / double_time_avg
              ],
-             fontsize=8)
+             fontsize=7)
 
 ax.set_ylabel("Time (ms)")
 ax.set_xlabel("$\kappa^\mathrm{inc}$")
 ax.set_xticks(x + 2.5 * width, cr_list)
 
-ax.legend(fancybox=True, shadow=True)
+ax.legend(loc="upper center", ncol=3, fancybox=True, shadow=True)
 
 plot_settings.plt.savefig("figs/single-vs-double.pdf", bbox_inches="tight")

@@ -61,14 +61,16 @@ for i in range(len(dof_list)):
                 icc_data[data_idx],
                 label="ICC")
         ax.set_yscale("log")
+        if (not j == 0):
+            ax.set_yticklabels([])
         ax.set_title("$\mathtt{dof}=" + str(dof) +
                      "^3$, $\kappa^\mathrm{inc}=" + str(contrast) + "$")
         handles, labels = ax.get_legend_handles_labels()
 
 fig.legend(handles=handles,
            labels=labels,
-           loc="upper center",
-           bbox_to_anchor=(0.5, 1.05),
+           loc="lower center",
+           bbox_to_anchor=(0.5, 1.02),
            ncol=5,
            fancybox=True,
            shadow=True)

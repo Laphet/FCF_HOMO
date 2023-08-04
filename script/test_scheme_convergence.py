@@ -37,9 +37,9 @@ for i in range(LEN):
             label="$\kappa^\mathrm{inc}=" + "{:.0f}".format(cr_list[2 * i]) +
             "$",
             marker='.')
-ax.legend(loc="upper left",
-          bbox_to_anchor=(-0.12, 1.06),
-          ncol=3,
+ax.legend(loc="lower center",
+          bbox_to_anchor=(0.5, 1.02),
+          ncol=2,
           fancybox=True,
           shadow=True)
 ax.set_xticks(x_axis)
@@ -58,9 +58,9 @@ for i in range(LEN):
             data_rtol9[2 * i + 1, :],
             label="$\kappa^\mathrm{inc}=" + str(cr_list[2 * i + 1]) + "$",
             marker='.')
-ax.legend(loc="upper left",
-          bbox_to_anchor=(-0.12, 1.06),
-          ncol=3,
+ax.legend(loc="lower center",
+          bbox_to_anchor=(0.5, 1.02),
+          ncol=2,
           fancybox=True,
           shadow=True)
 ax.set_xticks(x_axis)
