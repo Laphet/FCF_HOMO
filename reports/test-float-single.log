@@ -738,3 +738,1063 @@ Reach rtol=1.000000e-06, the solver exits with residual=2.555208e+02 and iterati
   homoCoeffZ=0.910609
 ========================================================
 Contrast=0.01, rtol=1e-07
+  common=18489ms
+GPU solver with FCT preconditioner.
+  Warm-up=3675ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.341688e+01 and iterations=45.
+  Solver=14343ms
+  Post=9ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-08
+  common=22700ms
+GPU solver with FCT preconditioner.
+  Warm-up=5376ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.835659e+00 and iterations=55.
+  Solver=17503ms
+  Post=205ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-09
+  common=20582ms
+GPU solver with FCT preconditioner.
+  Warm-up=3250ms
+Reach rtol=1.000000e-09, the solver exits with residual=2.545750e-01 and iterations=64.
+  Solver=20262ms
+  Post=199ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.1, rtol=1e-05
+  common=21971ms
+GPU solver with FCT preconditioner.
+  Warm-up=4992ms
+Reach rtol=1.000000e-05, the solver exits with residual=1.971084e+03 and iterations=12.
+  Solver=4227ms
+  Post=213ms
+  homoCoeffZ=0.922716
+========================================================
+Contrast=0.1, rtol=1e-06
+  common=20669ms
+GPU solver with FCT preconditioner.
+  Warm-up=4118ms
+Reach rtol=1.000000e-06, the solver exits with residual=2.000294e+02 and iterations=15.
+  Solver=5311ms
+  Post=236ms
+  homoCoeffZ=0.922655
+========================================================
+Contrast=0.1, rtol=1e-07
+  common=23309ms
+GPU solver with FCT preconditioner.
+  Warm-up=5618ms
+Reach rtol=1.000000e-07, the solver exits with residual=1.168234e+01 and iterations=19.
+  Solver=6633ms
+  Post=262ms
+  homoCoeffZ=0.922689
+========================================================
+Contrast=0.1, rtol=1e-08
+  common=21166ms
+GPU solver with FCT preconditioner.
+  Warm-up=5024ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.496222e+00 and iterations=22.
+  Solver=7303ms
+  Post=216ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=0.1, rtol=1e-09
+  common=22296ms
+GPU solver with FCT preconditioner.
+  Warm-up=5179ms
+Reach rtol=1.000000e-09, the solver exits with residual=1.902974e-01 and iterations=25.
+  Solver=8276ms
+  Post=241ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=10, rtol=1e-05
+  common=20955ms
+GPU solver with FCT preconditioner.
+  Warm-up=4302ms
+Reach rtol=1.000000e-05, the solver exits with residual=4.041253e+03 and iterations=16.
+  Solver=5362ms
+  Post=236ms
+  homoCoeffZ=1.14535
+========================================================
+Contrast=10, rtol=1e-06
+  common=22011ms
+GPU solver with FCT preconditioner.
+  Warm-up=5178ms
+Reach rtol=1.000000e-06, the solver exits with residual=3.839243e+02 and iterations=19.
+  Solver=6559ms
+  Post=265ms
+  homoCoeffZ=1.1453
+========================================================
+Contrast=10, rtol=1e-07
+  common=21981ms
+GPU solver with FCT preconditioner.
+  Warm-up=4832ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.756920e+01 and iterations=23.
+  Solver=7681ms
+  Post=231ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-08
+  common=20638ms
+GPU solver with FCT preconditioner.
+  Warm-up=4012ms
+Reach rtol=1.000000e-08, the solver exits with residual=3.657902e+00 and iterations=26.
+  Solver=8768ms
+  Post=258ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-09
+  common=21001ms
+GPU solver with FCT preconditioner.
+  Warm-up=3802ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.956212e-01 and iterations=29.
+  Solver=9432ms
+  Post=390ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=100, rtol=1e-05
+  common=23090ms
+GPU solver with FCT preconditioner.
+  Warm-up=4789ms
+Reach rtol=1.000000e-05, the solver exits with residual=3.878077e+04 and iterations=37.
+  Solver=11897ms
+  Post=249ms
+  homoCoeffZ=1.19267
+========================================================
+Contrast=100, rtol=1e-06
+  common=22481ms
+GPU solver with FCT preconditioner.
+  Warm-up=5941ms
+Reach rtol=1.000000e-06, the solver exits with residual=4.064229e+03 and iterations=48.
+  Solver=15341ms
+  Post=185ms
+  homoCoeffZ=1.19508
+========================================================
+Contrast=100, rtol=1e-07
+  common=22005ms
+GPU solver with FCT preconditioner.
+  Warm-up=5168ms
+Reach rtol=1.000000e-07, the solver exits with residual=3.397429e+02 and iterations=58.
+  Solver=18442ms
+  Post=193ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-08
+  common=20991ms
+GPU solver with FCT preconditioner.
+  Warm-up=4718ms
+Reach rtol=1.000000e-08, the solver exits with residual=2.336502e+01 and iterations=71.
+  Solver=22412ms
+  Post=234ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-09
+  common=20973ms
+GPU solver with FCT preconditioner.
+  Warm-up=3532ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.509781e+00 and iterations=78.
+  Solver=24598ms
+  Post=238ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=0.01, rtol=1e-05
+  common=21145ms
+GPU solver with FCT preconditioner.
+  Warm-up=5367ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.304672e+03 and iterations=24.
+  Solver=8071ms
+  Post=305ms
+  homoCoeffZ=0.909009
+========================================================
+Contrast=0.01, rtol=1e-06
+  common=21946ms
+GPU solver with FCT preconditioner.
+  Warm-up=5071ms
+Reach rtol=1.000000e-06, the solver exits with residual=2.555208e+02 and iterations=34.
+  Solver=11003ms
+  Post=209ms
+  homoCoeffZ=0.910609
+========================================================
+Contrast=0.01, rtol=1e-07
+  common=21869ms
+GPU solver with FCT preconditioner.
+  Warm-up=4972ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.341688e+01 and iterations=45.
+  Solver=14376ms
+  Post=210ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-08
+  common=24493ms
+GPU solver with FCT preconditioner.
+  Warm-up=5292ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.835659e+00 and iterations=55.
+  Solver=17563ms
+  Post=281ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-09
+  common=19952ms
+GPU solver with FCT preconditioner.
+  Warm-up=4414ms
+Reach rtol=1.000000e-09, the solver exits with residual=2.545750e-01 and iterations=64.
+  Solver=20159ms
+  Post=226ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.1, rtol=1e-05
+  common=22053ms
+GPU solver with FCT preconditioner.
+  Warm-up=5046ms
+Reach rtol=1.000000e-05, the solver exits with residual=1.971084e+03 and iterations=12.
+  Solver=4463ms
+  Post=298ms
+  homoCoeffZ=0.922716
+========================================================
+Contrast=0.1, rtol=1e-06
+  common=22459ms
+GPU solver with FCT preconditioner.
+  Warm-up=4000ms
+Reach rtol=1.000000e-06, the solver exits with residual=2.000294e+02 and iterations=15.
+  Solver=5159ms
+  Post=228ms
+  homoCoeffZ=0.922655
+========================================================
+Contrast=0.1, rtol=1e-07
+  common=22547ms
+GPU solver with FCT preconditioner.
+  Warm-up=5271ms
+Reach rtol=1.000000e-07, the solver exits with residual=1.168234e+01 and iterations=19.
+  Solver=6384ms
+  Post=193ms
+  homoCoeffZ=0.922689
+========================================================
+Contrast=0.1, rtol=1e-08
+  common=22851ms
+GPU solver with FCT preconditioner.
+  Warm-up=4901ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.496222e+00 and iterations=22.
+  Solver=7363ms
+  Post=217ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=0.1, rtol=1e-09
+  common=21009ms
+GPU solver with FCT preconditioner.
+  Warm-up=4651ms
+Reach rtol=1.000000e-09, the solver exits with residual=1.902974e-01 and iterations=25.
+  Solver=8108ms
+  Post=194ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=10, rtol=1e-05
+  common=22418ms
+GPU solver with FCT preconditioner.
+  Warm-up=4787ms
+Reach rtol=1.000000e-05, the solver exits with residual=4.041253e+03 and iterations=16.
+  Solver=5354ms
+  Post=211ms
+  homoCoeffZ=1.14535
+========================================================
+Contrast=10, rtol=1e-06
+  common=21905ms
+GPU solver with FCT preconditioner.
+  Warm-up=4790ms
+Reach rtol=1.000000e-06, the solver exits with residual=3.839243e+02 and iterations=19.
+  Solver=6360ms
+  Post=191ms
+  homoCoeffZ=1.1453
+========================================================
+Contrast=10, rtol=1e-07
+  common=23250ms
+GPU solver with FCT preconditioner.
+  Warm-up=5399ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.756920e+01 and iterations=23.
+  Solver=7571ms
+  Post=207ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-08
+  common=21892ms
+GPU solver with FCT preconditioner.
+  Warm-up=4033ms
+Reach rtol=1.000000e-08, the solver exits with residual=3.657902e+00 and iterations=26.
+  Solver=8526ms
+  Post=185ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-09
+  common=22019ms
+GPU solver with FCT preconditioner.
+  Warm-up=4983ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.956212e-01 and iterations=29.
+  Solver=9496ms
+  Post=229ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=100, rtol=1e-05
+  common=23457ms
+GPU solver with FCT preconditioner.
+  Warm-up=5435ms
+Reach rtol=1.000000e-05, the solver exits with residual=3.878077e+04 and iterations=37.
+  Solver=11960ms
+  Post=255ms
+  homoCoeffZ=1.19267
+========================================================
+Contrast=100, rtol=1e-06
+  common=22376ms
+GPU solver with FCT preconditioner.
+  Warm-up=5121ms
+Reach rtol=1.000000e-06, the solver exits with residual=4.064229e+03 and iterations=48.
+  Solver=15430ms
+  Post=236ms
+  homoCoeffZ=1.19508
+========================================================
+Contrast=100, rtol=1e-07
+  common=22114ms
+GPU solver with FCT preconditioner.
+  Warm-up=5389ms
+Reach rtol=1.000000e-07, the solver exits with residual=3.397429e+02 and iterations=58.
+  Solver=18531ms
+  Post=196ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-08
+  common=21510ms
+GPU solver with FCT preconditioner.
+  Warm-up=5149ms
+Reach rtol=1.000000e-08, the solver exits with residual=2.336502e+01 and iterations=71.
+  Solver=22432ms
+  Post=253ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-09
+  common=21225ms
+GPU solver with FCT preconditioner.
+  Warm-up=4045ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.509781e+00 and iterations=78.
+  Solver=24503ms
+  Post=231ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=0.01, rtol=1e-05
+  common=21613ms
+GPU solver with FCT preconditioner.
+  Warm-up=5159ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.304672e+03 and iterations=24.
+  Solver=7905ms
+  Post=233ms
+  homoCoeffZ=0.909009
+========================================================
+Contrast=0.01, rtol=1e-06
+  common=20677ms
+GPU solver with FCT preconditioner.
+  Warm-up=5206ms
+Reach rtol=1.000000e-06, the solver exits with residual=2.555208e+02 and iterations=34.
+  Solver=11031ms
+  Post=214ms
+  homoCoeffZ=0.910609
+========================================================
+Contrast=0.01, rtol=1e-07
+  common=23216ms
+GPU solver with FCT preconditioner.
+  Warm-up=5127ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.341688e+01 and iterations=45.
+  Solver=14592ms
+  Post=310ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-08
+  common=20042ms
+GPU solver with FCT preconditioner.
+  Warm-up=3563ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.835659e+00 and iterations=55.
+  Solver=17506ms
+  Post=186ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-09
+  common=19722ms
+GPU solver with FCT preconditioner.
+  Warm-up=4582ms
+Reach rtol=1.000000e-09, the solver exits with residual=2.545750e-01 and iterations=64.
+  Solver=20239ms
+  Post=258ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.1, rtol=1e-05
+  common=20936ms
+GPU solver with FCT preconditioner.
+  Warm-up=3563ms
+Reach rtol=1.000000e-05, the solver exits with residual=1.971084e+03 and iterations=12.
+  Solver=4217ms
+  Post=237ms
+  homoCoeffZ=0.922716
+========================================================
+Contrast=0.1, rtol=1e-06
+  common=22010ms
+GPU solver with FCT preconditioner.
+  Warm-up=4929ms
+Reach rtol=1.000000e-06, the solver exits with residual=2.000294e+02 and iterations=15.
+  Solver=5057ms
+  Post=227ms
+  homoCoeffZ=0.922655
+========================================================
+Contrast=0.1, rtol=1e-07
+  common=20705ms
+GPU solver with FCT preconditioner.
+  Warm-up=4824ms
+Reach rtol=1.000000e-07, the solver exits with residual=1.168234e+01 and iterations=19.
+  Solver=6543ms
+  Post=317ms
+  homoCoeffZ=0.922689
+========================================================
+Contrast=0.1, rtol=1e-08
+  common=23399ms
+GPU solver with FCT preconditioner.
+  Warm-up=5155ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.496222e+00 and iterations=22.
+  Solver=7335ms
+  Post=305ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=0.1, rtol=1e-09
+  common=22117ms
+GPU solver with FCT preconditioner.
+  Warm-up=5498ms
+Reach rtol=1.000000e-09, the solver exits with residual=1.902974e-01 and iterations=25.
+  Solver=8226ms
+  Post=209ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=10, rtol=1e-05
+  common=20914ms
+GPU solver with FCT preconditioner.
+  Warm-up=5142ms
+Reach rtol=1.000000e-05, the solver exits with residual=4.041253e+03 and iterations=16.
+  Solver=5553ms
+  Post=195ms
+  homoCoeffZ=1.14535
+========================================================
+Contrast=10, rtol=1e-06
+  common=21474ms
+GPU solver with FCT preconditioner.
+  Warm-up=4897ms
+Reach rtol=1.000000e-06, the solver exits with residual=3.839243e+02 and iterations=19.
+  Solver=6409ms
+  Post=241ms
+  homoCoeffZ=1.1453
+========================================================
+Contrast=10, rtol=1e-07
+  common=22827ms
+GPU solver with FCT preconditioner.
+  Warm-up=5296ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.756920e+01 and iterations=23.
+  Solver=7763ms
+  Post=300ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-08
+  common=23056ms
+GPU solver with FCT preconditioner.
+  Warm-up=4258ms
+Reach rtol=1.000000e-08, the solver exits with residual=3.657902e+00 and iterations=26.
+  Solver=8454ms
+  Post=205ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-09
+  common=20123ms
+GPU solver with FCT preconditioner.
+  Warm-up=4479ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.956212e-01 and iterations=29.
+  Solver=9498ms
+  Post=240ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=100, rtol=1e-05
+  common=23130ms
+GPU solver with FCT preconditioner.
+  Warm-up=5112ms
+Reach rtol=1.000000e-05, the solver exits with residual=3.878077e+04 and iterations=37.
+  Solver=11959ms
+  Post=247ms
+  homoCoeffZ=1.19267
+========================================================
+Contrast=100, rtol=1e-06
+  common=22679ms
+GPU solver with FCT preconditioner.
+  Warm-up=5729ms
+Reach rtol=1.000000e-06, the solver exits with residual=4.064229e+03 and iterations=48.
+  Solver=15414ms
+  Post=229ms
+  homoCoeffZ=1.19508
+========================================================
+Contrast=100, rtol=1e-07
+  common=20476ms
+GPU solver with FCT preconditioner.
+  Warm-up=4082ms
+Reach rtol=1.000000e-07, the solver exits with residual=3.397429e+02 and iterations=58.
+  Solver=18446ms
+  Post=195ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-08
+  common=22156ms
+GPU solver with FCT preconditioner.
+  Warm-up=4642ms
+Reach rtol=1.000000e-08, the solver exits with residual=2.336502e+01 and iterations=71.
+  Solver=22454ms
+  Post=217ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-09
+  common=23174ms
+GPU solver with FCT preconditioner.
+  Warm-up=4372ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.509781e+00 and iterations=78.
+  Solver=24453ms
+  Post=235ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=0.01, rtol=1e-05
+  common=21274ms
+GPU solver with FCT preconditioner.
+  Warm-up=5844ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.304672e+03 and iterations=24.
+  Solver=8047ms
+  Post=294ms
+  homoCoeffZ=0.909009
+========================================================
+Contrast=0.01, rtol=1e-06
+  common=21826ms
+GPU solver with FCT preconditioner.
+  Warm-up=4946ms
+Reach rtol=1.000000e-06, the solver exits with residual=2.555208e+02 and iterations=34.
+  Solver=11179ms
+  Post=206ms
+  homoCoeffZ=0.910609
+========================================================
+Contrast=0.01, rtol=1e-07
+  common=20994ms
+GPU solver with FCT preconditioner.
+  Warm-up=3966ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.341688e+01 and iterations=45.
+  Solver=14466ms
+  Post=230ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-08
+  common=22882ms
+GPU solver with FCT preconditioner.
+  Warm-up=5115ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.835659e+00 and iterations=55.
+  Solver=17820ms
+  Post=296ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-09
+  common=22291ms
+GPU solver with FCT preconditioner.
+  Warm-up=4928ms
+Reach rtol=1.000000e-09, the solver exits with residual=2.545750e-01 and iterations=64.
+  Solver=20228ms
+  Post=247ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.1, rtol=1e-05
+  common=23402ms
+GPU solver with FCT preconditioner.
+  Warm-up=4567ms
+Reach rtol=1.000000e-05, the solver exits with residual=1.971084e+03 and iterations=12.
+  Solver=4249ms
+  Post=216ms
+  homoCoeffZ=0.922716
+========================================================
+Contrast=0.1, rtol=1e-06
+  common=21914ms
+GPU solver with FCT preconditioner.
+  Warm-up=3940ms
+Reach rtol=1.000000e-06, the solver exits with residual=2.000294e+02 and iterations=15.
+  Solver=5037ms
+  Post=8ms
+  homoCoeffZ=0.922655
+========================================================
+Contrast=0.1, rtol=1e-07
+  common=20032ms
+GPU solver with FCT preconditioner.
+  Warm-up=3779ms
+Reach rtol=1.000000e-07, the solver exits with residual=1.168234e+01 and iterations=19.
+  Solver=6382ms
+  Post=14ms
+  homoCoeffZ=0.922689
+========================================================
+Contrast=0.1, rtol=1e-08
+  common=22255ms
+GPU solver with FCT preconditioner.
+  Warm-up=4471ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.496222e+00 and iterations=22.
+  Solver=7185ms
+  Post=201ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=0.1, rtol=1e-09
+  common=22882ms
+GPU solver with FCT preconditioner.
+  Warm-up=4782ms
+Reach rtol=1.000000e-09, the solver exits with residual=1.902974e-01 and iterations=25.
+  Solver=8369ms
+  Post=189ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=10, rtol=1e-05
+  common=21673ms
+GPU solver with FCT preconditioner.
+  Warm-up=5143ms
+Reach rtol=1.000000e-05, the solver exits with residual=4.041253e+03 and iterations=16.
+  Solver=5521ms
+  Post=228ms
+  homoCoeffZ=1.14535
+========================================================
+Contrast=10, rtol=1e-06
+  common=22743ms
+GPU solver with FCT preconditioner.
+  Warm-up=4653ms
+Reach rtol=1.000000e-06, the solver exits with residual=3.839243e+02 and iterations=19.
+  Solver=6389ms
+  Post=205ms
+  homoCoeffZ=1.1453
+========================================================
+Contrast=10, rtol=1e-07
+  common=21086ms
+GPU solver with FCT preconditioner.
+  Warm-up=5076ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.756920e+01 and iterations=23.
+  Solver=7621ms
+  Post=313ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-08
+  common=21981ms
+GPU solver with FCT preconditioner.
+  Warm-up=4708ms
+Reach rtol=1.000000e-08, the solver exits with residual=3.657902e+00 and iterations=26.
+  Solver=8781ms
+  Post=230ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-09
+  common=23705ms
+GPU solver with FCT preconditioner.
+  Warm-up=5152ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.956212e-01 and iterations=29.
+  Solver=9527ms
+  Post=216ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=100, rtol=1e-05
+  common=21921ms
+GPU solver with FCT preconditioner.
+  Warm-up=4378ms
+Reach rtol=1.000000e-05, the solver exits with residual=3.878077e+04 and iterations=37.
+  Solver=11962ms
+  Post=233ms
+  homoCoeffZ=1.19267
+========================================================
+Contrast=100, rtol=1e-06
+  common=22790ms
+GPU solver with FCT preconditioner.
+  Warm-up=4637ms
+Reach rtol=1.000000e-06, the solver exits with residual=4.064229e+03 and iterations=48.
+  Solver=15318ms
+  Post=231ms
+  homoCoeffZ=1.19508
+========================================================
+Contrast=100, rtol=1e-07
+  common=22046ms
+GPU solver with FCT preconditioner.
+  Warm-up=4408ms
+Reach rtol=1.000000e-07, the solver exits with residual=3.397429e+02 and iterations=58.
+  Solver=18565ms
+  Post=207ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-08
+  common=21303ms
+GPU solver with FCT preconditioner.
+  Warm-up=5168ms
+Reach rtol=1.000000e-08, the solver exits with residual=2.336502e+01 and iterations=71.
+  Solver=22468ms
+  Post=245ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-09
+  common=20673ms
+GPU solver with FCT preconditioner.
+  Warm-up=4723ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.509781e+00 and iterations=78.
+  Solver=24612ms
+  Post=244ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=0.01, rtol=1e-05
+  common=22944ms
+GPU solver with FCT preconditioner.
+  Warm-up=6311ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.304672e+03 and iterations=24.
+  Solver=7952ms
+  Post=232ms
+  homoCoeffZ=0.909009
+========================================================
+Contrast=0.01, rtol=1e-06
+  common=22628ms
+GPU solver with FCT preconditioner.
+  Warm-up=3700ms
+Reach rtol=1.000000e-06, the solver exits with residual=2.555208e+02 and iterations=34.
+  Solver=10958ms
+  Post=10ms
+  homoCoeffZ=0.910609
+========================================================
+Contrast=0.01, rtol=1e-07
+  common=22985ms
+GPU solver with FCT preconditioner.
+  Warm-up=5028ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.341688e+01 and iterations=45.
+  Solver=14488ms
+  Post=215ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-08
+  common=22214ms
+GPU solver with FCT preconditioner.
+  Warm-up=4176ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.835659e+00 and iterations=55.
+  Solver=17503ms
+  Post=303ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-09
+  common=21168ms
+GPU solver with FCT preconditioner.
+  Warm-up=4805ms
+Reach rtol=1.000000e-09, the solver exits with residual=2.545750e-01 and iterations=64.
+  Solver=20513ms
+  Post=249ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.1, rtol=1e-05
+  common=22696ms
+GPU solver with FCT preconditioner.
+  Warm-up=5324ms
+Reach rtol=1.000000e-05, the solver exits with residual=1.971084e+03 and iterations=12.
+  Solver=4250ms
+  Post=216ms
+  homoCoeffZ=0.922716
+========================================================
+Contrast=0.1, rtol=1e-06
+  common=22506ms
+GPU solver with FCT preconditioner.
+  Warm-up=5414ms
+Reach rtol=1.000000e-06, the solver exits with residual=2.000294e+02 and iterations=15.
+  Solver=5278ms
+  Post=248ms
+  homoCoeffZ=0.922655
+========================================================
+Contrast=0.1, rtol=1e-07
+  common=21143ms
+GPU solver with FCT preconditioner.
+  Warm-up=4968ms
+Reach rtol=1.000000e-07, the solver exits with residual=1.168234e+01 and iterations=19.
+  Solver=6425ms
+  Post=193ms
+  homoCoeffZ=0.922689
+========================================================
+Contrast=0.1, rtol=1e-08
+  common=22506ms
+GPU solver with FCT preconditioner.
+  Warm-up=4477ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.496222e+00 and iterations=22.
+  Solver=7448ms
+  Post=252ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=0.1, rtol=1e-09
+  common=20253ms
+GPU solver with FCT preconditioner.
+  Warm-up=5388ms
+Reach rtol=1.000000e-09, the solver exits with residual=1.902974e-01 and iterations=25.
+  Solver=8194ms
+  Post=194ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=10, rtol=1e-05
+  common=21645ms
+GPU solver with FCT preconditioner.
+  Warm-up=4891ms
+Reach rtol=1.000000e-05, the solver exits with residual=4.041253e+03 and iterations=16.
+  Solver=5440ms
+  Post=251ms
+  homoCoeffZ=1.14535
+========================================================
+Contrast=10, rtol=1e-06
+  common=22207ms
+GPU solver with FCT preconditioner.
+  Warm-up=5645ms
+Reach rtol=1.000000e-06, the solver exits with residual=3.839243e+02 and iterations=19.
+  Solver=6401ms
+  Post=247ms
+  homoCoeffZ=1.1453
+========================================================
+Contrast=10, rtol=1e-07
+  common=24753ms
+GPU solver with FCT preconditioner.
+  Warm-up=5617ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.756920e+01 and iterations=23.
+  Solver=7620ms
+  Post=303ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-08
+  common=20642ms
+GPU solver with FCT preconditioner.
+  Warm-up=3618ms
+Reach rtol=1.000000e-08, the solver exits with residual=3.657902e+00 and iterations=26.
+  Solver=8437ms
+  Post=8ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-09
+  common=22116ms
+GPU solver with FCT preconditioner.
+  Warm-up=3646ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.956212e-01 and iterations=29.
+  Solver=9249ms
+  Post=10ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=100, rtol=1e-05
+  common=20762ms
+GPU solver with FCT preconditioner.
+  Warm-up=4749ms
+Reach rtol=1.000000e-05, the solver exits with residual=3.878077e+04 and iterations=37.
+  Solver=11979ms
+  Post=239ms
+  homoCoeffZ=1.19267
+========================================================
+Contrast=100, rtol=1e-06
+  common=23490ms
+GPU solver with FCT preconditioner.
+  Warm-up=5026ms
+Reach rtol=1.000000e-06, the solver exits with residual=4.064229e+03 and iterations=48.
+  Solver=15345ms
+  Post=218ms
+  homoCoeffZ=1.19508
+========================================================
+Contrast=100, rtol=1e-07
+  common=22223ms
+GPU solver with FCT preconditioner.
+  Warm-up=4923ms
+Reach rtol=1.000000e-07, the solver exits with residual=3.397429e+02 and iterations=58.
+  Solver=18426ms
+  Post=205ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-08
+  common=20990ms
+GPU solver with FCT preconditioner.
+  Warm-up=4661ms
+Reach rtol=1.000000e-08, the solver exits with residual=2.336502e+01 and iterations=71.
+  Solver=22324ms
+  Post=250ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-09
+  common=21258ms
+GPU solver with FCT preconditioner.
+  Warm-up=4554ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.509781e+00 and iterations=78.
+  Solver=24853ms
+  Post=325ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=0.01, rtol=1e-05
+  common=19960ms
+GPU solver with FCT preconditioner.
+  Warm-up=5297ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.304672e+03 and iterations=24.
+  Solver=7946ms
+  Post=190ms
+  homoCoeffZ=0.909009
+========================================================
+Contrast=0.01, rtol=1e-06
+  common=22332ms
+GPU solver with FCT preconditioner.
+  Warm-up=3834ms
+Reach rtol=1.000000e-06, the solver exits with residual=2.555208e+02 and iterations=34.
+  Solver=10972ms
+  Post=191ms
+  homoCoeffZ=0.910609
+========================================================
+Contrast=0.01, rtol=1e-07
+  common=21262ms
+GPU solver with FCT preconditioner.
+  Warm-up=4552ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.341688e+01 and iterations=45.
+  Solver=14413ms
+  Post=236ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-08
+  common=22300ms
+GPU solver with FCT preconditioner.
+  Warm-up=5022ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.835659e+00 and iterations=55.
+  Solver=17637ms
+  Post=301ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.01, rtol=1e-09
+  common=24659ms
+GPU solver with FCT preconditioner.
+  Warm-up=4189ms
+Reach rtol=1.000000e-09, the solver exits with residual=2.545750e-01 and iterations=64.
+  Solver=20319ms
+  Post=204ms
+  homoCoeffZ=0.910684
+========================================================
+Contrast=0.1, rtol=1e-05
+  common=21947ms
+GPU solver with FCT preconditioner.
+  Warm-up=4917ms
+Reach rtol=1.000000e-05, the solver exits with residual=1.971084e+03 and iterations=12.
+  Solver=4400ms
+  Post=120ms
+  homoCoeffZ=0.922716
+========================================================
+Contrast=0.1, rtol=1e-06
+  common=22755ms
+GPU solver with FCT preconditioner.
+  Warm-up=4575ms
+Reach rtol=1.000000e-06, the solver exits with residual=2.000294e+02 and iterations=15.
+  Solver=5227ms
+  Post=241ms
+  homoCoeffZ=0.922655
+========================================================
+Contrast=0.1, rtol=1e-07
+  common=22654ms
+GPU solver with FCT preconditioner.
+  Warm-up=5059ms
+Reach rtol=1.000000e-07, the solver exits with residual=1.168234e+01 and iterations=19.
+  Solver=6378ms
+  Post=237ms
+  homoCoeffZ=0.922689
+========================================================
+Contrast=0.1, rtol=1e-08
+  common=20842ms
+GPU solver with FCT preconditioner.
+  Warm-up=4489ms
+Reach rtol=1.000000e-08, the solver exits with residual=1.496222e+00 and iterations=22.
+  Solver=7504ms
+  Post=320ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=0.1, rtol=1e-09
+  common=22289ms
+GPU solver with FCT preconditioner.
+  Warm-up=4946ms
+Reach rtol=1.000000e-09, the solver exits with residual=1.902974e-01 and iterations=25.
+  Solver=8199ms
+  Post=221ms
+  homoCoeffZ=0.92269
+========================================================
+Contrast=10, rtol=1e-05
+  common=21747ms
+GPU solver with FCT preconditioner.
+  Warm-up=4412ms
+Reach rtol=1.000000e-05, the solver exits with residual=4.041253e+03 and iterations=16.
+  Solver=5438ms
+  Post=203ms
+  homoCoeffZ=1.14535
+========================================================
+Contrast=10, rtol=1e-06
+  common=21498ms
+GPU solver with FCT preconditioner.
+  Warm-up=5008ms
+Reach rtol=1.000000e-06, the solver exits with residual=3.839243e+02 and iterations=19.
+  Solver=6411ms
+  Post=235ms
+  homoCoeffZ=1.1453
+========================================================
+Contrast=10, rtol=1e-07
+  common=23066ms
+GPU solver with FCT preconditioner.
+  Warm-up=4966ms
+Reach rtol=1.000000e-07, the solver exits with residual=2.756920e+01 and iterations=23.
+  Solver=7555ms
+  Post=201ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-08
+  common=20868ms
+GPU solver with FCT preconditioner.
+  Warm-up=3676ms
+Reach rtol=1.000000e-08, the solver exits with residual=3.657902e+00 and iterations=26.
+  Solver=8422ms
+  Post=8ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=10, rtol=1e-09
+  common=20875ms
+GPU solver with FCT preconditioner.
+  Warm-up=4270ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.956212e-01 and iterations=29.
+  Solver=9719ms
+  Post=247ms
+  homoCoeffZ=1.14532
+========================================================
+Contrast=100, rtol=1e-05
+  common=20661ms
+GPU solver with FCT preconditioner.
+  Warm-up=4819ms
+Reach rtol=1.000000e-05, the solver exits with residual=3.878077e+04 and iterations=37.
+  Solver=11961ms
+  Post=199ms
+  homoCoeffZ=1.19267
+========================================================
+Contrast=100, rtol=1e-06
+  common=23174ms
+GPU solver with FCT preconditioner.
+  Warm-up=5120ms
+Reach rtol=1.000000e-06, the solver exits with residual=4.064229e+03 and iterations=48.
+  Solver=15321ms
+  Post=241ms
+  homoCoeffZ=1.19508
+========================================================
+Contrast=100, rtol=1e-07
+  common=23091ms
+GPU solver with FCT preconditioner.
+  Warm-up=5010ms
+Reach rtol=1.000000e-07, the solver exits with residual=3.397429e+02 and iterations=58.
+  Solver=18541ms
+  Post=198ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-08
+  common=20006ms
+GPU solver with FCT preconditioner.
+  Warm-up=5145ms
+Reach rtol=1.000000e-08, the solver exits with residual=2.336502e+01 and iterations=71.
+  Solver=22462ms
+  Post=210ms
+  homoCoeffZ=1.19506
+========================================================
+Contrast=100, rtol=1e-09
+  common=20785ms
+GPU solver with FCT preconditioner.
+  Warm-up=4887ms
+Reach rtol=1.000000e-09, the solver exits with residual=3.509781e+00 and iterations=78.
+  Solver=24703ms
+  Post=235ms
+  homoCoeffZ=1.19506

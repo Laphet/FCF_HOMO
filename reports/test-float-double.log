@@ -34,3 +34,14 @@ Reach rtol=1.000000e-09, the solver exits with residual=2.748397e+00 and iterati
   Solver=39050ms
   Post=184ms
   homoCoeffZ=1.19816
+========================================================
+Contrast=0.01, rtol=1e-05
+  common=20124ms
+GPU solver with FCT preconditioner.
+  Warm-up=5139ms
+Reach rtol=1.000000e-05, the solver exits with residual=2.304672e+03 and iterations=24.
+  Solver=7867ms
+  Post=178ms
+  homoCoeffZ=0.909009
+========================================================
+Contrast=0.01, rtol=1e-06

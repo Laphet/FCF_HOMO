@@ -125,12 +125,14 @@ int main(int argc, char *argv[])
         std::cout << "  homoCoeffZ=" << homoCoeffZ << std::endl;
       }
   } else {
-    double rtol = 1.0e-9;
+    double rtol = 1.0e-5;
     for (auto contrast : contrastList) {
-      std::cout << "========================================================\n";
-      std::cout << "Contrast=" << contrast << ", rtol=" << rtol << std::endl;
-      double homoCoeffZ = gpuTestCase<double>(contrast, rtol);
-      std::cout << "  homoCoeffZ=" << homoCoeffZ << std::endl;
+      for (int i{0}; i < 10; ++i) {
+        std::cout << "========================================================\n";
+        std::cout << "Contrast=" << contrast << ", rtol=" << rtol << std::endl;
+        double homoCoeffZ = gpuTestCase<double>(contrast, rtol);
+        std::cout << "  homoCoeffZ=" << homoCoeffZ << std::endl;
+      }
     }
   }
 
