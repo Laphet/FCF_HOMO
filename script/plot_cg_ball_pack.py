@@ -27,7 +27,7 @@ cpu_data_avg = (np.sum(cpu_data, axis=0) - np.max(cpu_data, axis=0) -
 # print(cpu_data_avg)
 # print(cpu_data_avg / iter)
 
-cr_list = ["0.01", "0.1", "10", "100"]
+cr_list = ["$0.01$", "$0.1$", "$10$", "$100$"]
 import plot_settings
 
 fig = plot_settings.plt.figure(figsize=(0.6 * plot_settings.A4_WIDTH,
@@ -49,7 +49,8 @@ rects = ax.bar(x + width,
                color=plot_settings.INTEL_COLOR)
 ax.bar_label(
     rects,
-    labels=["x{:.1f}".format(ratio) for ratio in cpu_data_avg / gpu_data_avg])
+    labels=["x{:.1f}".format(ratio) for ratio in cpu_data_avg / gpu_data_avg],
+    fontsize=8)
 ax.set_ylabel("Time (ms)")
 ax.set_xlabel("$\kappa^\mathrm{inc}$")
 ax.set_xticks(x + width / 2, cr_list)
