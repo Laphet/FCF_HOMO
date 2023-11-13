@@ -908,3 +908,94 @@ GPU solver
   Warm-up=2289ms
   precondSolver=109us
   check=796ms, error=1.47645e-06
+
+New use cudaDeviceSynchronize()
+
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6858ms
+  Warm-up=2951ms
+  precondSolver=146us
+  check=1103ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=70ms
+  Warm-up=809ms
+  precondSolver=125us
+  check=17ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=745ms
+  Warm-up=664ms
+  precondSolver=96us
+  check=86ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=9ms
+  Warm-up=618ms
+  precondSolver=85us
+  check=7ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=71ms
+  Warm-up=578ms
+  precondSolver=103us
+  check=9ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=751ms
+  Warm-up=840ms
+  precondSolver=99us
+  check=87ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6775ms
+  Warm-up=1859ms
+  precondSolver=137us
+  check=831ms, error=1.47645e-06
+========================================================
+withoutParallelFor=0, withSingle=0.
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6135ms
+  Warm-up=3443ms
+  precondSolver=196us
+  check=607ms, error=1.47645e-06
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=93ms
+  Warm-up=1038ms
+  precondSolver=92us
+  check=6ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=753ms
+  Warm-up=1086ms
+  precondSolver=118us
+  check=43ms, error=5.90586e-06
+Test case (M, N, P)=(64, 64, 64), length of float=8
+GPU solver
+  common=8ms
+  Warm-up=634ms
+  precondSolver=116us
+  check=1ms, error=9.45104e-05
+Test case (M, N, P)=(128, 128, 128), length of float=8
+GPU solver
+  common=74ms
+  Warm-up=596ms
+  precondSolver=92us
+  check=3ms, error=2.36243e-05
+Test case (M, N, P)=(256, 256, 256), length of float=8
+GPU solver
+  common=763ms
+  Warm-up=806ms
+  precondSolver=107us
+  check=35ms, error=5.90586e-06
+Test case (M, N, P)=(512, 512, 512), length of float=8
+GPU solver
+  common=6606ms
+  Warm-up=1853ms
+  precondSolver=108us
+  check=451ms, error=1.47645e-06
