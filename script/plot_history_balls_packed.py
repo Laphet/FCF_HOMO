@@ -36,7 +36,7 @@ fig = plot_settings.plt.figure(figsize=(plot_settings.A4_WIDTH,
                                layout="constrained")
 gs = GridSpec(3, 4, figure=fig)
 
-contrast_list = [0.01, 0.1, 10.0, 100.0]
+contrast_list = [0.01, 0.1, 10, 100]
 config_list = ["(a)", "(b)", "(c)"]
 
 for i in range(len(config_list)):
@@ -63,12 +63,14 @@ for i in range(len(config_list)):
         ax.set_yscale("log")
         ax.set_title("config-" + config + ", $\kappa^\mathrm{inc}=" +
                      str(contrast) + "$")
+        if (not j == 0):
+            ax.set_yticklabels([])
         handles, labels = ax.get_legend_handles_labels()
 
 fig.legend(handles=handles,
            labels=labels,
-           loc="upper center",
-           bbox_to_anchor=(0.5, 1.05),
+           loc="lower center",
+           bbox_to_anchor=(0.5, 1.02),
            ncol=5,
            fancybox=True,
            shadow=True)

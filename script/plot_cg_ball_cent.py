@@ -133,6 +133,8 @@ for i in range(4):
         axs[i].set_ylabel("Time (ms)")
     if i == 3:
         ax2.set_ylabel("$\mathtt{iter}$")
+    if not (i == 3):
+        ax2.set_yticklabels([])
 
 fig.legend(handles=handles,
            labels=labels,
