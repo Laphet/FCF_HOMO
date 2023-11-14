@@ -82,29 +82,35 @@ void gpuTestCase(int M, int N, int P)
   auto timeMillSec = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
   std::cout << "  common=" << timeMillSec << "ms" << std::endl;
 
+  // gpuTimer cuTimer_warmup;
+
   start = std::chrono::steady_clock::now();
-  // Need to synchronize?
-  CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+  // cuTimer_warmup.start();
   cufctSolver<T> gpuSolver(M, N, P);
   gpuSolver.setTridSolverData(&dl[0], &d[0], &du[0]);
   T *rhs_d{nullptr};
   CHECK_CUDA_ERROR(cudaMalloc(reinterpret_cast<void **>(&rhs_d), size * sizeof(T)));
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(rhs_d), reinterpret_cast<void *>(&rhs[0]), size * sizeof(T), cudaMemcpyHostToDevice));
+  // cuTimer_warmup.stop();
+  CHECK_CUDA_ERROR(cudaDeviceSynchronize());
   end         = std::chrono::steady_clock::now();
   timeMillSec = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-  CHECK_CUDA_ERROR(cudaDeviceSynchronize());
   std::cout << "  Warm-up=" << timeMillSec << "ms" << std::endl;
+  // << " cuda=" << cuTimer_warmup.elapsed() << "ms" << std::endl;
+
+  // gpuTimer cuTimer_exec;
 
   start = std::chrono::steady_clock::now();
-  CHECK_CUDA_ERROR(cudaDeviceSynchronize());
+  // cuTimer_exec.start();
   gpuSolver.precondSolver(&rhs_d[0]);
-  end = std::chrono::steady_clock::now();
+  // cuTimer_exec.stop();
   CHECK_CUDA_ERROR(cudaDeviceSynchronize());
-  timeMillSec = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-  std::cout << "  precondSolver=" << timeMillSec << "us" << std::endl;
+  end         = std::chrono::steady_clock::now();
+  timeMillSec = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+  std::cout << "  precondSolver=" << timeMillSec << "ms" << std::endl;
+  // << " cuda=" << cuTimer_exec.elapsed() << "ms" << std::endl;
 
   start = std::chrono::steady_clock::now();
-  CHECK_CUDA_ERROR(cudaDeviceSynchronize());
   CHECK_CUDA_ERROR(cudaMemcpy(reinterpret_cast<void *>(&rhs[0]), reinterpret_cast<void *>(&rhs_d[0]), size * sizeof(T), cudaMemcpyDeviceToHost));
   CHECK_CUDA_ERROR(cudaFree(rhs_d));
   mkl::cblas::axpy(size, static_cast<T>(-1), &u[0], 1, &rhs[0], 1);

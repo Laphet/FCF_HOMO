@@ -1300,6 +1300,36 @@ void cufctSolver<T>::solveWithICC(T *u, const T *b, const int maxIter, const T r
   cuFreeMod(u_d.ptr);
 }
 
+gpuTimer::gpuTimer()
+{
+  cudaEventCreate(&start_);
+  cudaEventCreate(&stop_);
+}
+
+gpuTimer::~gpuTimer()
+{
+  cudaEventDestroy(start_);
+  cudaEventDestroy(stop_);
+}
+
+void gpuTimer::start()
+{
+  cudaEventRecord(start_, 0);
+}
+
+void gpuTimer::stop()
+{
+  cudaEventRecord(stop_, 0);
+}
+
+float gpuTimer::elapsed()
+{
+  float elapsed_;
+  cudaEventSynchronize(stop_);
+  cudaEventElapsedTime(&elapsed_, start_, stop_);
+  return elapsed_;
+}
+
 template class cufctSolver<float>;
 
 template class cufctSolver<double>;
