@@ -19,6 +19,22 @@ void check(cublasStatus_t status, char const *const func, char const *const file
 #define CHECK_LAST_CUDA_ERROR() checkLast(__FILE__, __LINE__)
 void checkLast(char const *const file, int const line);
 
+class gpuTimer {
+  cudaEvent_t start_;
+  cudaEvent_t stop_;
+
+public:
+  gpuTimer();
+
+  ~gpuTimer();
+
+  void start();
+
+  void stop();
+
+  float elapsed();
+};
+
 template <typename T>
 struct cuTraits;
 
