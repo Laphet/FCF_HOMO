@@ -30,8 +30,8 @@ cpu_data_avg = (np.sum(cpu_data, axis=0) - np.max(cpu_data, axis=0) -
 cr_list = ["$0.01$", "$0.1$", "$10$", "$100$"]
 import plot_settings
 
-fig = plot_settings.plt.figure(figsize=(0.6 * plot_settings.A4_WIDTH,
-                                        0.6 * plot_settings.A4_WIDTH),
+fig = plot_settings.plt.figure(figsize=(0.5 * plot_settings.A4_WIDTH,
+                                        0.5 * plot_settings.A4_WIDTH),
                                layout="constrained")
 ax = fig.add_subplot()
 x = np.arange(len(cr_list))
@@ -39,13 +39,13 @@ width = 0.25
 rects = ax.bar(x,
                gpu_data_avg,
                width,
-               label="cuda",
+               label="CUDA",
                color=plot_settings.NVIDIA_COLOR)
 ax.bar_label(rects, fmt="")
 rects = ax.bar(x + width,
                cpu_data_avg,
                width,
-               label="fftw3-mkl",
+               label="MKL-FFTW3",
                color=plot_settings.INTEL_COLOR)
 ax.bar_label(
     rects,
@@ -60,6 +60,13 @@ ax2 = ax.twinx()
 ax2.plot(x + width / 2, iter, marker='*', color="gray")
 ax2.set_ylabel("$\mathtt{iter}$")
 
-ax.legend(ncol=2, fancybox=True, shadow=True)
+# ax.legend(ncol=2, fancybox=True, shadow=True)
+fig.legend(handles=handles,
+           labels=labels,
+           loc="lower center",
+           bbox_to_anchor=(0.5, 1.00),
+           ncol=2,
+           fancybox=True,
+           shadow=True)
 
 plot_settings.plt.savefig("figs/cg-ball-pack.pdf", bbox_inches="tight")

@@ -97,12 +97,13 @@ cr_list = ["0.001", "0.01", "100", "1000"]
 
 import plot_settings
 
-fig, axs = plot_settings.plt.subplots(1,
-                                      4,
-                                      figsize=(plot_settings.A4_WIDTH,
-                                               0.25 * plot_settings.A4_WIDTH),
+fig, axs = plot_settings.plt.subplots(2,
+                                      2,
+                                      figsize=(0.5*plot_settings.A4_WIDTH,
+                                               0.5 * plot_settings.A4_WIDTH),
                                       layout="constrained")
 for i in range(4):
+    i_, j_ = divmod(i, 2)
     x = np.arange(len(dof_list))  # the label locations
     # width = 0.25  # the width of the bars
     # rects = axs[i].bar(x,
@@ -111,35 +112,36 @@ for i in range(4):
     #                    label="Preparation",
     #                    color=plot_settings.NVIDIA_COLOR)
     # axs[i].bar_label(rects, fmt="")
-    axs[i].plot(x,
-                gpu_time_data_avg[4 * i:4 * i + 4],
-                marker='.',
-                color=plot_settings.NVIDIA_COLOR,
-                label="cuda")
-    axs[i].plot(x,
+    axs[i_, j_].plot(x,
                 cpu_time_data_avg[4 * i:4 * i + 4],
                 marker='.',
                 color=plot_settings.INTEL_COLOR,
-                label="fftw3-mkl")
-    handles, labels = axs[i].get_legend_handles_labels()
-    axs[i].set_xticks(x, dof_list)
-    axs[i].set_yscale("log")
-    axs[i].set_title("$\kappa^\mathrm{inc}=" + cr_list[i] + "$")
-    axs[i].set_xlabel("$\mathtt{dof}$")
-    ax2 = axs[i].twinx()
+                label="MKL-FFTW3")
+    axs[i_, j_].plot(x,
+                gpu_time_data_avg[4 * i:4 * i + 4],
+                marker='.',
+                color=plot_settings.NVIDIA_COLOR,
+                label="CUDA")
+
+    handles, labels = axs[i_, j_].get_legend_handles_labels()
+    axs[i_, j_].set_xticks(x, dof_list)
+    axs[i_, j_].set_yscale("log")
+    axs[i_, j_].set_title("$\kappa^\mathrm{inc}=" + cr_list[i] + "$")
+    axs[i_, j_].set_xlabel("$\mathtt{dof}$")
+    ax2 = axs[i_, j_].twinx()
     ax2.plot(x, iter[4 * i:4 * i + 4], marker='*', color="gray")
     ax2.set_ylim(0, 50)
-    if i == 0:
-        axs[i].set_ylabel("Time (ms)")
-    if i == 3:
+    if i in [0, 2]:
+        axs[i_, j_].set_ylabel("Time (ms)")
+    if i in [1, 3]:
         ax2.set_ylabel("$\mathtt{iter}$")
-    if not (i == 3):
+    if i in [0, 2]:
         ax2.set_yticklabels([])
 
 fig.legend(handles=handles,
            labels=labels,
            loc="lower center",
-           bbox_to_anchor=(0.5, 1.05),
+           bbox_to_anchor=(0.5, 1.00),
            ncol=2,
            fancybox=True,
            shadow=True)

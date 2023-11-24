@@ -48,11 +48,11 @@ labels_list = ["Plan(P)", "Plan(E)"]
 
 import plot_settings
 
-fig = plot_settings.plt.figure(figsize=(0.32 * plot_settings.A4_WIDTH,
-                                        0.32 * plot_settings.A4_WIDTH),
+fig = plot_settings.plt.figure(figsize=(0.60 * plot_settings.A4_WIDTH,
+                                        0.4 * plot_settings.A4_WIDTH),
                                layout="constrained")
-ax = fig.add_subplot()
 
+ax = fig.add_subplot(1, 2, 1)
 x = np.arange(len(dof_list))  # the label locations
 width = 0.25  # the width of the bars
 rects = ax.bar(x, cpu_warmup_p1_data, width, label=labels_list[0])
@@ -68,16 +68,15 @@ ax.bar_label(rects,
 ax.set_ylabel("Time (ms)")
 ax.set_xlabel("$\mathtt{dof}$")
 ax.set_xticks(x + width / 2, dof_list)
-ax.legend(loc='upper left', ncols=2, fancybox=True, shadow=True)
+handles, labels = ax.get_legend_handles_labels()
+# ax.legend(bbox_to_anchor=(0.0, 1.0),
+#            loc="lower left",
+#            fancybox=True,
+#            shadow=True, ncols=2)
+# ax.legend(loc='upper left', ncols=2, fancybox=True, shadow=True)
 ax.set_yscale("log")
 
-plot_settings.plt.savefig("figs/precond-solver-cpu-warmup.pdf",
-                          bbox_inches="tight")
-
-fig = plot_settings.plt.figure(figsize=(0.5 * plot_settings.A4_WIDTH,
-                                        0.5 * plot_settings.A4_WIDTH),
-                               layout="constrained")
-ax = fig.add_subplot()
+ax = fig.add_subplot(1, 2, 2)
 
 x = np.arange(len(dof_list))  # the label locations
 width = 0.25  # the width of the bars
@@ -91,11 +90,19 @@ ax.bar_label(rects,
              ],
              fontsize=7)
 
-ax.set_ylabel("Time (ms)")
+# ax.set_ylabel("Time (ms)")
 ax.set_xlabel("$\mathtt{dof}$")
 ax.set_xticks(x + width / 2, dof_list)
-ax.legend(loc='upper left', ncols=2, fancybox=True, shadow=True)
+# ax.legend(loc='upper left', ncols=2, fancybox=True, shadow=True)
 ax.set_yscale("log")
 
-plot_settings.plt.savefig("figs/precond-solver-cpu-solver.pdf",
+fig.legend(handles=handles,
+           labels=labels,
+           loc="lower center",
+           bbox_to_anchor=(0.5, 1.0),
+           ncol=2,
+           fancybox=True,
+           shadow=True)
+
+plot_settings.plt.savefig("figs/precond-solver-cpu-solver-upd.pdf",
                           bbox_inches="tight")

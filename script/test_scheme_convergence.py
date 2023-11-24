@@ -28,8 +28,8 @@ cr_list = [
 ]
 LEN = 6
 
-fig = plot_settings.plt.figure(figsize=(0.46 * plot_settings.A4_WIDTH,
-                                        0.75 * plot_settings.A4_WIDTH))
+fig = plot_settings.plt.figure(figsize=(0.42 * plot_settings.A4_WIDTH,
+                                        0.70 * plot_settings.A4_WIDTH))
 ax = fig.add_subplot()
 for i in range(LEN):
     ax.plot(x_axis,
@@ -38,20 +38,20 @@ for i in range(LEN):
             "$",
             marker='.')
 ax.legend(loc="lower center",
-          bbox_to_anchor=(0.5, 1.02),
+          bbox_to_anchor=(0.5, 1.00),
           ncol=2,
           fancybox=True,
           shadow=True)
 ax.set_xticks(x_axis)
 ax.set_xticklabels(x_axis_label)
 ax.set_xlabel("$\mathtt{dof}$")
-ax.set_ylabel("$\kappa^\mathrm{eff}_z$")
+ax.set_ylabel("$\kappa_\mathrm{eff}^z$")
 
 plot_settings.plt.savefig("figs/test-scheme-convergence-1.pdf",
                           bbox_inches="tight")
 
-fig = plot_settings.plt.figure(figsize=(0.46 * plot_settings.A4_WIDTH,
-                                        0.75 * plot_settings.A4_WIDTH))
+fig = plot_settings.plt.figure(figsize=(0.42 * plot_settings.A4_WIDTH,
+                                        0.70 * plot_settings.A4_WIDTH))
 ax = fig.add_subplot()
 for i in range(LEN):
     ax.plot(x_axis,
@@ -59,14 +59,14 @@ for i in range(LEN):
             label="$\kappa^\mathrm{inc}=" + str(cr_list[2 * i + 1]) + "$",
             marker='.')
 ax.legend(loc="lower center",
-          bbox_to_anchor=(0.5, 1.02),
+          bbox_to_anchor=(0.5, 1.00),
           ncol=2,
           fancybox=True,
           shadow=True)
 ax.set_xticks(x_axis)
 ax.set_xticklabels(x_axis_label)
 ax.set_xlabel("$\mathtt{dof}$")
-ax.set_ylabel("$\kappa^\mathrm{eff}_z$")
+ax.set_ylabel("$\kappa_\mathrm{eff}^z$")
 
 plot_settings.plt.savefig("figs/test-scheme-convergence-2.pdf",
                           bbox_inches="tight")
