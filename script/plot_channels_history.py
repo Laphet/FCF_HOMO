@@ -57,4 +57,6 @@ ax.set_yscale("log")
 #     shadow=True,
 # )
 ax.legend(loc="upper center", ncol=3, fancybox=True, shadow=True)
+ax.set_xlabel("PCG iteration")
+ax.set_ylabel("Relative residual")
 plot_settings.plt.savefig("figs/channels-convergence-history.pdf", bbox_inches="tight")
