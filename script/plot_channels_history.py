@@ -33,11 +33,17 @@ fig = plot_settings.plt.figure(
 )
 ax = fig.add_subplot()
 ax.plot(np.arange(len(opt_data[0])), opt_data[0], label="opt($\Psi=1$)")
-ax.plot(np.arange(len(one_data[0])), one_data[0], label="one($\Psi=1$)")
+ax.plot(
+    np.arange(len(one_data[0])), one_data[0], linestyle="dashed", label="one($\Psi=1$)"
+)
 ax.plot(np.arange(len(opt_data[1])), opt_data[1], label="opt($\Psi=2$)")
-ax.plot(np.arange(len(one_data[1])), one_data[1], label="one($\Psi=2$)")
+ax.plot(
+    np.arange(len(one_data[1])), one_data[1], linestyle="dashed", label="one($\Psi=2$)"
+)
 ax.plot(np.arange(len(opt_data[2])), opt_data[2], label="opt($\Psi=3$)")
-ax.plot(np.arange(len(one_data[2])), one_data[2], label="one($\Psi=3$)")
+ax.plot(
+    np.arange(len(one_data[2])), one_data[2], linestyle="dashed", label="one($\Psi=3$)"
+)
 ax.set_yscale("log")
 # ax.legend(fancybox=True, shadow=True)
 # handles, labels = ax.get_legend_handles_labels()
